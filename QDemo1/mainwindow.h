@@ -56,9 +56,9 @@ public slots:
 
     void    zoomIn();
     void    zoomOut();
+	void    resetZoom();
     void    zoomToWindow();
-    void    resetZoom();
-
+    
     void    deskew();
     void    grayscale();
 
@@ -100,12 +100,17 @@ protected:
     void    createDockWndOcrResult();
     void    updateOcrComboBox();
 
+    void    updateActions();
+
 protected:
     QIcon   createIcon(const QString &strIconName);
     QToolButton* createToolButton(const QString &strText);
 
     void    loadImage();
     void    showImage(const QPixmap &pixmap);
+	void	saveScreenShot(QPixmap &pixmap);
+
+    void    onTimerScreenShot();
 
 protected:
     //action
@@ -151,7 +156,8 @@ protected:
     QActionGroup *languagesActionGroup;
 
 protected:
-   // QPrinter printer;
+	//QPrinter printer;
+	QPixmap pixmap;
 
     ImageView *imageView;
     OCRProgressDialog *progressDlg;

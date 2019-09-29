@@ -344,6 +344,17 @@ void MainWindow::updateOcrComboBox()
 {
     ocrLanguagesComboBox->clear();
 }
+
+void MainWindow::updateActions()
+{
+    printAction->setEnabled(true);
+    zoomToWindowAction->setEnabled(true);
+
+    zoomInAction->setEnabled(!zoomToWindowAction->isChecked());
+    zoomOutAction->setEnabled(!zoomToWindowAction->isChecked());
+    resetZoomAction->setEnabled(!zoomToWindowAction->isChecked());
+}
+
 //////////////////////////////////////////////////////////////////////////
 //
 QIcon MainWindow::createIcon(const QString &strIconName)
@@ -375,9 +386,7 @@ void MainWindow::loadImage()
         return;
     }
 
-    QPixmap pixmap;
     pixmap = QPixmap::fromImage(image, nullptr);
-
     showImage(pixmap);
 }
 
@@ -385,7 +394,38 @@ void MainWindow::showImage(const QPixmap &pixmap)
 {
     imageView->showImage(pixmap);
 
-    printAction->setEnabled(true);
+    updateActions();
+
+    if (!zoomToWindowAction->isChecked())
+    {
+        zoomToWindow();
+    }
+}
+
+void MainWindow::saveScreenShot(QPixmap &pixmap)
+{
+	
+}
+
+void MainWindow::onTimerScreenShot()
+{
+	while (true)
+	{
+		if (isHidden())
+		{
+            QThread::msleep(500);
+
+            //pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
+			
+			saveScreenShot(pixmap);
+			showImage(pixmap);
+			
+			show();
+            break;
+		}
+
+        QThread::msleep(0);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -406,12 +446,13 @@ void MainWindow::open()
 
 void MainWindow::screenshot()
 {
+	hide();
+    QTimer::singleShot(0, this, SLOT(onTimerScreenShot));
 }
 
 void MainWindow::save()
 {
-    QFileDialog fileDlg(this);
-    QString fileName = fileDlg.getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("Text (*.txt)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("Text (*.txt)"));
 
     if (fileName.isEmpty())
     {
@@ -424,20 +465,48 @@ void MainWindow::print()
 }
 
 void MainWindow::zoomIn()
-{}
+{
+    imageView->zoomIn();
+}
 
 void MainWindow::zoomOut()
 {
+    imageView->zoomOut();
+}
+
+void MainWindow::resetZoom()
+{
+	imageView->resetZoom();
 }
 
 void MainWindow::zoomToWindow()
-{}
-
-void MainWindow::resetZoom()
-{}
+{
+    double viewWidth = imageView->width();
+	double viewHeight = imageView->height();
+	
+	double imageWidth = pixmap.width();
+	double imageHeight = pixmap.height();
+	
+	double widthScaleFactor = imageWidth/viewWidth;
+	double heightScaleFactor = imageHeight/viewHeight;
+	
+	double maxScaleFactor = std::max(widthScaleFactor, heightScaleFactor);
+	double minScaleFactor = std::min(widthScaleFactor, heightScaleFactor);
+	
+	double scaleFactor = maxScaleFactor/minScaleFactor;
+	if (widthScaleFactor < heightScaleFactor)
+		imageView->fitInView(0, 0, imageWidth*scaleFactor, imageHeight);
+	else
+		imageView->fitInView(0, 0, imageWidth, imageHeight*scaleFactor);
+}
 
 void MainWindow::deskew()
-{}
+{
+	imageView->setCursor(Qt::WaitCursor);
+	
+	loadImage();
+	imageView->unsetCursor();
+}
 
 void MainWindow::grayscale()
 {}
