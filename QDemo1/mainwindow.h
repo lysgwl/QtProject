@@ -2,8 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
-#include <QKeyEvent>
 #include <QProgressDialog>
 //#include <QtPrintSupport/QPrinter>
 
@@ -21,23 +19,6 @@ class QButtonGroup;
 class ImageView;
 class QProgressDialog;
 QT_END_NAMESPACE
-
-class OCRProgressDialog : public QProgressDialog
-{
-    Q_OBJECT
-public:
-    explicit OCRProgressDialog(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::Widget)
-            : QProgressDialog(parent, flags)
-        {
-        }
-
-protected:
-    void keyPressEvent(QKeyEvent *event)
-    {
-        if(event->key() == Qt::Key_Escape)
-            event->ignore();
-    }
-};
 
 class MainWindow : public QMainWindow
 {
@@ -66,7 +47,8 @@ public slots:
     void    downloadOCRLanguageData();
     void    about();
 
-   // void    pointerGroupClicked(int pointerType);
+    void    onTimerScreenShot();
+    void    pointerGroupClicked(int pointerType);
 
 protected:
     void    createActions();
@@ -104,13 +86,14 @@ protected:
 
 protected:
     QIcon   createIcon(const QString &strIconName);
-    QToolButton* createToolButton(const QString &strText);
+    QToolButton* createToolButton(const QString &strText, const QString &strIconName);
 
     void    loadImage();
     void    showImage(const QPixmap &pixmap);
 	void	saveScreenShot(QPixmap &pixmap);
 
-    void    onTimerScreenShot();
+    void    imageDeskew();
+    void    imageGrayscale();
 
 protected:
     //action
@@ -160,7 +143,7 @@ protected:
 	QPixmap pixmap;
 
     ImageView *imageView;
-    OCRProgressDialog *progressDlg;
+    QProgressDialog *progressDlg;
 
     QString m_filename;
 };

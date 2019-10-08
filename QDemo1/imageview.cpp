@@ -1,8 +1,14 @@
 #include "imageview.h"
 
+#include <QtGui>
+#include <QRubberBand>
+
 ImageView::ImageView(QWidget* parent)
     : QGraphicsView(parent)
 {
+    isMousePress = false;
+    isMoveImageWithCurrentState = true;
+
     setBackgroundRole(QPalette::Dark); 	//设置背景颜色
     setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);	//Antialiasing:抗锯齿绘制	SmoothPixmapTransform:使用平滑的pixmap变换算法
 
@@ -15,6 +21,7 @@ ImageView::ImageView(QWidget* parent)
     setCursor(Qt::OpenHandCursor);		//改变鼠标形状
 
     setMouseTracking(true);
+    rubberBand = nullptr;
 }
 
 void ImageView::showImage(const QPixmap &pixmap)
@@ -25,7 +32,14 @@ void ImageView::showImage(const QPixmap &pixmap)
 }
 
 bool ImageView::isSelectRect()
-{}
+{
+    if (rubberBand)
+    {
+
+    }
+
+    return false;
+}
 
 void ImageView::zoomIn()
 {
@@ -51,24 +65,119 @@ void ImageView::fitToView()
 	fitInView(0, 0, scene()->width(), scene()->height());
 }
 
+void ImageView::setMoveImageState(bool state)
+{
+    isMoveImageWithCurrentState = state;
+
+    if (state)
+    {
+        setCursor(Qt::OpenHandCursor);
+    }
+    else
+    {
+        setCursor(Qt::CrossCursor);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////
 //
 void ImageView::mousePressEvent(QMouseEvent* event)
 {
+    isMousePress = true;
+
+    if (isMoveImageWithCurrentState)
+    {
+        lastPoint = event->pos();
+        setCursor(Qt::ClosedHandCursor);
+    }
+    else
+    {
+        origin = event->pos();
+
+        if (!rubberBand)
+        {
+            rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+        }
+
+        rubberBand->setGeometry(QRect(origin, QSize()));
+        rubberBand->show();
+    }
 }
 
 void ImageView::mouseReleaseEvent(QMouseEvent* event)
 {
+    isMousePress = false;
+
+    if (isMoveImageWithCurrentState)
+    {
+        setCursor(Qt::OpenHandCursor);
+        lastPoint = QPoint();
+    }
+    else
+    {
+        if (rubberBand)
+        {
+            QRect selectedRect = QRect(origin, event->pos()).normalized();  //
+            QRectF selectedRectF = mapToScene(QRect(selectedRect.topLeft(), selectedRect.bottomRight())).boundingRect();    //
+
+            int selectedRectWidth = selectedRectF.width();
+            int selectedRectHeight = selectedRectF.height();
+
+            QPixmap outputImage(selectedRectWidth, selectedRectHeight); //
+
+            QPainter outputPainter(&outputImage);
+            outputPainter.fillRect(outputImage.rect(), Qt::white);
+
+            QRectF targetRect(0, 0, selectedRectWidth, selectedRectHeight);
+            render(&outputPainter, targetRect, selectedRect);
+            //outputImage.save(m_selectedRectImageFilename, "JPG");
+
+            outputPainter.end();
+        }
+    }
 }
 
 void ImageView::mouseMoveEvent(QMouseEvent* event)
 {
+    if (isMoveImageWithCurrentState)
+    {
+        if (!lastPoint.isNull())
+        {
+            QPointF delta = mapToScene(lastPoint) - mapToScene(event->pos());   //
+            lastPoint = event->pos();
+
+            //setCenterPoint(centerPoint() + delta);
+        }
+    }
+    else
+    {
+        if (isMousePress && rubberBand)
+        {
+            rubberBand->setGeometry(QRect(origin, event->pos()).normalized());  //
+        }
+    }
 }
 
 void ImageView::wheelEvent(QWheelEvent* event)
 {
+    QPointF pointBeforeScale(mapToScene(event->pos()));
+
+    //QPointF screenCenter = centerPoint(); //CurrentCenterPoint;
+
+    if(event->delta() > 0)
+    {
+        zoomIn();
+    }
+    else
+    {
+        zoomOut();
+    }
 }
 
 void ImageView::resizeEvent(QResizeEvent* event)
 {
+    QRectF visibleArea = mapToScene(rect()).boundingRect();
+    //setCenterPoint(visibleArea.center());
+
+    QGraphicsView::resizeEvent(event);
 }

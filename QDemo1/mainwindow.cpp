@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "imageview.h"
+#include "ProcessDialog.h"
 
 #include <QtGui>
 #include <QAction>
@@ -17,6 +18,8 @@
 
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QApplication>
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     createActions();
@@ -29,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     createStatusbars();
     createDockWindows();
 
-    setWindowTitle("Wnd Test!");
+    setWindowTitle("");
 }
 
 MainWindow::~MainWindow()
@@ -268,7 +271,7 @@ void MainWindow::createImageView()
 
 void MainWindow::initProcessDialog()
 {//预处理窗口
-    progressDlg = new OCRProgressDialog(this, Qt::SplashScreen);
+    progressDlg = new ProcessDialog(this, Qt::SplashScreen);
 
     progressDlg->setRange(0, 0);
     progressDlg->setWindowModality(Qt::WindowModal);
@@ -281,11 +284,11 @@ void MainWindow::initProcessDialog()
 
 void MainWindow::createToolbars()
 {//工具条
-    moveImageToolButton = createToolButton(tr("Move Image"));
+    moveImageToolButton = createToolButton(tr("Move Image"), tr("move_image"));
     moveImageToolButton->setCheckable(true);
     moveImageToolButton->setChecked(true);
 
-    rectSelectionToolButton = createToolButton(tr("Rectangular Selection"));
+    rectSelectionToolButton = createToolButton(tr("Rectangular Selection"), tr("rect_selection"));
     rectSelectionToolButton->setCheckable(true);
 
     pointerTypeButtonGroup = new QButtonGroup(this);
@@ -361,17 +364,18 @@ QIcon MainWindow::createIcon(const QString &strIconName)
 {
     QIcon icon;
 
-    icon.addFile(QString(":/images/16/")+strIconName+".png", QSize(16,16));
-    icon.addFile(QString(":/images/32/")+strIconName+".png", QSize(32, 32));
+    icon.addFile(QString(":images/res/images/16/")+strIconName+".png", QSize(16,16));
+    icon.addFile(QString(":images/res/images/32/")+strIconName+".png", QSize(32, 32));
 
     return icon;
 }
 
-QToolButton* MainWindow::createToolButton(const QString &strText)
+QToolButton* MainWindow::createToolButton(const QString &strText, const QString &strIconName)
 {
     QToolButton *pToolButton = new QToolButton();
+
     pToolButton->setText(strText);
-    pToolButton->setIcon(createIcon(strText));
+    pToolButton->setIcon(createIcon(strIconName));
     pToolButton->setCheckable(true);
 
     return pToolButton;
@@ -407,25 +411,14 @@ void MainWindow::saveScreenShot(QPixmap &pixmap)
 	
 }
 
-void MainWindow::onTimerScreenShot()
+void MainWindow::imageDeskew()
 {
-	while (true)
-	{
-		if (isHidden())
-		{
-            QThread::msleep(500);
 
-            //pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
-			
-			saveScreenShot(pixmap);
-			showImage(pixmap);
-			
-			show();
-            break;
-		}
+}
 
-        QThread::msleep(0);
-	}
+void MainWindow::imageGrayscale()
+{
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -447,7 +440,7 @@ void MainWindow::open()
 void MainWindow::screenshot()
 {
 	hide();
-    QTimer::singleShot(0, this, SLOT(onTimerScreenShot));
+    QTimer::singleShot(0, this, SLOT(onTimerScreenShot()));
 }
 
 void MainWindow::save()
@@ -503,16 +496,28 @@ void MainWindow::zoomToWindow()
 void MainWindow::deskew()
 {
 	imageView->setCursor(Qt::WaitCursor);
-	
+
+    imageDeskew();
 	loadImage();
+
 	imageView->unsetCursor();
 }
 
 void MainWindow::grayscale()
-{}
+{
+    imageView->setCursor(Qt::WaitCursor);
+
+    imageGrayscale();
+    loadImage();
+
+    imageView->unsetCursor();
+}
 
 void MainWindow::ocr()
-{}
+{
+    progressDlg->show();
+    progressDlg->exec();
+}
 
 void MainWindow::downloadOCRLanguageData()
 {}
@@ -520,4 +525,41 @@ void MainWindow::downloadOCRLanguageData()
 void MainWindow::about()
 {
 
+}
+
+void MainWindow::onTimerScreenShot()
+{
+    while (true)
+    {
+        if (isHidden())
+        {
+            qApp->beep();
+            QThread::msleep(500);
+
+            QScreen *screen = QGuiApplication::primaryScreen();
+
+            pixmap = screen->grabWindow(0);
+            //pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
+
+            saveScreenShot(pixmap);
+            showImage(pixmap);
+
+            show();
+            break;
+        }
+
+        QThread::msleep(0);
+    }
+}
+
+void MainWindow::pointerGroupClicked(int pointerType)
+{
+    if (pointerType == 1)
+    {
+        imageView->setMoveImageState(true);
+    }
+    else if (pointerType == 2)
+    {
+        imageView->setMoveImageState(false);
+    }
 }

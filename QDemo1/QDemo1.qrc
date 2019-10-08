@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>res/images/16/open.png</file>
+        <file>res/images/16/screenshot.png</file>
+        <file>res/images/16/save.png</file>
+        <file>res/images/16/print.png</file>
+        <file>res/images/16/zoom_in.png</file>
+        <file>res/images/16/zoom_out.png</file>
+        <file>res/images/16/zoom_to_window.png</file>
+        <file>res/images/16/reset_zoom.png</file>
+        <file>res/images/16/ocr.png</file>
+        <file>res/images/16/move_image.png</file>
+        <file>res/images/16/rect_selection.png</file>
+        <file>res/images/16/scan.png</file>
+        <file>res/images/32/open.png</file>
+        <file>res/images/32/screenshot.png</file>
+        <file>res/images/32/save.png</file>
+        <file>res/images/32/print.png</file>
+        <file>res/images/32/zoom_in.png</file>
+        <file>res/images/32/zoom_out.png</file>
+        <file>res/images/32/zoom_to_window.png</file>
+        <file>res/images/32/reset_zoom.png</file>
+        <file>res/images/32/ocr.png</file>
+        <file>res/images/32/move_image.png</file>
+        <file>res/images/32/rect_selection.png</file>
+        <file>res/images/32/scan.png</file>
+    </qresource>
+</RCC>

@@ -16,6 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        ProcessDialog.cpp \
+        RubberBand.cpp \
         imageview.cpp \
         main.cpp \
         mainwindow.cpp
@@ -26,5 +28,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    ProcessDialog.h \
+    RubberBand.h \
     imageview.h \
     mainwindow.h
+
+RESOURCES += \
+    QDemo1.qrc
