@@ -17,7 +17,7 @@ ImageView::ImageView(QWidget* parent)
 
     setScene(new QGraphicsScene(this));	//设置场景	
     setSceneRect(0, 0, rect().width(), rect().height());	//设置场景的范围	
-    //setCenterPoint(QPointF(rect().width()/2, rect().height()/2));
+    setCenterPoint(QPointF(rect().width()/2, rect().height()/2));
     setCursor(Qt::OpenHandCursor);		//改变鼠标形状
 
     setMouseTracking(true);
@@ -146,7 +146,7 @@ void ImageView::mouseMoveEvent(QMouseEvent* event)
             QPointF delta = mapToScene(lastPoint) - mapToScene(event->pos());   //
             lastPoint = event->pos();
 
-            //setCenterPoint(centerPoint() + delta);
+            setCenterPoint(curCenterPoint + delta);
         }
     }
     else
@@ -160,11 +160,11 @@ void ImageView::mouseMoveEvent(QMouseEvent* event)
 
 void ImageView::wheelEvent(QWheelEvent* event)
 {
-    QPointF pointBeforeScale(mapToScene(event->pos()));
+    QPointF pointBeforeScale(mapToScene(event->pos())); //坐标转换
+    QPointF screenCenter = curCenterPoint;
 
-    //QPointF screenCenter = centerPoint(); //CurrentCenterPoint;
-
-    if(event->delta() > 0)
+    //正数值表示滑轮相对于用户在向前滑动，相反，负数值表示滑轮相对于用户是向后滑动的
+    if(event->delta() > 0)  //鼠标滑轮在滚动时用于返回滑动的距离
     {
         zoomIn();
     }
@@ -172,12 +172,68 @@ void ImageView::wheelEvent(QWheelEvent* event)
     {
         zoomOut();
     }
+
+    QPointF pointAfterScale(mapToScene(event->pos()));  //坐标转换
+    QPointF offset = pointBeforeScale - pointAfterScale;
+
+    QPointF center = screenCenter + offset; //计算中心位置
+    setCenterPoint(center);
 }
 
 void ImageView::resizeEvent(QResizeEvent* event)
 {
     QRectF visibleArea = mapToScene(rect()).boundingRect();
-    //setCenterPoint(visibleArea.center());
+
+    setCenterPoint(visibleArea.center());
 
     QGraphicsView::resizeEvent(event);
+}
+
+void ImageView::setCenterPoint(const QPointF &centerPoint)
+{
+    QRectF visibleArea = mapToScene(rect()).boundingRect(); //
+    QRectF sceneBounds = sceneRect();   //场景范围
+
+    double boundX = visibleArea.width()/2.0;
+    double boundY = visibleArea.height()/2.0;
+    double boundWidth = sceneBounds.width() - 2.0*boundX;
+    double boundHeight = sceneBounds.height() - 2.0*boundY;
+
+    QRectF bounds(boundX, boundY, boundWidth, boundHeight);
+
+    if (bounds.contains(centerPoint))
+    {
+        curCenterPoint = centerPoint;
+    }
+    else
+    {
+        if (visibleArea.contains(sceneBounds))
+        {
+            curCenterPoint = sceneBounds.center();
+        }
+        else
+        {
+            curCenterPoint = centerPoint;
+
+            if (centerPoint.x() > bounds.x() + bounds.width())
+            {
+                curCenterPoint.setX(bounds.x() + bounds.width());
+            }
+            else if (centerPoint.x() < bounds.x())
+            {
+                curCenterPoint.setX(bounds.x());
+            }
+
+            if (centerPoint.y() > bounds.y() + bounds.height())
+            {
+                curCenterPoint.setY(bounds.y() + bounds.height());
+
+            } else if (centerPoint.y() < bounds.y())
+            {
+                curCenterPoint.setY(bounds.y());
+            }
+        }
+    }
+
+    centerOn(curCenterPoint);
 }

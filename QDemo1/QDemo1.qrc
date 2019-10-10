@@ -24,5 +24,6 @@
         <file>res/images/32/move_image.png</file>
         <file>res/images/32/rect_selection.png</file>
         <file>res/images/32/scan.png</file>
+        <file>res/ocrstyle.png</file>
     </qresource>
 </RCC>

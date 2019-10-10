@@ -29,9 +29,13 @@ protected:
     virtual void wheelEvent(QWheelEvent* event);
     virtual void resizeEvent(QResizeEvent* event);
 
+    void    setCenterPoint(const QPointF &centerPoint);
+
 protected:
     QPoint  origin;
     QPoint  lastPoint;
+
+    QPointF curCenterPoint;
 
 private:
     bool    isMousePress;
