@@ -9,22 +9,26 @@
 #include <QStyleFactory>
 #include <QApplication>
 
+
 #include "mainwindow.h"
+
 
 #include <QLabel>
 #include <QDebug>
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    a.setWindowIcon(QIcon(":/images/res/ocrstyle.png"));
+
+
+app.setWindowIcon(QIcon(":/Images/res/ocrstyle.png"));
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForLocale());
 
-    //qDebug() << "测试" << endl;
+    //qDebug() << QLocale::system().name() << endl;
+    QString strFileName = QString("style_") + QLocale::system().name();
+    QString strFileDir = ":/Languages/res/translations";
+
+    QTranslator translator;
+    translator.load(strFileName, strFileDir);
+    app.installTranslator(&translator);
 
     MainWindow mainWindow;
     mainWindow.showMaximized();
     mainWindow.show();
-
-    return a.exec();
-}

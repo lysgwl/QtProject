@@ -13,14 +13,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
-SOURCES += \
-        ProcessDialog.cpp \
-        RubberBand.cpp \
-        imageview.cpp \
-        main.cpp \
-        mainwindow.cpp
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0		
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -28,10 +21,30 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    ProcessDialog.h \
-    RubberBand.h \
-    imageview.h \
-    mainwindow.h
+        control/ControlerMainHandler.h \
+        control/MainFrameControl.h \
+        data/DataMainHandler.h \
+        inc/FrameWork.h \
+        inc/ObjectMgr.h \
+        main\application.h \
+        widget/MainFrameView.h \
+        widget/ViewMainHandler.h
+		
+SOURCES += \
+    control/ControlerMainHandler.cpp \
+    control/MainFrameControl.cpp \
+    data/DataMainHandler.cpp \
+    inc/FrameWork.cpp \
+    inc/ObjectMgr.cpp \
+        main\main.cpp \
+        main\application.cpp\ \
+    widget/MainFrameView.cpp \
+    widget/ViewMainHandler.cpp
 
 RESOURCES += \
-    QDemo1.qrc
+        res\QDemo1.qrc
+
+CODECFORTR  = UTF-8
+CODECFORSRC = UTF-8
+#TRANSLATIONS = res/translations/style_en.ts \
+#        res/translations/style_zh_CN.ts

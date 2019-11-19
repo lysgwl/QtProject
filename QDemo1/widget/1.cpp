@@ -22,15 +22,14 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    createActions();
+    createImageView();
     createMenus();
 
-    createImageView();
-    //initProcessDialog();
+
+    initProcessDialog();
 
     createToolbars();
     createStatusbars();
-    createDockWindows();
 
     setWindowTitle("");
 }
@@ -40,237 +39,214 @@ MainWindow::~MainWindow()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//Actions èœå•
-void MainWindow::createActions()
-{//èœå•
-    createFileActions();
-    createViewActions();
-    createAdjustmentActions();
-
-    createOcrActions();
-    createLangActions();
-    createWindowActions();
-    createHelpActions();
-}
-
-void MainWindow::createFileActions()
-{//æ–‡ä»¶
-    //æ‰“å¼€æ–‡ä»¶
-    openAction = new QAction(tr("Open(&O)..."), this);
-    openAction->setIcon(createIcon("open"));
-    openAction->setShortcut(QKeySequence::Open);
-    connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
-
-    //æˆªå±
-    screenshotAction = new QAction(tr("Screenshot(&X)..."), this);
-    screenshotAction->setIcon(createIcon("screenshot"));
-    screenshotAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_X);
-    connect(screenshotAction, SIGNAL(triggered()), this, SLOT(screenshot()));
-
-    //ä¿å­˜
-    saveAction = new QAction(tr("Save(&S)..."), this);
-    saveAction->setIcon(createIcon("save"));
-    saveAction->setShortcut(QKeySequence::Save);
-    saveAction->setEnabled(false);
-    connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
-
-    //æ‰“å°
-    printAction = new QAction(tr("Print(&P)..."), this);
-    printAction->setIcon(createIcon("print"));
-    printAction->setShortcut(QKeySequence::Print);
-    printAction->setEnabled(false);
-    connect(printAction, SIGNAL(triggered()), this, SLOT(print()));
-
-    //é€€å‡º
-    exitAction = new QAction(tr("Exit(&Q)"), this);
-    exitAction->setShortcut(QKeySequence::Quit);
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
-}
-
-void MainWindow::createViewActions()
-{//æ˜¾ç¤º
-    //æ”¾å¤§
-    zoomInAction = new QAction(tr("Zoom In"), this);
-    zoomInAction->setIcon(createIcon("zoom_in"));
-    zoomInAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Equal));
-    zoomInAction->setEnabled(false);
-    connect(zoomInAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
-
-    //ç¼©å°
-    zoomOutAction = new QAction(tr("Zoom Out"), this);
-    zoomOutAction->setIcon(createIcon("zoom_out"));
-    zoomOutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Minus));
-    zoomOutAction->setEnabled(false);
-    connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
-
-    //æŒ‰çª—å£å¤§å°æ˜¾ç¤º
-    zoomToWindowAction = new QAction(tr("Fit To Screen"), this);
-    zoomToWindowAction->setIcon(createIcon("zoom_to_window"));
-    zoomToWindowAction->setShortcut(Qt::CTRL | Qt::Key_0);
-    zoomToWindowAction->setEnabled(false);
-    connect(zoomToWindowAction, SIGNAL(triggered()), this, SLOT(zoomToWindow()));
-
-    //å®žé™…å¤§å°
-    resetZoomAction = new QAction(tr("Actual Size"), this);
-    resetZoomAction->setIcon(createIcon("reset_zoom"));
-    resetZoomAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_0);
-    resetZoomAction->setEnabled(false);
-    connect(resetZoomAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
-}
-
-void MainWindow::createAdjustmentActions()
-{//è°ƒæ•´
-    //æ ¡æ­£
-    deskewAction = new QAction(tr("Deskew"), this);
-    connect(deskewAction, SIGNAL(triggered()), this, SLOT(deskew()));
-
-    //ç°åº¦å›¾
-    grayscaleAction = new QAction(tr("Grayscale"), this);
-    connect(grayscaleAction, SIGNAL(triggered()), this, SLOT(grayscale()));
-}
-
-void MainWindow::createOcrActions()
-{//OCR
-    //å­—ç¬¦è¯†åˆ«
-    ocrAction = new QAction(tr("Character Recognition"), this);
-    ocrAction->setIcon(createIcon("ocr"));
-    ocrAction->setShortcut(Qt::CTRL | Qt::Key_E);
-    connect(ocrAction, SIGNAL(triggered()), this, SLOT(ocr()));
-
-    //ä¸‹è½½æ•°æ®
-    downloadOCRLanguageDataAction = new QAction(tr("Download Language Data..."), this);
-    connect(downloadOCRLanguageDataAction, SIGNAL(triggered()), this, SLOT(downloadOCRLanguageData()));
-}
-
-void MainWindow::createLangActions()
-{//è¯­éŸ³
-
-}
-
-void MainWindow::createWindowActions()
-{//çª—å£
-
-}
-
-void MainWindow::createHelpActions()
-{//å¸®åŠ©
-    //å…³äºŽ
-    aboutAction = new QAction(tr("About(&A)"), this);
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
-}
-
-//////////////////////////////////////////////////////////////////////////
-//Menus ç›®å½•
+//Menus Ä¿Â¼
 void MainWindow::createMenus()
-{//ç›®å½•
+{//Ä¿Â¼
     createFileMenus();
     createViewMenus();
     createAdjustmentMenus();
 
     createOcrMenus();
-    createLanguageMenus();
     createWindowMenus();
     createHelpMenus();
 }
 
 void MainWindow::createFileMenus()
-{//æ–‡ä»¶ç›®å½•
+{//ÎÄ¼þÄ¿Â¼
+    QMenu *fileMenu;
     fileMenu = new QMenu(tr("File(&F)"), this);
 
+    //´ò¿ªÎÄ¼þ
+    QAction *openAction = new QAction(tr("Open(&O)..."), this);
+    openAction->setIcon(createIcon("open"));
+    openAction->setShortcut(QKeySequence::Open);
+    connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
     fileMenu->addAction(openAction);
+
+    //½ØÆÁ
+    QAction *screenshotAction = new QAction(tr("Screenshot(&X)..."), this);
+    screenshotAction->setIcon(createIcon("screenshot"));
+    screenshotAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_X);
+    connect(screenshotAction, SIGNAL(triggered()), this, SLOT(screenshot()));
     fileMenu->addAction(screenshotAction);
+
     fileMenu->addSeparator();
+
+    //±£´æ
+    QAction *saveAction = new QAction(tr("Save(&S)..."), this);
+    saveAction->setIcon(createIcon("save"));
+    saveAction->setShortcut(QKeySequence::Save);
+    saveAction->setEnabled(false);
+    connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
     fileMenu->addAction(saveAction);
+
+    //±£³ÖÍ¼Ïñ
+    QAction *saveImageAction = new QAction(tr("Save Image..."), this);
+    saveImageAction->setIcon(createIcon("save"));
+    saveImageAction->setEnabled(false);
+    connect(saveImageAction, SIGNAL(triggered()), this, SLOT(saveimage()));
+    fileMenu->addAction(saveImageAction);
+
+    //´òÓ¡
+    QAction *printAction = new QAction(tr("Print(&P)..."), this);
+    printAction->setIcon(createIcon("print"));
+    printAction->setShortcut(QKeySequence::Print);
+    printAction->setEnabled(false);
+    connect(printAction, SIGNAL(triggered()), this, SLOT(print()));
     fileMenu->addAction(printAction);
+
     fileMenu->addSeparator();
+
+    //ÍË³ö
+    QAction *exitAction = new QAction(tr("Exit(&Q)"), this);
+    exitAction->setShortcut(QKeySequence::Quit);
+    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
     fileMenu->addAction(exitAction);
 
     menuBar()->addMenu(fileMenu);
 }
 
 void MainWindow::createViewMenus()
-{//æ˜¾ç¤ºç›®å½•
+{//ÏÔÊ¾Ä¿Â¼
+    QMenu *viewMenu;
     viewMenu = new QMenu(tr("View(&V)"), this);
 
+    //·Å´ó
+    QAction *zoomInAction = new QAction(tr("Zoom In"), this);
+    zoomInAction->setIcon(createIcon("zoom_in"));
+    zoomInAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Equal));
+    zoomInAction->setEnabled(false);
+    connect(zoomInAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
     viewMenu->addAction(zoomInAction);
+
+    //ËõÐ¡
+    QAction *zoomOutAction = new QAction(tr("Zoom Out"), this);
+    zoomOutAction->setIcon(createIcon("zoom_out"));
+    zoomOutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Minus));
+    zoomOutAction->setEnabled(false);
+    connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
     viewMenu->addAction(zoomOutAction);
+
+    //°´´°¿Ú´óÐ¡ÏÔÊ¾
+    QAction *zoomToWindowAction = new QAction(tr("Fit To Screen"), this);
+    zoomToWindowAction->setIcon(createIcon("zoom_to_window"));
+    zoomToWindowAction->setShortcut(Qt::CTRL | Qt::Key_0);
+    zoomToWindowAction->setEnabled(false);
+    connect(zoomToWindowAction, SIGNAL(triggered()), this, SLOT(zoomToWindow()));
     viewMenu->addAction(zoomToWindowAction);
+
+    //Êµ¼Ê´óÐ¡
+    QAction *resetZoomAction = new QAction(tr("Actual Size"), this);
+    resetZoomAction->setIcon(createIcon("reset_zoom"));
+    resetZoomAction->setShortcut(Qt::CTRL | Qt::ALT | Qt::Key_0);
+    resetZoomAction->setEnabled(false);
+    connect(resetZoomAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
     viewMenu->addAction(resetZoomAction);
 
     menuBar()->addMenu(viewMenu);
 }
 
 void MainWindow::createAdjustmentMenus()
-{//è°ƒæ•´ç›®å½•
+{//µ÷ÕûÄ¿Â¼
+    QMenu *adjustmentMenu;
     adjustmentMenu = new QMenu(tr("Adjustments(&A)"), this);
 
+    //Ð£Õý
+    QAction *deskewAction = new QAction(tr("Deskew"), this);
+    connect(deskewAction, SIGNAL(triggered()), this, SLOT(deskew()));
     adjustmentMenu->addAction(deskewAction);
+
+    //»Ò¶ÈÍ¼
+    QAction *grayscaleAction = new QAction(tr("Grayscale"), this);
+    connect(grayscaleAction, SIGNAL(triggered()), this, SLOT(grayscale()));
     adjustmentMenu->addAction(grayscaleAction);
 
     menuBar()->addMenu(adjustmentMenu);
 }
 
 void MainWindow::createOcrMenus()
-{//OCRç›®å½•
+{//OCRÄ¿Â¼
+    QMenu *ocrMenu;
     ocrMenu = new QMenu(tr("OCR(&O)"), this);
 
+    //×Ö·ûÊ¶±ð
+    QAction *ocrAction = new QAction(tr("Character Recognition"), this);
+    ocrAction->setIcon(createIcon("ocr"));
+    ocrAction->setShortcut(Qt::CTRL | Qt::Key_E);
+    connect(ocrAction, SIGNAL(triggered()), this, SLOT(ocr()));
     ocrMenu->addAction(ocrAction);
+
+    //ÏÂÔØÊý¾Ý
+    QAction *downloadOCRLanguageDataAction = new QAction(tr("Download Language Data..."), this);
+    connect(downloadOCRLanguageDataAction, SIGNAL(triggered()), this, SLOT(downloadOCRLanguageData()));
     ocrMenu->addAction(downloadOCRLanguageDataAction);
 
-    createOcrLanguagesMenu();
-    createOcrPageSegModesMenu();
+    createOcrLanguagesMenu(ocrMenu);
+    createOcrPageSegModesMenu(ocrMenu);
 
     menuBar()->addMenu(ocrMenu);
 }
 
-void MainWindow::createOcrLanguagesMenu()
-{
-    ocrLanguagesMenu = new QMenu(tr("Languages(&L)"));
-    ocrMenu->addMenu(ocrLanguagesMenu);
-
-
-}
-
-void MainWindow::createOcrPageSegModesMenu()
-{
-    ocrPageSegModesMenu = new QMenu(tr("Page Layout Analysis"));
-    ocrMenu->addMenu(ocrPageSegModesMenu);
-}
-
-void MainWindow::createLanguageMenus()
-{//è¯­è¨€ç›®å½•
-    languagesMenu = new QMenu(tr("Languages(&L)"), this);
-
-    languagesActionGroup = new QActionGroup(this);
-
-    menuBar()->addMenu(languagesMenu);
-}
-
 void MainWindow::createWindowMenus()
-{//çª—å£ç›®å½•
+{//´°¿ÚÄ¿Â¼
+    QMenu *windowMenu;
     windowMenu = new QMenu(tr("Window(&W)"), this);
     menuBar()->addMenu(windowMenu);
+
+    createDockWindows(windowMenu);
 }
 
 void MainWindow::createHelpMenus()
-{//å¸®åŠ©ç›®å½•
+{//°ïÖúÄ¿Â¼
+    QMenu *helpMenu;
     helpMenu = new QMenu(tr("Help(&H)"), this);
+
+    //¹ØÓÚ
+    QAction *aboutAction = new QAction(tr("About(&A)"), this);
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
     helpMenu->addAction(aboutAction);
 
     menuBar()->addMenu(helpMenu);
 }
 
+void MainWindow::createOcrLanguagesMenu(QMenu *pMenu)
+{
+    QMenu *ocrLanguagesMenu;
+    ocrLanguagesMenu = new QMenu(tr("Languages(&L)"));
+    //ocrMenu->addMenu(ocrLanguagesMenu);
+}
+
+void MainWindow::createOcrPageSegModesMenu(QMenu *pMenu)
+{
+    QMenu *ocrPageSegModesMenu;
+    ocrPageSegModesMenu = new QMenu(tr("Page Layout Analysis"));
+    //ocrMenu->addMenu(ocrPageSegModesMenu);
+}
+
+void MainWindow::createDockWindows(QMenu *pMenu)
+{//Dock´°¿Ú
+    QDockWidget *dockWnd = new QDockWidget(tr("OCR Result"), this);
+    dockWnd->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
+    ocrResultWnd = new QTextEdit(dockWnd);
+    dockWnd->setWidget(ocrResultWnd);
+    addDockWidget(Qt::RightDockWidgetArea, dockWnd);
+
+    pMenu->addAction(dockWnd->toggleViewAction());
+}
+
 //////////////////////////////////////////////////////////////////////////
 //
 void MainWindow::createImageView()
-{//ä¸šåŠ¡çª—å£
+{//ÒµÎñ´°¿Ú
     imageView = new ImageView();
 
     setCentralWidget(imageView);
 }
 
 void MainWindow::initProcessDialog()
-{//é¢„å¤„ç†çª—å£
+{//Ô¤´¦Àí´°¿Ú
+#if 0
     progressDlg = new ProcessDialog(this, Qt::SplashScreen);
 
     progressDlg->setRange(0, 0);
@@ -280,10 +256,13 @@ void MainWindow::initProcessDialog()
     progressDlg->setCancelButton(nullptr);
     progressDlg->setMinimumWidth(300);
     progressDlg->setCursor(Qt::WaitCursor);
+#endif
+
+    progressDlg = nullptr;
 }
 
 void MainWindow::createToolbars()
-{//å·¥å…·æ¡
+{//¹¤¾ßÌõ
     moveImageToolButton = createToolButton(tr("Move Image"), tr("move_image"));
     moveImageToolButton->setCheckable(true);
     moveImageToolButton->setChecked(true);
@@ -295,13 +274,13 @@ void MainWindow::createToolbars()
     pointerTypeButtonGroup->addButton(moveImageToolButton, int(1));
     pointerTypeButtonGroup->addButton(rectSelectionToolButton, int(2));
     connect(pointerTypeButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(pointerGroupClicked(int)));
-
+#if 0
     toolbar = addToolBar("OCR Style Toolbar");
     toolbar->addAction(openAction);
     toolbar->addAction(screenshotAction);
     toolbar->addSeparator();
     toolbar->addAction(saveAction);
-    toolbar->addAction(printAction);
+    toolbar->addAction(saveImageAction);
     toolbar->addSeparator();
     toolbar->addWidget(moveImageToolButton);
     toolbar->addWidget(rectSelectionToolButton);
@@ -319,28 +298,12 @@ void MainWindow::createToolbars()
     connect(ocrLanguagesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(selectedOcrLanguageWithIndex(int)));
 
     updateOcrComboBox();
+#endif
 }
 
 void MainWindow::createStatusbars()
-{//çŠ¶æ€æ¡
+{//×´Ì¬Ìõ
     statusBar()->addWidget(new QLabel(""));
-}
-
-void MainWindow::createDockWindows()
-{//Dockçª—å£
-    createDockWndOcrResult();
-}
-
-void MainWindow::createDockWndOcrResult()
-{
-    QDockWidget *dockWnd = new QDockWidget(tr("OCR Result"), this);
-    dockWnd->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
-    ocrResultWnd = new QTextEdit(dockWnd);
-    dockWnd->setWidget(ocrResultWnd);
-    addDockWidget(Qt::RightDockWidgetArea, dockWnd);
-
-    windowMenu->addAction(dockWnd->toggleViewAction());
 }
 
 void MainWindow::updateOcrComboBox()
@@ -350,12 +313,15 @@ void MainWindow::updateOcrComboBox()
 
 void MainWindow::updateActions()
 {
+#if 0
+    saveImageAction->setEnabled(true);
     printAction->setEnabled(true);
     zoomToWindowAction->setEnabled(true);
 
     zoomInAction->setEnabled(!zoomToWindowAction->isChecked());
     zoomOutAction->setEnabled(!zoomToWindowAction->isChecked());
     resetZoomAction->setEnabled(!zoomToWindowAction->isChecked());
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -364,8 +330,8 @@ QIcon MainWindow::createIcon(const QString &strIconName)
 {
     QIcon icon;
 
-    icon.addFile(QString(":images/res/images/16/")+strIconName+".png", QSize(16,16));
-    icon.addFile(QString(":images/res/images/32/")+strIconName+".png", QSize(32, 32));
+    icon.addFile(QString(":Images/res/images/16/")+strIconName+".png", QSize(16,16));
+    icon.addFile(QString(":Images/res/images/32/")+strIconName+".png", QSize(32, 32));
 
     return icon;
 }
@@ -381,34 +347,16 @@ QToolButton* MainWindow::createToolButton(const QString &strText, const QString 
     return pToolButton;
 }
 
-void MainWindow::loadImage()
-{
-    QImage image(m_filename);
-    if (image.isNull())
-    {
-        QMessageBox::information(this, "Wnd", tr("loadImage failed! %1.").arg(m_filename));
-        return;
-    }
-
-    pixmap = QPixmap::fromImage(image, nullptr);
-    showImage(pixmap);
-}
-
 void MainWindow::showImage(const QPixmap &pixmap)
 {
     imageView->showImage(pixmap);
 
     updateActions();
 
-    if (!zoomToWindowAction->isChecked())
+    //if (!zoomToWindowAction->isChecked())
     {
         zoomToWindow();
     }
-}
-
-void MainWindow::saveScreenShot(QPixmap &pixmap)
-{
-	
 }
 
 void MainWindow::imageDeskew()
@@ -433,8 +381,15 @@ void MainWindow::open()
         return;
     }
 
-    m_filename = filename;
-    loadImage();
+   QImage image(filename);
+    if (image.isNull())
+    {
+        QMessageBox::information(this, "Wnd", tr("loadImage failed! %1.").arg(filename));
+        return;
+    }
+
+    pixmap = QPixmap::fromImage(image, nullptr);
+    showImage(pixmap);
 }
 
 void MainWindow::screenshot()
@@ -451,6 +406,30 @@ void MainWindow::save()
     {
         return;
     }
+
+    QFile file(fileName);
+    if (file.open(QFile::WriteOnly))
+    {
+        QTextStream textStream(&file);
+        textStream.setCodec("utf-8");
+        file.close();
+    }
+}
+
+void MainWindow::saveimage()
+{
+    if (pixmap.isNull())
+    {
+        return;
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QDir::currentPath(), tr("Images (*.bmp *.jpg *.png)"));
+    if (fileName.isEmpty())
+    {
+        return;
+    }
+
+    pixmap.save(fileName);
 }
 
 void MainWindow::print()
@@ -498,7 +477,6 @@ void MainWindow::deskew()
 	imageView->setCursor(Qt::WaitCursor);
 
     imageDeskew();
-	loadImage();
 
 	imageView->unsetCursor();
 }
@@ -508,13 +486,15 @@ void MainWindow::grayscale()
     imageView->setCursor(Qt::WaitCursor);
 
     imageGrayscale();
-    loadImage();
 
     imageView->unsetCursor();
 }
 
 void MainWindow::ocr()
 {
+    if (progressDlg == nullptr)
+        return;
+
     progressDlg->show();
     progressDlg->exec();
 }
@@ -537,12 +517,13 @@ void MainWindow::onTimerScreenShot()
             QThread::msleep(500);
 
             QScreen *screen = QGuiApplication::primaryScreen();
+            if (screen != nullptr)
+            {
+                pixmap = screen->grabWindow(0);
+                //pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
 
-            pixmap = screen->grabWindow(0);
-            //pixmap = QPixmap::grabWindow(QApplication::desktop()->winId());
-
-            saveScreenShot(pixmap);
-            showImage(pixmap);
+                showImage(pixmap);
+            }
 
             show();
             break;
