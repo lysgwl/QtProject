@@ -4,8 +4,6 @@
 #include <QtWidgets>
 #include <QStackedWidget>
 
-#include "../widget/MainFrameView.h"
-
 class CMainFrameControl : public QObject
 {
 	Q_OBJECT
@@ -14,15 +12,9 @@ public:
 	
     void		initMainFrame();
 	
-    QWidget*	getMainFrame();
+    QObject*    getObject();
 
 public slots:
-
-protected:
-	
-private:
-	QStackedWidget	*m_pStackedWidget;
-	CMainFrameView	*m_pMainView;
 };
 
 #endif

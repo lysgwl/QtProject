@@ -3,6 +3,8 @@
 
 enum ControlerHandlerId {
     Controler_MainFrame_Id  = 0x1001,
+    Controler_TopMenu_Id    = 0x1002,
+    Controler_ToolStatus_Id = 0x1003,
 };
 
 class CControlerMainHandler

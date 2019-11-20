@@ -5,6 +5,8 @@
 
 #include "../inc/FrameWork.h"
 #include "../control/MainFrameControl.h"
+
+#include "../widget/ViewMainHandler.h"
 #include "../control/ControlerMainHandler.h"
 
 CApplication::CApplication(int &argc, char **argv):
@@ -20,7 +22,7 @@ void CApplication::initModule()
 
 void CApplication::runModule()
 {
-    CMainFrameControl *pMainFrameControl = dynamic_cast<CMainFrameControl*>CFrameWork::getObjectPointer(Controler_MainFrame_Id);
+    CMainFrameControl *pMainFrameControl = (CMainFrameControl*)CFrameWork::getObjectPointer(Controler_MainFrame_Id);
     if (pMainFrameControl == nullptr)
     {
         return;
@@ -33,7 +35,7 @@ void CApplication::setAppEnv()
 {
    setWindowIcon(QIcon(":/Images/ocrstyle.png"));
 
-   qDebug() << QLocale::system().name() << endl;
+   //qDebug() << QLocale::system().name() << endl;
    QTextCodec::setCodecForLocale(QTextCodec::codecForLocale());
 
    QString strFileDir = ":/Languages/translations";
@@ -46,5 +48,6 @@ void CApplication::setAppEnv()
 
 void CApplication::setAppModule()
 {
+    CViewMainHandler::registerObj();
     CControlerMainHandler::registerObj();
 }
