@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Widget</class>
+ <widget class="QWidget" name="Widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>645</width>
+    <height>296</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Widget</string>
+  </property>
+  <widget class="QPushButton" name="btnOpen">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>220</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>打开</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnClose">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>220</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>关闭</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnAudio1">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>220</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>声卡一</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnAudio2">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>220</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>声卡二</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnAudio3">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>220</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>声卡三</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelStatus">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>50</y>
+     <width>221</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>this is a test!</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

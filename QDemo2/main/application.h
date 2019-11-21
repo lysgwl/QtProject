@@ -2,6 +2,7 @@
 #define __APPLICATION_H__
 
 #include <QApplication>
+#include "../widget/MainFrameWindow.h"
 
 class CApplication : public QApplication
 {
@@ -14,6 +15,9 @@ public:
 protected:
     void        setAppEnv();
     void        setAppModule();
+
+private:
+    CMainFrameWindow *m_pMainFrameWindow;
 };
 
 #endif

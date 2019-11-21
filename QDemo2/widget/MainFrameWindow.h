@@ -1,21 +1,35 @@
-#ifndef WIDGET_H
-#define WIDGET_H
+#ifndef __MAINFRAME_WINDOW_H__
+#define __MAINFRAME_WINDOW_H__
 
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class Widget; }
+    namespace Ui { class Widget; }
 QT_END_NAMESPACE
 
-class Widget : public QWidget
+class CMainFrameWindow : public QWidget
 {
     Q_OBJECT
-
 public:
-    Widget(QWidget *parent = nullptr);
-    ~Widget();
+    CMainFrameWindow(QWidget *parent = nullptr);
+    ~CMainFrameWindow();
+	
+public:
+    void		initUI();
+
+private slots:
+    void on_btnOpen_pressed();
+
+    void on_btnClose_pressed();
+
+    void on_btnAudio1_pressed();
+
+    void on_btnAudio2_pressed();
+
+    void on_btnAudio3_pressed();
 
 private:
-    Ui::Widget *ui;
+    Ui::Widget  *ui;
 };
-#endif // WIDGET_H
+
+#endif
