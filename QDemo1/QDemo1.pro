@@ -23,22 +23,26 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
         control/ControlerMainHandler.h \
         control/MainFrameControl.h \
+        control/ToolStatusControl.h \
         data/DataMainHandler.h \
         inc/FrameWork.h \
         inc/ObjectMgr.h \
         main\application.h \
         widget/MainFrameView.h \
+        widget/ToolStatusView.h \
         widget/ViewMainHandler.h
 		
 SOURCES += \
     control/ControlerMainHandler.cpp \
     control/MainFrameControl.cpp \
+    control/ToolStatusControl.cpp \
     data/DataMainHandler.cpp \
     inc/FrameWork.cpp \
     inc/ObjectMgr.cpp \
         main\main.cpp \
         main\application.cpp\ \
     widget/MainFrameView.cpp \
+    widget/ToolStatusView.cpp \
     widget/ViewMainHandler.cpp
 
 RESOURCES += \

@@ -2,6 +2,7 @@
 
 #include "../inc/FrameWork.h"
 #include "../widget/MainFrameView.h"
+#include "../widget/ToolStatusView.h"
 #include "../widget/ViewMainHandler.h"
 
 CMainFrameControl::CMainFrameControl(QObject *parent) 
@@ -15,17 +16,15 @@ void CMainFrameControl::initMainFrame()
     if (pMainView == nullptr)
         return;
 
-    //QStackedWidget *pStackedWidget = new QStackedWidget();
-    //QVBoxLayout *pLayout = new QVBoxLayout();
-    //pLayout->addWidget(pStackedWidget);
-    //pLayout->setMargin(0);
+    CToolStatusView *pToolView = (CToolStatusView*)CFrameWork::getObjectPointer(View_ToolStatus_id);
+    if (pToolView == nullptr)
+        return;
 
-    //pMainView->setLayout(pLayout);
-    //pMainView->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    //pMainView->setFixedSize();
     pMainView->initUI();
+    //pToolView->initUI();
 
-    pMainView->showMaximized();  //showFullScreen
+    pMainView->showMain();
+    //pToolView->show();
 }
 
 QObject* CMainFrameControl::getObject()

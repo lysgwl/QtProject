@@ -6,13 +6,13 @@
 
 class CMainFrameControl : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit CMainFrameControl(QObject *parent=Q_NULLPTR);
+    explicit CMainFrameControl(QObject *parent=Q_NULLPTR);
 	
-    void		initMainFrame();
+    void                initMainFrame();
 	
-    QObject*    getObject();
+    QObject*            getObject();
 
 public slots:
 };

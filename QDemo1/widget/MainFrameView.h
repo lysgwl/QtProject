@@ -9,14 +9,19 @@ class CMainFrameView : public QWidget
 public:
 	explicit CMainFrameView(QWidget *parent = nullptr);	
 	
-	void		initUI();
+    void    initUI();
+    void    showMain();
 	
 protected:
-	void		mouseReleaseEvent(QMouseEvent *event) override;
-	void        mouseMoveEvent(QMouseEvent *event) override;
+    void    mouseReleaseEvent(QMouseEvent *event) override;
+    void    mouseMoveEvent(QMouseEvent *event) override;
+
+
 	
 signals:
-		
+
+protected:
+    QStackedWidget *m_pStackedWidget;
 };
 
 #endif // MAINWINDOW_H

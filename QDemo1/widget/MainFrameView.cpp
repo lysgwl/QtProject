@@ -7,25 +7,40 @@ CMainFrameView::CMainFrameView(QWidget *parent)
 
 void CMainFrameView::initUI()
 {
-/*
-    QPushButton *button1 = new QPushButton("One");
-    QPushButton *button2 = new QPushButton("Two");
-    QPushButton *button3 = new QPushButton("Three");
-    QPushButton *button4 = new QPushButton("Four");
-    QPushButton *button5 = new QPushButton("Five");
+    //QVBoxLayout *pLayout = new QVBoxLayout();
 
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(button1);
-    layout->addWidget(button2);
-    layout->addWidget(button3);
-    layout->addWidget(button4);
-    layout->addWidget(button5);
-    setLayout(layout);
-*/
-    QMenu *fileMenu;
-    fileMenu = new QMenu(tr("File(&F)"), this);
+    //pLayout->addWidget(m_pStackedWidget);
+    //pLayout->setMargin(0);
 
-    QAction *openAction = new QAction(tr("Open(&O)..."), this);
+    //setLayout(pLayout);
+    //setWindowFlags(Qt::FramelessWindowHint);  //Qt::WindowStaysOnTopHint
+    //resize(500,400);
+}
+
+void CMainFrameView::showMain()
+{
+    m_pStackedWidget = new QStackedWidget();
+    QPushButton *pButton1 = new QPushButton("test1", this);
+    QPushButton *pButton2 = new QPushButton("test2", this);
+    QPushButton *pButton3 = new QPushButton("test3", this);
+
+    //pButton1->move(200, 200);
+    //pButton2->move(200, 250);
+    //pButton3->move(200, 300);
+
+    m_pStackedWidget->addWidget(pButton1);
+    m_pStackedWidget->addWidget(pButton2);
+    m_pStackedWidget->addWidget(pButton3);
+
+    m_pStackedWidget->resize(200, 300);
+
+    QHBoxLayout *pLayout = new QHBoxLayout(this);
+    pLayout->setMargin(5);
+    pLayout->setSpacing(5);
+    pLayout->addWidget(m_pStackedWidget, 0, 0);   //Qt::AlignVCenter  Qt::AlignHCenter
+    pLayout->setStretchFactor(m_pStackedWidget, 4);
+
+    showMaximized();
 }
 
 void CMainFrameView::mouseReleaseEvent(QMouseEvent *event)

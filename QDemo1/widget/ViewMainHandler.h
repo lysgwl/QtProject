@@ -13,7 +13,7 @@ public:
 	CViewMainHandler();
 	
 public:
-	static void registerObj();
+    static void     registerObj();
 };
 
 #endif
