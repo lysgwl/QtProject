@@ -29,6 +29,7 @@ HEADERS += \
         inc/ObjectMgr.h \
         main\application.h \
         widget/MainFrameView.h \
+        widget/ScreenShotView.h \
         widget/ToolStatusView.h \
         widget/ViewMainHandler.h
 		
@@ -42,6 +43,7 @@ SOURCES += \
         main\main.cpp \
         main\application.cpp\ \
     widget/MainFrameView.cpp \
+    widget/ScreenShotView.cpp \
     widget/ToolStatusView.cpp \
     widget/ViewMainHandler.cpp
 

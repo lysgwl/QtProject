@@ -16,15 +16,8 @@ void CMainFrameControl::initMainFrame()
     if (pMainView == nullptr)
         return;
 
-    CToolStatusView *pToolView = (CToolStatusView*)CFrameWork::getObjectPointer(View_ToolStatus_id);
-    if (pToolView == nullptr)
-        return;
-
     pMainView->initUI();
-    //pToolView->initUI();
-
     pMainView->showMain();
-    //pToolView->show();
 }
 
 QObject* CMainFrameControl::getObject()

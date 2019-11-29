@@ -7,6 +7,7 @@ CMainFrameView::CMainFrameView(QWidget *parent)
 
 void CMainFrameView::initUI()
 {
+    m_pStackedWidget = new QStackedWidget();
     //QVBoxLayout *pLayout = new QVBoxLayout();
 
     //pLayout->addWidget(m_pStackedWidget);
@@ -19,28 +20,26 @@ void CMainFrameView::initUI()
 
 void CMainFrameView::showMain()
 {
-    m_pStackedWidget = new QStackedWidget();
-    QPushButton *pButton1 = new QPushButton("test1", this);
-    QPushButton *pButton2 = new QPushButton("test2", this);
-    QPushButton *pButton3 = new QPushButton("test3", this);
+    QLabel *screenshotLabel = new QLabel(this);
 
-    //pButton1->move(200, 200);
-    //pButton2->move(200, 250);
-    //pButton3->move(200, 300);
+    screenshotLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    screenshotLabel->setAlignment(Qt::AlignCenter);
 
-    m_pStackedWidget->addWidget(pButton1);
-    m_pStackedWidget->addWidget(pButton2);
-    m_pStackedWidget->addWidget(pButton3);
+   // const QRect screenGeometry = QApplication::desktop()->screenGeometry(this);
+   // screenshotLabel->setMinimumSize(screenGeometry.width() / 8, screenGeometry.height() / 8);
 
-    m_pStackedWidget->resize(200, 300);
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->addWidget(screenshotLabel);
 
-    QHBoxLayout *pLayout = new QHBoxLayout(this);
-    pLayout->setMargin(5);
-    pLayout->setSpacing(5);
-    pLayout->addWidget(m_pStackedWidget, 0, 0);   //Qt::AlignVCenter  Qt::AlignHCenter
-    pLayout->setStretchFactor(m_pStackedWidget, 4);
+    //QSpinBox *delaySpinBox;
+    //QGroupBox *optionsGroupBox = new QGroupBox(tr("Options"), this);
+    //delaySpinBox = new QSpinBox(optionsGroupBox);
+    //delaySpinBox->setSuffix(tr(" s"));
+    //delaySpinBox->setMaximum(60);
 
-    showMaximized();
+    //mainLayout->addWidget(optionsGroupBox);
+    //showMaximized();
+    show();
 }
 
 void CMainFrameView::mouseReleaseEvent(QMouseEvent *event)
