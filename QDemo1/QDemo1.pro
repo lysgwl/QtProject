@@ -27,6 +27,7 @@ HEADERS += \
         data/DataMainHandler.h \
         inc/FrameWork.h \
         inc/ObjectMgr.h \
+        inc/SystemTrayMgr.h \
         main\application.h \
         widget/MainFrameView.h \
         widget/ScreenShotView.h \
@@ -40,6 +41,7 @@ SOURCES += \
     data/DataMainHandler.cpp \
     inc/FrameWork.cpp \
     inc/ObjectMgr.cpp \
+    inc/SystemTrayMgr.cpp \
         main\main.cpp \
         main\application.cpp\ \
     widget/MainFrameView.cpp \

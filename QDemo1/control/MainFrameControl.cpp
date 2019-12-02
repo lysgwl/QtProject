@@ -5,6 +5,8 @@
 #include "../widget/ToolStatusView.h"
 #include "../widget/ViewMainHandler.h"
 
+#include "../widget/ScreenShotView.h"
+
 CMainFrameControl::CMainFrameControl(QObject *parent) 
 		: QObject(parent)
 {
@@ -16,8 +18,11 @@ void CMainFrameControl::initMainFrame()
     if (pMainView == nullptr)
         return;
 
-    pMainView->initUI();
-    pMainView->showMain();
+    //pMainView->initUI();
+    //pMainView->showMain();
+
+    CScreenShotView *pScreenShot = new CScreenShotView;
+    pScreenShot->initUI();
 }
 
 QObject* CMainFrameControl::getObject()
