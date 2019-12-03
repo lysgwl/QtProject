@@ -12,8 +12,11 @@ public:
 public:
 	void	initTray();
 
-    void    setTrayIcon();
-    void    showTrayMessage();
+    void    setTrayIcon(const QIcon &icon);
+    void    showTrayMessage(const QString &strTitle, const QString &strMsg);
+
+private slots:
+    void    activated(QSystemTrayIcon::ActivationReason reason);
 
 protected:
     QSystemTrayIcon *m_pSystemTray;
