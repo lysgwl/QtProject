@@ -7,7 +7,8 @@ CToolStatusView::CToolStatusView(QWidget *parent)
 
 void CToolStatusView::initUI()
 {
-    QPushButton *button1 = new QPushButton("One", this);
+    setWindowFlags(Qt::FramelessWindowHint);
+    /*QPushButton *button1 = new QPushButton("One", this);
     QPushButton *button2 = new QPushButton("Two", this);
     QPushButton *button3 = new QPushButton("Three", this);
     QPushButton *button4 = new QPushButton("Four", this);
@@ -19,10 +20,10 @@ void CToolStatusView::initUI()
     layout->addWidget(button3);
     layout->addWidget(button4);
     layout->addWidget(button5);
-    setLayout(layout);
+    setLayout(layout);*/
 }
 
-void CToolStatusView::showTools()
+void CToolStatusView::showMain()
 {
 
 }

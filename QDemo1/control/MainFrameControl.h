@@ -1,7 +1,6 @@
 #ifndef MAINFRAME_CONTROL_H
 #define MAINFRAME_CONTROL_H
 
-#include <QtWidgets>
 #include <QStackedWidget>
 #include "../widget/MainFrameView.h"
 

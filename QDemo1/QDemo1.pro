@@ -21,28 +21,32 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-	main\application.h \
+	main/application.h \
 	inc/FrameWork.h \
 	inc/ObjectMgr.h \
 	control/ControlerMain.h \
 	control/MainFrameControl.h \
 	control/WorkMainControl.h \
+	control/ToolStatusControl.h \
 	widget/MainFrameView.h \
-	widget/WorkMainView.h
+	widget/WorkMainView.h \
+	widget/ToolStatusView.h
 		
 SOURCES += \
-	main\main.cpp \
-	main\application.cpp \
+	main/main.cpp \
+	main/application.cpp \
 	inc/FrameWork.cpp \
 	inc/ObjectMgr.cpp \
 	control/ControlerMain.cpp \
 	control/MainFrameControl.cpp \
 	control/WorkMainControl.cpp \
+	control/ToolStatusControl.cpp \
 	widget/MainFrameView.cpp \
-	widget/WorkMainView.cpp
+	widget/WorkMainView.cpp \
+	widget/ToolStatusView.cpp
 
 #RESOURCES += \
-#	res\QDemo1.qrc
+#	res/QDemo1.qrc
 
 CODECFORTR  = UTF-8
 CODECFORSRC = UTF-8

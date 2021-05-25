@@ -22,7 +22,7 @@ void CMainFrameView::initUI()
 		setLayout(pLayout);
 		
 		setWindowFlags(Qt::FramelessWindowHint);  //Qt::WindowStaysOnTopHint
-		setFixedSize(500, 400); //resize
+        setFixedSize(800, 600); //resize
 	}
 }
 

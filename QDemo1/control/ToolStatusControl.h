@@ -1,7 +1,7 @@
-#ifndef __TOOLSTATUS_CONTROL_H__
-#define __TOOLSTATUS_CONTROL_H__
+#ifndef TOOLSTATUS_CONTROL_H
+#define TOOLSTATUS_CONTROL_H
 
-#include <QtWidgets>
+#include "../widget/ToolStatusView.h"
 
 class CToolStatusControl : public QObject
 {
@@ -9,9 +9,14 @@ class CToolStatusControl : public QObject
 public:
 	explicit CToolStatusControl(QObject *parent=Q_NULLPTR);
 	
-	void                initToolStatus();
+	QObject* getObject();
 	
-	QObject*			getObject();
+    void initUI(CToolStatusView *pToolStatusView);
+	
+signals:
+
+private:
+	CToolStatusView *m_pToolStatusView = Q_NULLPTR;
 };
 
 #endif

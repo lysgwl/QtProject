@@ -33,7 +33,12 @@ void CMainFrameControl::initMainFrame()
         if (pStackedWidget != Q_NULLPTR)
         {
             pStackedWidget->addWidget(new QPushButton("call"));
-            pStackedWidget->addWidget(workFrame->getWidget());
+            CWorkMainView *pWorkView = dynamic_cast<CWorkMainView*>(workFrame->getWidget());
+            if (pWorkView != Q_NULLPTR)
+            {
+                pStackedWidget->addWidget(pWorkView);
+            }
+
             pStackedWidget->addWidget(new QPushButton("aotu call"));
         }
 
@@ -43,4 +48,9 @@ void CMainFrameControl::initMainFrame()
 
 void CMainFrameControl::updateMainFrame()
 {
+    QStackedWidget *pStackedWidget = m_pMainView->getStackedWidget();
+    if (pStackedWidget != Q_NULLPTR)
+    {
+        pStackedWidget->setCurrentIndex(1);
+    }
 }

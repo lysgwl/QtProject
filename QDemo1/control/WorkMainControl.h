@@ -1,7 +1,6 @@
 #ifndef WORKMAIN_CONTROL_H
 #define WORKMAIN_CONTROL_H
 
-#include <QtWidgets>
 #include "../widget/WorkMainView.h"
 
 class CWorkMainControl : public QObject

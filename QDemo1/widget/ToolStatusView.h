@@ -1,5 +1,5 @@
-#ifndef __TOOLSTATUS_VIEW_H__
-#define __TOOLSTATUS_VIEW_H__
+#ifndef TOOLSTATUS_VIEW_H
+#define TOOLSTATUS_VIEW_H
 
 #include <QtWidgets>
 
@@ -9,14 +9,14 @@ class CToolStatusView : public QWidget
 public:
 	explicit CToolStatusView(QWidget *parent = nullptr);
 	
-	void                initUI();
-	void				showTools();
+	void initUI();
+	void showMain();
 	
 protected:
-    void                mouseReleaseEvent(QMouseEvent *event) override;
-    void                mouseMoveEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
 
-signals:	
+signals:
 };
 
 #endif
