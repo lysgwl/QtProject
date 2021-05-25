@@ -9,7 +9,7 @@ class CMainFrameView : public QWidget
 public:
     explicit CMainFrameView(QWidget *parent = nullptr);
 
-    QStackedWidget* getStackedWidget();
+    QStackedWidget* getStackedWidget() const;
 	
     void initUI();
     void showMain();
@@ -21,7 +21,7 @@ protected:
 signals:
 
 protected:
-    QStackedWidget *m_pStackedWidget;
+    QStackedWidget *m_pStackedWidget = Q_NULLPTR;
 };
 
 #endif // MAINWINDOW_H

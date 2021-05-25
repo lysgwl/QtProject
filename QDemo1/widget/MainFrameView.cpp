@@ -5,7 +5,7 @@ CMainFrameView::CMainFrameView(QWidget *parent)
 {
 }
 
-QStackedWidget* CMainFrameView::getStackedWidget()
+QStackedWidget* CMainFrameView::getStackedWidget() const
 {
     return m_pStackedWidget;
 }
@@ -14,7 +14,7 @@ void CMainFrameView::initUI()
 {
 	if (m_pStackedWidget == Q_NULLPTR)
 	{
-		m_pStackedWidget = new QStackedWidget();
+        m_pStackedWidget = new QStackedWidget(this);
 		QVBoxLayout *pLayout = new QVBoxLayout();
 		
 		pLayout->addWidget(m_pStackedWidget);
@@ -28,6 +28,11 @@ void CMainFrameView::initUI()
 
 void CMainFrameView::showMain()
 {
+    if (m_pStackedWidget == Q_NULLPTR)
+    {
+        return;
+    }
+
     show();  //showMaximized //showFullScreen
 }
 
