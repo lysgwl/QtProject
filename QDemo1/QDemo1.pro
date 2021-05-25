@@ -21,33 +21,25 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-        control/ControlerMainHandler.h \
-        control/MainFrameControl.h \
-        control/ToolStatusControl.h \
-        data/DataMainHandler.h \
-        inc/FrameWork.h \
+		main\application.h \
+		inc/FrameWork.h \
         inc/ObjectMgr.h \
-        inc/SystemTrayMgr.h \
-        main\application.h \
-        widget/MainFrameView.h \
-        widget/ScreenShotView.h \
-        widget/ToolStatusView.h \
-        widget/ViewMainHandler.h
+        control/ControlerMain.h \
+        control/MainFrameControl.h \
+		control/WorkMainControl.h \
+		widget/MainFrameView.h \
+		widget/WorkMainView.h \
 		
 SOURCES += \
-    control/ControlerMainHandler.cpp \
-    control/MainFrameControl.cpp \
-    control/ToolStatusControl.cpp \
-    data/DataMainHandler.cpp \
-    inc/FrameWork.cpp \
-    inc/ObjectMgr.cpp \
-    inc/SystemTrayMgr.cpp \
-        main\main.cpp \
-        main\application.cpp\ \
-    widget/MainFrameView.cpp \
-    widget/ScreenShotView.cpp \
-    widget/ToolStatusView.cpp \
-    widget/ViewMainHandler.cpp
+		main\main.cpp \
+		main\application.cpp \
+		inc/FrameWork.cpp \
+		inc/ObjectMgr.cpp \
+		control/ControlerMain.cpp \
+		control/MainFrameControl.cpp \
+		control/WorkMainControl.cpp \
+		widget/MainFrameView.cpp \
+		widget/WorkMainView.cpp \
 
 RESOURCES += \
         res\QDemo1.qrc

@@ -1,5 +1,5 @@
-#ifndef __MAINFRAME_VIEW_H__
-#define __MAINFRAME_VIEW_H__
+#ifndef MAINFRAME_VIEW_H
+#define MAINFRAME_VIEW_H
 
 #include <QtWidgets>
 
@@ -7,17 +7,17 @@ class CMainFrameView : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit CMainFrameView(QWidget *parent = nullptr);	
+    explicit CMainFrameView(QWidget *parent = nullptr);
+
+    QStackedWidget* getStackedWidget();
 	
-    void    initUI();
-    void    showMain();
-	
+    void initUI();
+    void showMain();
+
 protected:
-    void    mouseReleaseEvent(QMouseEvent *event) override;
-    void    mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
-
-	
 signals:
 
 protected:

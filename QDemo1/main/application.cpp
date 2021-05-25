@@ -4,10 +4,7 @@
 #include <QDebug>
 
 #include "../inc/FrameWork.h"
-#include "../control/MainFrameControl.h"
-
-#include "../widget/ViewMainHandler.h"
-#include "../control/ControlerMainHandler.h"
+#include "../control/ControlerMain.h"
 
 CApplication::CApplication(int &argc, char **argv):
     QApplication(argc, argv)
@@ -22,32 +19,14 @@ void CApplication::initModule()
 
 void CApplication::runModule()
 {
-    CMainFrameControl *pMainFrameControl = (CMainFrameControl*)CFrameWork::getObjectPointer(Controler_MainFrame_Id);
-    if (pMainFrameControl == nullptr)
-    {
-        return;
-    }
-
-    pMainFrameControl->initMainFrame();
+    ControlerMain::showControlMain();
 }
 
 void CApplication::setAppEnv()
 {
-   setWindowIcon(QIcon(":/Images/ocrstyle.png"));
-
-   //qDebug() << QLocale::system().name() << endl;
-   QTextCodec::setCodecForLocale(QTextCodec::codecForLocale());
-
-   QString strFileDir = ":/Languages/translations";
-   QString strFileName = QString("style_") + QLocale::system().name();
-
-   QTranslator translator;
-   translator.load(strFileName, strFileDir);
-   installTranslator(&translator);
 }
 
 void CApplication::setAppModule()
 {
-    CViewMainHandler::registerObj();
-    CControlerMainHandler::registerObj();
+    ControlerMain::registerObj();
 }

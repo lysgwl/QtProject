@@ -1,31 +1,46 @@
 #include "MainFrameControl.h"
 
 #include "../inc/FrameWork.h"
-#include "../widget/MainFrameView.h"
-#include "../widget/ToolStatusView.h"
-#include "../widget/ViewMainHandler.h"
-
-#include "../widget/ScreenShotView.h"
+#include "ControlerMain.h"
+#include "WorkMainControl.h"
 
 CMainFrameControl::CMainFrameControl(QObject *parent) 
 		: QObject(parent)
 {
 }
 
-void CMainFrameControl::initMainFrame()
-{
-    CMainFrameView *pMainView = (CMainFrameView*)CFrameWork::getObjectPointer(View_MainFrame_id);
-    if (pMainView == nullptr)
-        return;
-
-    //pMainView->initUI();
-    //pMainView->showMain();
-
-    CScreenShotView *pScreenShot = new CScreenShotView;
-    pScreenShot->initUI();
-}
-
 QObject* CMainFrameControl::getObject()
 {
     return this;
+}
+
+QWidget* CMainFrameControl::getWidget()
+{
+    return m_pMainView;
+}
+
+void CMainFrameControl::initMainFrame()
+{
+    if (m_pMainView == Q_NULLPTR)
+    {
+        m_pMainView = new CMainFrameView();
+        m_pMainView->initUI();
+
+        ObjectPtr<CWorkMainControl> workFrame(Controler_WorkFrame, CFrameWork::getObjectMgr());
+        workFrame->initWorkFrame();
+
+        QStackedWidget *pStackedWidget = m_pMainView->getStackedWidget();
+        if (pStackedWidget != Q_NULLPTR)
+        {
+            pStackedWidget->addWidget(new QPushButton("call"));
+            pStackedWidget->addWidget(workFrame->getWidget());
+            pStackedWidget->addWidget(new QPushButton("aotu call"));
+        }
+
+        m_pMainView->showMain();
+    }
+}
+
+void CMainFrameControl::updateMainFrame()
+{
 }

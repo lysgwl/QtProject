@@ -4,13 +4,13 @@ CFrameWork::CFrameWork()
 {
 }
 
-CObjectMgr* CFrameWork::getObjectMgr()
+ObjectMgr* CFrameWork::getObjectMgr()
 {
-	static CObjectMgr objectMgr;
+	static ObjectMgr objectMgr;
 	return &objectMgr;
 }
 
-void* CFrameWork::getObjectPointer(uint uObjectId)
+void* CFrameWork::getObjectPointer(uint uiId)
 {
-   return CFrameWork::getObjectMgr()->getObject(uObjectId);
+   return CFrameWork::getObjectMgr()->getObject(uiId);
 }

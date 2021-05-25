@@ -1,5 +1,5 @@
-#ifndef __FRAMEWORK_H__
-#define __FRAMEWORK_H__
+#ifndef FRAMEWORK_H
+#define FRAMEWORK_H
 
 #include "./ObjectMgr.h"
 
@@ -9,9 +9,9 @@ public:
 	CFrameWork();
 	
 public:
-	static CObjectMgr*		getObjectMgr();
+	static ObjectMgr* getObjectMgr();
 	
-    static void*            getObjectPointer(uint uObjectId);
+    static void* getObjectPointer(uint uiId);
 };
 
 #endif

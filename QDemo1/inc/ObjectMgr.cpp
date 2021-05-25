@@ -1,25 +1,25 @@
 #include "ObjectMgr.h"
 
-CObjectMgr::CObjectMgr()
+ObjectMgr::ObjectMgr()
 {
 }
 
-void* CObjectMgr::getObject(uint uId)
+void* ObjectMgr::getObject(uint uiId)
 {
-    return m_mapData.value(uId);
+    return m_mapData.value(uiId);
 }
 
-void CObjectMgr::addObject(uint uId, void *obj)
+void ObjectMgr::addObject(uint uiId, void *obj)
 {
-    if (uId == 0 || obj == nullptr)
+    if (uiId == 0 || obj == nullptr)
     {
         return;
     }
 
-    if (m_mapData.find(uId) != m_mapData.end())
+    if (m_mapData.find(uiId) != m_mapData.end())
     {
         return;
     }
 
-    m_mapData[uId] = obj;
+    m_mapData[uiId] = obj;
 }
