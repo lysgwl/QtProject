@@ -1,7 +1,9 @@
 #include "MainFrameControl.h"
 
-#include "../inc/FrameWork.h"
+#include <internal.h>
+
 #include "ControlerMain.h"
+#include "HomePageControl.h"
 #include "WorkMainControl.h"
 
 CMainFrameControl::CMainFrameControl(QObject *parent) 
@@ -21,13 +23,28 @@ QWidget* CMainFrameControl::getWidget()
 
 void CMainFrameControl::initMainFrame()
 {
+	CFrameWork *pFrameWork = CFrameWork::getFrameWork();
+	if (pFrameWork == Q_NULLPTR)
+	{
+		return;
+	}
+	
+	ObjectMgr *pObjectMgr = pFrameWork->getObjectMgr();
+	if (pObjectMgr == Q_NULLPTR)
+	{
+		return;
+	}
+	
     if (m_pMainView == Q_NULLPTR)
     {
         m_pMainView = new CMainFrameView();
         m_pMainView->initUI();
 
-        ObjectPtr<CWorkMainControl> workFrame(Controler_WorkFrame, CFrameWork::getObjectMgr());
+        ObjectPtr<CWorkMainControl> workFrame(Controler_WorkFrame, pObjectMgr);
         workFrame->initWorkFrame();
+
+        ObjectPtr<CHomePageControl> homePage(Controler_HomePage, pObjectMgr);
+        homePage->initHomePage();
 
         QStackedWidget *pStackedWidget = m_pMainView->getStackedWidget();
         if (pStackedWidget != Q_NULLPTR)

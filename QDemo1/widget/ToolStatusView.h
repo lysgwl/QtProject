@@ -1,7 +1,7 @@
 #ifndef TOOLSTATUS_VIEW_H
 #define TOOLSTATUS_VIEW_H
 
-#include <QtWidgets>
+#include <stHeader.h>
 
 class CToolStatusView : public QWidget
 {
@@ -12,11 +12,29 @@ public:
 	void initUI();
 	void showMain();
 	
-protected:
-	void mouseReleaseEvent(QMouseEvent *event) override;
-	void mouseMoveEvent(QMouseEvent *event) override;
-
 signals:
+
+protected:
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
+protected:
+	void setUserTimer();
+    void btnLogoutClicked();
+
+protected:
+	QLabel *m_lUserName;
+	QLabel *m_lNumberName;
+	
+	QLabel *m_lLogoIcon;
+	QLabel *m_lUserTime;
+	
+	QPushButton *m_btnLogout;
+	
+private:
+	QTimer *m_timer;
+	QHBoxLayout *m_layoutMain = Q_NULLPTR;
+	QHBoxLayout *m_layoutStatus = Q_NULLPTR;
 };
 
 #endif

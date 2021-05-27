@@ -1,7 +1,7 @@
 #ifndef MAINFRAME_VIEW_H
 #define MAINFRAME_VIEW_H
 
-#include <QtWidgets>
+#include <stHeader.h>
 
 class CMainFrameView : public QWidget
 {

@@ -3,6 +3,8 @@
 CMainFrameView::CMainFrameView(QWidget *parent)
 	: QWidget(parent)
 {
+    setWindowFlags(Qt::FramelessWindowHint);  //Qt::WindowStaysOnTopHint
+    setFixedSize(640, 480); //resize
 }
 
 QStackedWidget* CMainFrameView::getStackedWidget() const
@@ -19,10 +21,7 @@ void CMainFrameView::initUI()
 		
 		pLayout->addWidget(m_pStackedWidget);
 		pLayout->setMargin(0);
-		setLayout(pLayout);
-		
-		setWindowFlags(Qt::FramelessWindowHint);  //Qt::WindowStaysOnTopHint
-        setFixedSize(800, 600); //resize
+        this->setLayout(pLayout);
 	}
 }
 

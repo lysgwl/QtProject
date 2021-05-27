@@ -1,7 +1,7 @@
 #ifndef MAINFRAME_CONTROL_H
 #define MAINFRAME_CONTROL_H
 
-#include <QStackedWidget>
+#include <stHeader.h>
 #include "../widget/MainFrameView.h"
 
 class CMainFrameControl : public QObject

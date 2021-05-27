@@ -1,8 +1,13 @@
 QT += core gui network
 greaterThan(QT_MAJOR_VERSION, 4):QT += widgets
 
-CONFIG += c++11 console
-CONFIG -= app_bundle
+TARGET = Demo1
+TEMPLATE = app
+
+#CONFIG += c++11 console
+#CONFIG -= app_bundle
+
+DEFINES += QT_MESSAGELOGCONTEXT
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -15,35 +20,79 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0		
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+win32:{
+        PlatformFolder = win32
+
+        QMAKE_CXXFLAGS += -std=c++11
+        QMAKE_CXXFLAGS += -std=c++14
+
+        QMAKE_LFLAGS_RELEASE += /MAP
+        QMAKE_CFLAGS_RELEASE += /Zi
+        QMAKE_LFLAGS_RELEASE += /debug /opt:ref
+
+        CONFIG(debug, debug|release){
+            message("D***** win32 version")
+        }
+        else{
+            message("R***** win32 version")
+        }        
+}
+
+unix:!macx:{
+        PlatformFolder = linux
+
+        QMAKE_LFLAGS += -no-pie
+        QMAKE_CXXFLAGS += -std=c++11
+        QMAKE_CXXFLAGS += -std=c++14
+        CONFIG(debug, debug|release){
+            message("D***** linux version")
+        }
+        else{
+            message("R***** linux version")
+        }
+}
+
+DESTDIR = $$PWD/./bin/$$PlatformFolder
+
+INCLUDEPATH += \
+	./inc
 
 HEADERS += \
 	main/application.h \
+	inc/internal.h \
+	inc/stHeader.h \
+	inc/FuncTest.h \
 	inc/FrameWork.h \
 	inc/ObjectMgr.h \
+	inc/FrameStyleSheet.h \
 	control/ControlerMain.h \
+	control/HomePageControl.h \
 	control/MainFrameControl.h \
 	control/WorkMainControl.h \
 	control/ToolStatusControl.h \
+	widget/HomePageView.h \
 	widget/MainFrameView.h \
 	widget/WorkMainView.h \
-	widget/ToolStatusView.h
+	widget/ToolStatusView.h \ 
+	widget/BottomMenuView.h \
 		
 SOURCES += \
 	main/main.cpp \
 	main/application.cpp \
+	inc/FuncTest.cpp \
 	inc/FrameWork.cpp \
 	inc/ObjectMgr.cpp \
+	inc/FrameStyleSheet.cpp \
 	control/ControlerMain.cpp \
+	control/HomePageControl.cpp \
 	control/MainFrameControl.cpp \
 	control/WorkMainControl.cpp \
 	control/ToolStatusControl.cpp \
+	widget/HomePageView.cpp \
 	widget/MainFrameView.cpp \
 	widget/WorkMainView.cpp \
-	widget/ToolStatusView.cpp
+	widget/ToolStatusView.cpp \
+	widget/BottomMenuView.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc

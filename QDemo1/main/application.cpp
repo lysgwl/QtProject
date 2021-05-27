@@ -1,9 +1,6 @@
 #include "application.h"
 
-#include <QtGui>
-#include <QDebug>
-
-#include "../inc/FrameWork.h"
+#include <internal.h>
 #include "../control/ControlerMain.h"
 
 CApplication::CApplication(int &argc, char **argv):
@@ -24,6 +21,7 @@ void CApplication::runModule()
 
 void CApplication::setAppEnv()
 {
+	CFrameWork::getFrameWork()->initGlobalEnv();
 }
 
 void CApplication::setAppModule()

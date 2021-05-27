@@ -1,17 +1,28 @@
 #ifndef FRAMEWORK_H
 #define FRAMEWORK_H
 
-#include "./ObjectMgr.h"
+#include <stHeader.h>
+#include <ObjectMgr.h>
 
 class CFrameWork
 {
 public:
 	CFrameWork();
+
+    static CFrameWork* getFrameWork();
 	
 public:
-	static ObjectMgr* getObjectMgr();
+    ObjectMgr* getObjectMgr();
 	
-    static void* getObjectPointer(uint uiId);
+    void* getObjectPointer(uint uiId);
+
+    stGlobalVariant* getGlobalVariant();
+
+    void initGlobalEnv();
+
+private:
+    ObjectMgr m_objectMgr;
+    stGlobalVariant m_stGlobalVariant;
 };
 
 #endif

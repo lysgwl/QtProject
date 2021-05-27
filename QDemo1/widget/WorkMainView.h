@@ -1,8 +1,9 @@
 #ifndef WORKMAIN_VIEW_H
 #define WORKMAIN_VIEW_H
 
-#include <QtWidgets>
+#include <stHeader.h>
 #include "../widget/ToolStatusView.h"
+#include "../widget/BottomMenuView.h"
 
 class CWorkMainView : public QWidget
 {
@@ -23,9 +24,12 @@ protected:
 
 signals:
 
+protected:
+	CToolStatusView *m_pToolStatusView = Q_NULLPTR;
+	CBottomMenuView *m_pBottomMenuView = Q_NULLPTR;
+	
 private:
     QStackedWidget *m_pStackedWidget = Q_NULLPTR;
-    CToolStatusView *m_pToolStatusView = Q_NULLPTR;
 };
 
 #endif

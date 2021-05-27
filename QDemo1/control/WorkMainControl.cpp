@@ -1,6 +1,6 @@
 #include "WorkMainControl.h"
 
-#include "../inc/FrameWork.h"
+#include <internal.h>
 #include "./ControlerMain.h"
 #include "./ToolStatusControl.h"
 
@@ -21,12 +21,24 @@ QWidget* CWorkMainControl::getWidget()
 
 void CWorkMainControl::initWorkFrame()
 {
+	CFrameWork *pFrameWork = CFrameWork::getFrameWork();
+	if (pFrameWork == Q_NULLPTR)
+	{
+		return;
+	}
+	
+	ObjectMgr *pObjectMgr = pFrameWork->getObjectMgr();
+	if (pObjectMgr == Q_NULLPTR)
+	{
+		return;
+	}
+	
     if (m_pWorkView == Q_NULLPTR)
 	{
 		m_pWorkView = new CWorkMainView();
 		m_pWorkView->initUI();
 
-        ObjectPtr<CToolStatusControl> toolStatus(Controler_ToolStatus, CFrameWork::getObjectMgr());
+        ObjectPtr<CToolStatusControl> toolStatus(Controler_ToolStatus, pObjectMgr);
         toolStatus->initUI(m_pWorkView->getToolStatusView());
     }
 }

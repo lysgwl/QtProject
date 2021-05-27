@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <QApplication>
+#include <stHeader.h>
 
 class CApplication : public QApplication
 {

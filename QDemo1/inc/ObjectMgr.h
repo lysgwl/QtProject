@@ -1,8 +1,7 @@
 #ifndef OBJECT_MGR_H
 #define OBJECT_MGR_H
 
-#include <QMap>
-#include <QHash>
+#include <stHeader.h>
 
 class ObjectMgr
 {
