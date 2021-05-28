@@ -1,6 +1,7 @@
 #ifndef HOMEPAGE_CONTROL_H
 #define HOMEPAGE_CONTROL_H
 
+#include <stHeader.h>
 #include "../widget/HomePageView.h"
 
 class CHomePageControl : public QObject

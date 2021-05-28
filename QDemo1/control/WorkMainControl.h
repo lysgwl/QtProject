@@ -1,6 +1,7 @@
 #ifndef WORKMAIN_CONTROL_H
 #define WORKMAIN_CONTROL_H
 
+#include <stHeader.h>
 #include "../widget/WorkMainView.h"
 
 class CWorkMainControl : public QObject

@@ -1,6 +1,8 @@
 #ifndef CONTROLERMAIN_H
 #define CONTROLERMAIN_H
 
+#include <stHeader.h>
+
 class ControlerMain
 {
 public:

@@ -4,6 +4,7 @@
 #include <QMap>
 #include <QHash>
 
+#include <QDir>
 #include <QObject>
 #include <QString>
 
@@ -24,12 +25,24 @@ enum ControlerHandler{
     Controler_ToolStatus = 0x1003,
 };
 
+typedef struct tagUISolution{
+    double dW = 0.0;
+    double dH = 0.0;
+    double dOther = 0.0;
+    QSize  szScreen;
+    QSize  szBaseScreen;
+    QRect  rcGeometry;
+    QString strQssPath;
+    QString strImagePath;
+}stUISolution;
+
 typedef struct tagGlobalVariant{
     QString strAppDirPath;
     QString strBinPath;
     QString strThemesPath;
     QString strConfigPath;
     QString strDataPath;
+    QVector<stUISolution> vecUISolutions;
 }stGlobalVariant;
 
 #endif

@@ -21,6 +21,7 @@ protected:
 protected:
 	void setUserTimer();
     void btnLogoutClicked();
+    void btnTest1Clicked();
 
 protected:
 	QLabel *m_lUserName;
@@ -30,6 +31,7 @@ protected:
 	QLabel *m_lUserTime;
 	
 	QPushButton *m_btnLogout;
+    QPushButton *m_btnTest1;
 	
 private:
 	QTimer *m_timer;

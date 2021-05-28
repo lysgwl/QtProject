@@ -13,13 +13,7 @@ ControlerMain::ControlerMain()
 
 void ControlerMain::registerObj()
 {
-	CFrameWork *pFrameWork = CFrameWork::getFrameWork();
-	if (pFrameWork == Q_NULLPTR)
-	{
-		return;
-	}
-	
-	ObjectMgr *pObjectMgr = pFrameWork->getObjectMgr();
+    ObjectMgr *pObjectMgr = CFrameWork::getFrameWork().getObjectMgr();
 	if (pObjectMgr == Q_NULLPTR)
 	{
 		return;
@@ -38,13 +32,7 @@ void ControlerMain::registerObj()
 
 void ControlerMain::showControlMain()
 {
-	CFrameWork *pFrameWork = CFrameWork::getFrameWork();
-	if (pFrameWork == Q_NULLPTR)
-	{
-		return;
-	}
-	
-	ObjectMgr *pObjectMgr = pFrameWork->getObjectMgr();
+    ObjectMgr *pObjectMgr = CFrameWork::getFrameWork().getObjectMgr();
 	if (pObjectMgr == Q_NULLPTR)
 	{
 		return;

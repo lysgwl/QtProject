@@ -61,10 +61,11 @@ HEADERS += \
 	main/application.h \
 	inc/internal.h \
 	inc/stHeader.h \
+	inc/GenUtils.h \
 	inc/FuncTest.h \
 	inc/FrameWork.h \
 	inc/ObjectMgr.h \
-	inc/FrameStyleSheet.h \
+	inc/StyleSheet.h \
 	control/ControlerMain.h \
 	control/HomePageControl.h \
 	control/MainFrameControl.h \
@@ -75,14 +76,15 @@ HEADERS += \
 	widget/WorkMainView.h \
 	widget/ToolStatusView.h \ 
 	widget/BottomMenuView.h \
-		
+
 SOURCES += \
 	main/main.cpp \
 	main/application.cpp \
+	inc/GenUtils.cpp \
 	inc/FuncTest.cpp \
 	inc/FrameWork.cpp \
 	inc/ObjectMgr.cpp \
-	inc/FrameStyleSheet.cpp \
+	inc/StyleSheet.cpp \
 	control/ControlerMain.cpp \
 	control/HomePageControl.cpp \
 	control/MainFrameControl.cpp \
@@ -99,5 +101,6 @@ SOURCES += \
 
 CODECFORTR  = UTF-8
 CODECFORSRC = UTF-8
+
 #TRANSLATIONS = res/translations/style_en.ts \
 #        res/translations/style_zh_CN.ts

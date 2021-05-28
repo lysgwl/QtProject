@@ -3,8 +3,11 @@
 
 #include "stHeader.h"
 
+#include "GenUtils.h"
 #include "ObjectMgr.h"
 #include "FrameWork.h"
-#include "FrameStyleSheet.h"
+#include "StyleSheet.h"
+
+#include "FuncTest.h"
 
 #endif

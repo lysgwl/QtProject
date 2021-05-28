@@ -1,6 +1,7 @@
 #ifndef TOOLSTATUS_CONTROL_H
 #define TOOLSTATUS_CONTROL_H
 
+#include <stHeader.h>
 #include "../widget/ToolStatusView.h"
 
 class CToolStatusControl : public QObject

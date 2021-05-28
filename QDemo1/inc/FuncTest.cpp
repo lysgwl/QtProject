@@ -1,10 +1,14 @@
 #include "FuncTest.h"
 
+#include <map>
 #include <tuple>
 #include <string>
 #include <iostream>
 #include <utility>
 #include <functional>
+
+#include <QMap>
+#include <QString>
 
 CFuncTest::CFuncTest()
 {
@@ -37,5 +41,27 @@ void CFuncTest::tuple_test()
         std::tie(str1, std::ignore) = key6;
 
         auto key7 = std::tuple_cat(key5, key6);
+    }
+
+    //2
+    {
+        QMap<std::string, std::tuple<std::string, int>> mapstr;
+        mapstr["test1"] = std::make_tuple("123", 1);
+        mapstr["test2"] = std::make_tuple("123", 2);
+
+        if (mapstr.contains("test1"))
+        {
+            std::string s1 = std::get<0>(mapstr["test1"]);
+            int i1 = std::get<1>(mapstr["test1"]);
+        }
+    }
+}
+
+void CFuncTest::string_test()
+{
+    //1
+    {
+        QString str1 = "test 11 22";
+        int n = str1.indexOf("Test", 0, Qt::CaseInsensitive);
     }
 }

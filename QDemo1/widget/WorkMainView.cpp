@@ -5,6 +5,8 @@ CWorkMainView::CWorkMainView(QWidget *parent)
 {
     setWindowFlags(Qt::FramelessWindowHint);
     //setFixedSize(640, 480); //resize
+    setAttribute(Qt::WA_StyledBackground, true);
+    setStyleSheet("background-color:rgb(199,237,204)");
 }
 
 QStackedWidget* CWorkMainView::getStackedWidget()

@@ -9,7 +9,7 @@ class CFrameWork
 public:
 	CFrameWork();
 
-    static CFrameWork* getFrameWork();
+    static CFrameWork &getFrameWork();
 	
 public:
     ObjectMgr* getObjectMgr();
@@ -19,6 +19,8 @@ public:
     stGlobalVariant* getGlobalVariant();
 
     void initGlobalEnv();
+
+    void setStyleSheet(QWidget *parent, QString strFileName);
 
 private:
     ObjectMgr m_objectMgr;

@@ -1,6 +1,6 @@
 #include "ToolStatusView.h"
 
-#include <FuncTest.h>
+#include <internal.h>
 
 CToolStatusView::CToolStatusView(QWidget *parent)
     : QWidget(parent)
@@ -17,9 +17,13 @@ void CToolStatusView::initUI()
     m_lLogoIcon = new QLabel();
     m_lLogoIcon->setObjectName("label logo icon");
 
-    m_btnLogout = new QPushButton("test1");
+    m_btnLogout = new QPushButton("注销");
     m_btnLogout->setObjectName("button logout");
     connect(m_btnLogout, &QPushButton::clicked, this, &CToolStatusView::btnLogoutClicked);
+
+    m_btnTest1 = new QPushButton("测试1");
+    m_btnTest1->setObjectName("button test1");
+    connect(m_btnTest1, &QPushButton::clicked, this, &CToolStatusView::btnTest1Clicked);
 
 	m_lNumberName = new QLabel();
 	m_lNumberName->setObjectName("label number name");
@@ -56,9 +60,19 @@ void CToolStatusView::initUI()
 	m_layoutMain->addLayout(m_layoutStatus);
 	m_layoutMain->addWidget(m_lNumberName);
 	m_layoutMain->addWidget(m_btnLogout);
+    m_layoutMain->addWidget(m_btnTest1);
 	
 	this->setLayout(m_layoutMain);
 	this->setProperty("showMode", "normal");
+
+    /*m_btnTest1->setStyleSheet("QPushButton{background-color:black;\
+              color: red;   border-radius: 10px;  border: 2px groove gray;\
+              border-style: outset;}"
+              "QPushButton:hover{background-color:white; color: black;}"
+              "QPushButton:pressed{background-color:rgb(85, 170, 255);\
+              border-style: inset; }");*/
+
+    CFrameWork::getFrameWork().setStyleSheet(this, "systemBar");
 }
 
 void CToolStatusView::showMain()
@@ -84,9 +98,13 @@ void CToolStatusView::btnLogoutClicked()
 {
     //QMessageBox::information(NULL, "Title", "Content");
 
-    //CFuncTest test1;
-    //test1.tuple_test();
-
     QApplication* app;
     app->quit();
+}
+
+void CToolStatusView::btnTest1Clicked()
+{
+    CFuncTest test1;
+    test1.tuple_test();
+    test1.string_test();
 }

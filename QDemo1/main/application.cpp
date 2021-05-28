@@ -21,7 +21,7 @@ void CApplication::runModule()
 
 void CApplication::setAppEnv()
 {
-	CFrameWork::getFrameWork()->initGlobalEnv();
+    CFrameWork::getFrameWork().initGlobalEnv();
 }
 
 void CApplication::setAppModule()

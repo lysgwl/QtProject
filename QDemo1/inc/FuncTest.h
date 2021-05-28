@@ -8,6 +8,8 @@ public:
 
 public:
 	void tuple_test();	
+
+    void string_test();
 };
 
 #endif

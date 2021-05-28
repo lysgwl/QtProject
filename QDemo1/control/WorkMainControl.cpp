@@ -21,13 +21,7 @@ QWidget* CWorkMainControl::getWidget()
 
 void CWorkMainControl::initWorkFrame()
 {
-	CFrameWork *pFrameWork = CFrameWork::getFrameWork();
-	if (pFrameWork == Q_NULLPTR)
-	{
-		return;
-	}
-	
-	ObjectMgr *pObjectMgr = pFrameWork->getObjectMgr();
+    ObjectMgr *pObjectMgr = CFrameWork::getFrameWork().getObjectMgr();
 	if (pObjectMgr == Q_NULLPTR)
 	{
 		return;
