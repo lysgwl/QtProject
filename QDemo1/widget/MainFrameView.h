@@ -18,6 +18,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
+    void closeEvent(QCloseEvent*event) override;
+
 signals:
 
 protected:

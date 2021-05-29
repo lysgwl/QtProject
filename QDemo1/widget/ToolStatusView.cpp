@@ -54,25 +54,34 @@ void CToolStatusView::initUI()
 	m_layoutMain->addWidget(m_lUserName, 0, Qt::AlignLeft);
 	m_layoutMain->addStretch();
 	
-	m_layoutMain->addWidget(m_lUserTime, 0, Qt::AlignCenter);
-	m_layoutMain->addStretch();
+    m_layoutMain->addWidget(m_lUserTime, 0, Qt::AlignCenter);
+    m_layoutMain->addStretch();
 	
 	m_layoutMain->addLayout(m_layoutStatus);
 	m_layoutMain->addWidget(m_lNumberName);
-	m_layoutMain->addWidget(m_btnLogout);
+    m_layoutMain->addStretch();
+
+    m_layoutMain->addWidget(m_btnLogout);
+    m_layoutMain->addStretch();
     m_layoutMain->addWidget(m_btnTest1);
 	
 	this->setLayout(m_layoutMain);
 	this->setProperty("showMode", "normal");
 
-    /*m_btnTest1->setStyleSheet("QPushButton{background-color:black;\
+    /*this->setStyleSheet("QPushButton{background-color:black;\
               color: red;   border-radius: 10px;  border: 2px groove gray;\
               border-style: outset;}"
               "QPushButton:hover{background-color:white; color: black;}"
               "QPushButton:pressed{background-color:rgb(85, 170, 255);\
               border-style: inset; }");*/
 
-    CFrameWork::getFrameWork().setStyleSheet(this, "systemBar");
+    this->setStyleSheet("QWidget{padding-left:10px;padding-right:10px;background-color:rgba(0, 255, 0, 20%);border:0px solid red;}"
+                        "QPushButton{font-size:20px;color:white;background-color:rgb(128,0,255);min-width:50px;max-width:50px;}"
+                        "QPushButton:hover{background-color:rgb(128,0,128);}"
+                        "QPushButton:pressed{background-color:rgb(85,170,255);}");
+
+    m_lUserName->setStyleSheet("QLabel{font-size:15px;color:white;font-family:Microsoft YaHei;max-height:20px;min-height:20px;}");
+    m_lUserTime->setStyleSheet("QLabel{font-size:15px;color:white;font-family:Microsoft YaHei;}");
 }
 
 void CToolStatusView::showMain()
@@ -90,16 +99,14 @@ void CToolStatusView::mouseMoveEvent(QMouseEvent *event)
 
 void CToolStatusView::setUserTimer()
 {
-	QString strTemp = "**************";
+    QString strTemp = "";
 	m_lUserTime->setText(QDateTime::currentDateTime().toString("MM月dd日 dddd hh:mm:ss") + strTemp);
 }
 
 void CToolStatusView::btnLogoutClicked()
 {
     //QMessageBox::information(NULL, "Title", "Content");
-
-    QApplication* app;
-    app->quit();
+    qApp->quit();
 }
 
 void CToolStatusView::btnTest1Clicked()

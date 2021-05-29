@@ -13,7 +13,9 @@ public:
 	void showMenu();
 	
 signals:
-		
+
+private:
+     QHBoxLayout *m_layoutBar = Q_NULLPTR;
 };
 
 #endif

@@ -14,6 +14,8 @@ public:
     QStackedWidget* getStackedWidget();
 
     CToolStatusView* getToolStatusView();
+
+    CBottomMenuView* getButtomMenuView();
 	
 	void initUI();
 	void showMain();	

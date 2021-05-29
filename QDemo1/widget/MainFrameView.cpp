@@ -42,3 +42,18 @@ void CMainFrameView::mouseReleaseEvent(QMouseEvent *event)
 void CMainFrameView::mouseMoveEvent(QMouseEvent *event)
 {
 }
+
+void CMainFrameView::closeEvent(QCloseEvent*event)
+{
+    //QString::fromLocal8Bit
+    auto temp = QMessageBox::information(this, tr("提示！"), tr("你是否要关闭?"), QMessageBox::Yes | QMessageBox::No);
+    if (temp == QMessageBox::Yes)
+    {
+        qApp->quit();
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
+}

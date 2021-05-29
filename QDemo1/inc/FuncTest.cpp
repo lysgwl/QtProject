@@ -61,7 +61,5 @@ void CFuncTest::string_test()
 {
     //1
     {
-        QString str1 = "test 11 22";
-        int n = str1.indexOf("Test", 0, Qt::CaseInsensitive);
     }
 }

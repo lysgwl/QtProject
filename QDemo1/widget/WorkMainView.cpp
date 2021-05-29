@@ -4,9 +4,9 @@ CWorkMainView::CWorkMainView(QWidget *parent)
 	: QWidget(parent)
 {
     setWindowFlags(Qt::FramelessWindowHint);
-    //setFixedSize(640, 480); //resize
+    setFixedSize(640, 480); //resize
     setAttribute(Qt::WA_StyledBackground, true);
-    setStyleSheet("background-color:rgb(199,237,204)");
+    //setStyleSheet("background-color:rgb(150,130,80)");
 }
 
 QStackedWidget* CWorkMainView::getStackedWidget()
@@ -19,12 +19,18 @@ CToolStatusView* CWorkMainView::getToolStatusView()
     return m_pToolStatusView;
 }
 
+CBottomMenuView* CWorkMainView::getButtomMenuView()
+{
+    return m_pBottomMenuView;
+}
+
 void CWorkMainView::initUI()
 {
     if (m_pStackedWidget == Q_NULLPTR)
     {
         m_pStackedWidget = new QStackedWidget(this);
         m_pToolStatusView = new CToolStatusView(this);
+        m_pBottomMenuView = new CBottomMenuView(this);
     }
 }
 

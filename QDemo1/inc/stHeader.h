@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QLabel>
 #include <QLayout>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QApplication>
 #include <QStackedWidget>
