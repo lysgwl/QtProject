@@ -76,12 +76,13 @@ HEADERS += \
 	widget/WorkMainView.h \
 	widget/ToolStatusView.h \ 
 	widget/BottomMenuView.h \
+	inc/test/FuncTest.h \
+	inc/test/ThreadTest.h \
 
 SOURCES += \
 	main/main.cpp \
 	main/application.cpp \
 	inc/GenUtils.cpp \
-	inc/FuncTest.cpp \
 	inc/FrameWork.cpp \
 	inc/ObjectMgr.cpp \
 	inc/StyleSheet.cpp \
@@ -95,6 +96,8 @@ SOURCES += \
 	widget/WorkMainView.cpp \
 	widget/ToolStatusView.cpp \
 	widget/BottomMenuView.cpp \
+	inc/test/FuncTest.cpp \
+	inc/test/ThreadTest.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc

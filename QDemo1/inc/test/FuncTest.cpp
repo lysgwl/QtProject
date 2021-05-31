@@ -2,8 +2,10 @@
 
 #include <map>
 #include <tuple>
+
 #include <string>
 #include <iostream>
+
 #include <utility>
 #include <functional>
 
@@ -51,8 +53,8 @@ void CFuncTest::tuple_test()
 
         if (mapstr.contains("test1"))
         {
-            std::string s1 = std::get<0>(mapstr["test1"]);
-            int i1 = std::get<1>(mapstr["test1"]);
+            str1 = std::get<0>(mapstr["test1"]);
+            s1 = std::get<1>(mapstr["test1"]);
         }
     }
 }

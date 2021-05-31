@@ -14,14 +14,21 @@ public:
 	
 signals:
 
+public slots:
+    void slotInit();
+    void setUserTimer();
+
 protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
 protected:
-	void setUserTimer();
     void btnLogoutClicked();
     void btnTest1Clicked();
+
+protected:
+    void funcTest();
+    void timerTest();
 
 protected:
 	QLabel *m_lUserName;

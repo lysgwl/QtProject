@@ -97,12 +97,6 @@ void CToolStatusView::mouseMoveEvent(QMouseEvent *event)
 {
 }
 
-void CToolStatusView::setUserTimer()
-{
-    QString strTemp = "";
-	m_lUserTime->setText(QDateTime::currentDateTime().toString("MM月dd日 dddd hh:mm:ss") + strTemp);
-}
-
 void CToolStatusView::btnLogoutClicked()
 {
     //QMessageBox::information(NULL, "Title", "Content");
@@ -111,7 +105,36 @@ void CToolStatusView::btnLogoutClicked()
 
 void CToolStatusView::btnTest1Clicked()
 {
+    //funcTest();
+    timerTest();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//
+void CToolStatusView::setUserTimer()
+{
+    QString strTemp = "";
+    m_lUserTime->setText(QDateTime::currentDateTime().toString("MM月dd日 dddd hh:mm:ss") + strTemp);
+}
+
+void CToolStatusView::slotInit()
+{
+    printf("test1");
+}
+
+void CToolStatusView::funcTest()
+{
     CFuncTest test1;
     test1.tuple_test();
     test1.string_test();
+}
+
+void CToolStatusView::timerTest()
+{
+    QTimer timer;
+    timer.setSingleShot(true);
+    QObject::connect(&timer, &QTimer::timeout, [this]{slotInit();});
+    timer.start(3000);
+
+    QTimer::singleShot(2000, [&]{slotInit();});
 }

@@ -8,6 +8,7 @@
 #include "FrameWork.h"
 #include "StyleSheet.h"
 
-#include "FuncTest.h"
+#include "./test/FuncTest.h"
+#include "./test/ThreadTest.h"
 
 #endif
