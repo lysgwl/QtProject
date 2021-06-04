@@ -105,7 +105,7 @@ void CToolStatusView::btnLogoutClicked()
 
 void CToolStatusView::btnTest1Clicked()
 {
-    //funcTest();
+    funcTest();
     timerTest();
 }
 
@@ -117,7 +117,7 @@ void CToolStatusView::setUserTimer()
     m_lUserTime->setText(QDateTime::currentDateTime().toString("MM月dd日 dddd hh:mm:ss") + strTemp);
 }
 
-void CToolStatusView::slotInit()
+void CToolStatusView::slotInit(std::string s1)
 {
     printf("test1");
 }
@@ -131,10 +131,13 @@ void CToolStatusView::funcTest()
 
 void CToolStatusView::timerTest()
 {
-    QTimer timer;
+    /*QTimer timer;
     timer.setSingleShot(true);
     QObject::connect(&timer, &QTimer::timeout, [this]{slotInit();});
-    timer.start(3000);
+    timer.start(3000);*/
 
-    QTimer::singleShot(2000, [&]{slotInit();});
+    std::string s1 = "this is a test!";
+    QTimer::singleShot(3000, this, [&, s1]{
+        slotInit(s1);
+    });
 }

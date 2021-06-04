@@ -11,6 +11,8 @@
 
 #include <QMap>
 #include <QString>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 CFuncTest::CFuncTest()
 {
@@ -63,5 +65,21 @@ void CFuncTest::string_test()
 {
     //1
     {
+        QJsonObject json;
+        json.insert("requestId", 1);
+        json.insert("protocol", 0x1234abcd);
+
+        if (json.isEmpty())
+        {
+            return;
+        }
+
+        if (!json.contains("protocol"))
+        {
+            return;
+        }
+
+        std::string str1 = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
+        //std::string str2 = str1.toStdString();
     }
 }

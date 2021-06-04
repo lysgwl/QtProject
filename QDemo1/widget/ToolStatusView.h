@@ -15,7 +15,7 @@ public:
 signals:
 
 public slots:
-    void slotInit();
+    void slotInit(std::string s1);
     void setUserTimer();
 
 protected:
@@ -42,6 +42,7 @@ protected:
 	
 private:
 	QTimer *m_timer;
+
 	QHBoxLayout *m_layoutMain = Q_NULLPTR;
 	QHBoxLayout *m_layoutStatus = Q_NULLPTR;
 };
