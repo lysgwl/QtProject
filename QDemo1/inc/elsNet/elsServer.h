@@ -1,12 +1,6 @@
 #ifndef ELS_SERVER_H
 #define ELS_SERVER_H
 
-#define ELS_PROTOCOL_ID		0x1234abcd
-
-#define ELS_PKG_TYPE_DATA	0x01
-#define ELS_PKG_TYPE_MEET	0x02
-#define ELS_PKG_TYPE_STATUS	0x03
-
 class CElsServer
 {
 public:
@@ -14,18 +8,21 @@ public:
 	virtual ~CElsServer();
 
 public:
+	//是否支持els服务
 	bool isElsServer(const QJsonObject &jsonObject);
 
-	bool elsSendMessage(stMESSAGE *pMessage, QByteArray &arSend);
+	//消息请求
+	bool elsSendMessage(stMESSAGE *pstMsg, QByteArray &arSend);
 	
+	//pkg包解析
 	bool elsParsePkg(char *pPkgBuf, int iLen, void *pstEvent);
 	
+	//消息转换json
 	void elsBuildJson(const stMESSAGE *pMessage, std::string &strJson);
 
 protected:
-	void buildPkg(stMESSAGE *pMessage, char *pPkgBuf, int &iLen);
-	
-	void parsePkg(char *pPkgBuf, stTerminalPkgHeader &stPkgHeader);
+	//pkg包头解析
+	bool parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader);
 	
 private:
 	CElsDataAdapter *m_pDataAdapter = Q_NULLPTR;

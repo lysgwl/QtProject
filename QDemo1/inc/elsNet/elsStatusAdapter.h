@@ -1,19 +1,27 @@
 #ifndef ELS_STATUS_ADAPTER_H
 #define ELS_STATUS_ADAPTER_H
 
-class CElsStatusAdapter
+class CElsStatusAdapter : public CElsBaseAdapter
 {
 public:
 	CElsStatusAdapter();
 	~CElsStatusAdapter();
 
 public:
-	bool elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson);
+	//pkg请求组包
+	bool elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType);
+	
+	//pkg包解析
+	bool elsParsePkg(int iMsgType, char *pPayload, void* pstEvent);
+	
+	//pkg包转换json
+	bool elsBuildJson(void* pstEvent, std::string &strJson);
 	
 protected:
-	bool buildPkg(void *pstPkg, std::string &strJson);
+	//stEventPkgFormat包
+	bool buildEventPkg(void *pstPkg, std::string &strJson, int &iMsgType);
 
-protected:	
+protected:
 };
 
 #endif

@@ -137,7 +137,7 @@ void CToolStatusView::timerTest()
     timer.start(3000);*/
 
     std::string s1 = "this is a test!";
-    QTimer::singleShot(3000, this, [&, s1]{
+    QTimer::singleShot(300, this, [&, s1]{
         slotInit(s1);
     });
 }

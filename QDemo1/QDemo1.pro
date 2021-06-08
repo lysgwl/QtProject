@@ -62,7 +62,6 @@ HEADERS += \
 	inc/internal.h \
 	inc/stHeader.h \
 	inc/GenUtils.h \
-	inc/FuncTest.h \
 	inc/FrameWork.h \
 	inc/ObjectMgr.h \
 	inc/StyleSheet.h \

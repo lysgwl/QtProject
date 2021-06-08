@@ -8,7 +8,8 @@ CElsMeetAdapter::~CElsMeetAdapter()
 {
 }
 
-bool CElsMeetAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson)
+//pkg请求组包
+bool CElsMeetAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	bool bResult = false;
 	
@@ -25,7 +26,21 @@ bool CElsMeetAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJs
 	return bResult;
 }
 
-bool CElsMeetAdapter::buildPkg(void *pstPkg, std::string &strJson)
+//pkg包解析
+bool CElsMeetAdapter::elsParsePkg(int iMsgType, char *pPayload, void* pstEvent)
+{
+	stSchPkgFormat jstSchPkgFmt = {0};
+	return true;
+}
+
+//pkg包转换json
+bool CElsMeetAdapter::elsBuildJson(void* pstEvent, std::string &strJson)
+{
+	return true;
+}
+
+//stSchPkgFormat包
+bool CElsMeetAdapter::buildPkg(void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	stSchPkgFormat *pstSchPkgMsg = static_cast<stSchPkgFormat*>(pstPkg);
 	if (pstSchPkgMsg == Q_NULLPTR)
@@ -36,7 +51,7 @@ bool CElsMeetAdapter::buildPkg(void *pstPkg, std::string &strJson)
 	switch (pstSchPkgMsg->iMsgType)
 	{
 	case SCH_MEETING_CREATE_REQ:
-		OnReqElsCreateMeet(pstSchPkgMsg, strJson);
+		OnReqElsCreateMeet(pstSchPkgMsg, strJson, iMsgType);
 		break;
 		
 	default:
@@ -46,7 +61,8 @@ bool CElsMeetAdapter::buildPkg(void *pstPkg, std::string &strJson)
 	return true;
 }
 
-void CElsMeetAdapter::OnReqElsCreateMeet(const stSchPkgFormat *pstPkg, std::string &strJson)
+//req::createMeet创建会议
+void CElsMeetAdapter::OnReqElsCreateMeet(const stSchPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
 {
 	if (pstPkg == Q_NULLPTR)
 	{
