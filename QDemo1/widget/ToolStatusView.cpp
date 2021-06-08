@@ -1,6 +1,7 @@
 #include "ToolStatusView.h"
 
 #include <internal.h>
+#include "../inc/elsNet/elsServer.h"
 
 CToolStatusView::CToolStatusView(QWidget *parent)
     : QWidget(parent)
@@ -107,6 +108,7 @@ void CToolStatusView::btnTest1Clicked()
 {
     funcTest();
     timerTest();
+    vsSdkTest();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -140,4 +142,35 @@ void CToolStatusView::timerTest()
     QTimer::singleShot(300, this, [&, s1]{
         slotInit(s1);
     });
+}
+
+void CToolStatusView::vsSdkTest()
+{
+    stBasicPkgFormat stBasicPkgFmt;
+    memset(&stBasicPkgFmt, 0x0, sizeof(stBasicPkgFormat));
+
+    stBasicPkgFmt.iMsgType = BASIC_MSG_LOGINEXT_REQ;
+    stBasicPkgFmt.iReqId = 123;
+    stBasicPkgFmt.iTerminalType = TERMINAL_TYPE_SCHEDULE;
+    stBasicPkgFmt.iReserver0 = LOGIN_NEED_CUSTOMED_SCHEDULER_NUMB;
+    stBasicPkgFmt.iReserver1 = 1;
+
+    snprintf(stBasicPkgFmt.acUsrName, STR_LEN_32, "%s", "16104016001");
+    snprintf(stBasicPkgFmt.acReserver2, STR_LEN_1024, "%s", "192.168.0.1");
+    snprintf(stBasicPkgFmt.acPwd, STR_LEN_32, "%s", "123456");
+
+    QString strData = QString("%1,%2,%3").arg("16104026001").arg("c1:d2:e3:f4:g5:h6").arg("0001");
+    stBasicPkgFmt.uiDataLen = static_cast<uint>(strData.length());
+    snprintf(stBasicPkgFmt.acData, BUF_SIZE_2048, "%s", strData.toUtf8().data());
+
+    stMESSAGE stMsg;
+    memset(&stMsg, 0x0, sizeof(stMESSAGE));
+
+    stMsg.ePskType = PKG_TYPE_BASIC;
+    stMsg.pvMessage = reinterpret_cast<void*>(&stBasicPkgFmt);
+
+    QByteArray arSend;
+
+    CElsServer server;
+    server.elsSendMessage(&stMsg, arSend);
 }

@@ -29,6 +29,7 @@ protected:
 protected:
     void funcTest();
     void timerTest();
+    void vsSdkTest();
 
 protected:
 	QLabel *m_lUserName;

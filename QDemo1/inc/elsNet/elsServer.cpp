@@ -41,31 +41,29 @@ bool CElsServer::isElsServer(const QJsonObject &jsonObject)
 		return false;
 	}
 	
-    /*uint uPkgId = jsonObject.value("protocol").toInt();
-	if (uPkgId != htonl(ELS_PROTOCOL_ID))
+    uint uiPkgId = static_cast<uint>(jsonObject.value("protocol").toInt());
+    if (uiPkgId != htonl(ELS_PROTOCOL_ID))
 	{
 		return false;
-    }*/
+    }
 	
 	return true;
 }
 
 //消息请求
-bool CElsServer::elsSendMessage(stMESSAGE *pstMsg, QByteArray &arSend)
+bool CElsServer::elsSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
 {
 	bool bResult = false;
 	
-	int iPkgType = 0;
-	int iMsgType = 0;
-
-	std::string strJson;
-	char acBuffer[AC_MAX_PROTOCOL_PKG_LEN] = {0};
-
 	if (pstMsg == Q_NULLPTR)
 	{
 		return false;
 	}
+
+    int iPkgType = 0;
+    int iMsgType = 0;
 	
+    std::string strJson;
 	switch(pstMsg->ePskType)
 	{
 	case PKG_TYPE_BASIC:
@@ -85,22 +83,25 @@ bool CElsServer::elsSendMessage(stMESSAGE *pstMsg, QByteArray &arSend)
 	
 	if (bResult)
 	{
-        /*stProtocolPkgHeader *pstPkgHeader = (stProtocolPkgHeader *)acBuffer;
-		pstPkgHeader->iProtocolId = htonl(ELS_PROTOCOL_ID);
-		pstPkgHeader->cPkgType = iPkgType;
-		pstPkgHeader->cMsgType = iMsgType;
+        char acBuffer[AC_MAX_PROTOCOL_PKG_LEN];
+        stTerminalPkgHeader *pstPkgHeader = reinterpret_cast<stTerminalPkgHeader*>(acBuffer);
+
+        pstPkgHeader->iProtocolId = static_cast<int>(htonl(ELS_PROTOCOL_ID));
+        pstPkgHeader->cPkgType = static_cast<char>(iPkgType);
+        pstPkgHeader->cMsgType = static_cast<char>(iMsgType);
 		
-		pstPkgHeader->iBodyLength = htonl(strJson.size());
-		strncpy(pstPkgHeader->body, strJson.c_str(), strJson.size());
-		
-        arSend = QByteArray(acBuffer, strJson.size());*/
+        int iLen = static_cast<int>(strJson.length());
+        pstPkgHeader->iBodyLength = static_cast<int>(iLen);
+
+        strncpy(pstPkgHeader->body, strJson.c_str(), strJson.length());
+        arSend = QByteArray(acBuffer, iLen);
 	}
 	
 	return bResult;
 }
 
 //Pkg包解析
-bool CElsServer::elsParsePkg(char *pPkgBuf, int iLen, void *pstEvent)
+bool CElsServer::elsParsePkg(char *pPkgBuf, void *pstEvent)
 {
 	bool bResult = false;
 	
@@ -160,21 +161,23 @@ void CElsServer::elsBuildJson(const stMESSAGE *pstMsg, std::string &strJson)
     default:
 		break;
 	}
+
+    strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
 }
 
 //Pkg包头解析
 bool CElsServer::parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader)
 {
-    /**pstPkgHeader = static_cast<stTerminalPkgHeader*>(pPkgBuf);
+    *pstPkgHeader = reinterpret_cast<stTerminalPkgHeader*>(pPkgBuf);
 	if ((*pstPkgHeader) == Q_NULLPTR)
 	{
 		return false;
-    }*/
+    }
 
-    /*if ((*pstPkgHeader)->iProtocolId != htonl(ELS_PROTOCOL_ID))
+    if ((*pstPkgHeader)->iProtocolId != static_cast<int>(htonl(ELS_PROTOCOL_ID)))
 	{
 		return false;
-    }*/
+    }
 	
 	char cPkgType = (*pstPkgHeader)->cPkgType;
 	if (cPkgType != ELS_PKG_TYPE_DATA && 

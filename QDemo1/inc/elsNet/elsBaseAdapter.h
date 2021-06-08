@@ -10,6 +10,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
+#include <winsock2.h>
 #include "elsHeader.h"
 
 class CElsBaseAdapter

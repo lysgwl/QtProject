@@ -27,6 +27,10 @@
 #define AC_MAX_PROTOCOL_PKG_LEN     4096
 #define AC_RECV_BUF_MAX_SIZE        BUF_SIZE_4096 * 10 * 10
 
+#define LOGIN_VIA_USR_NUMB                   0  //使用调度员号码登录，且兼容以调度员名字登录
+#define LOGIN_VIA_USR_ORG_INFO               1  //使用单位、部门、调度员名字登录
+#define LOGIN_NEED_CUSTOMED_SCHEDULER_NUMB   2  //使用调度员号码登录，且兼容以调度员名字登录,但需要系统返回一个定制的调度员号码
+
 enum PACKAGE_TYPE
 {
 	PKG_TYPE_INVALID = 0,
@@ -47,6 +51,13 @@ enum BASIC_MSG_TYPE
 	BASIC_MSG_HEARTBEAT_ACK = 5,
 	BASIC_MSG_LOGINEXT_REQ = 20,
 	BASIC_MSG_LOGINEXT_RESP = 21,
+};
+
+enum enTERMINAL_TYPE
+{
+	TERMINAL_TYPE_UNKNOW = 0,
+	TERMINAL_TYPE_CFG,
+	TERMINAL_TYPE_SCHEDULE,
 };
 
 //pkg包类型

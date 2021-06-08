@@ -7,8 +7,10 @@ public:
     CFuncTest();
 
 public:
+    //tuple
 	void tuple_test();	
 
+    //string
     void string_test();
 };
 

@@ -15,10 +15,10 @@ public:
 	bool isElsServer(const QJsonObject &jsonObject);
 
 	//消息请求
-	bool elsSendMessage(stMESSAGE *pstMsg, QByteArray &arSend);
+    bool elsSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend);
 	
 	//pkg包解析
-	bool elsParsePkg(char *pPkgBuf, int iLen, void *pstEvent);
+    bool elsParsePkg(char *pPkgBuf, void *pstEvent);
 	
 	//消息转换json
 	void elsBuildJson(const stMESSAGE *pstMsg, std::string &strJson);

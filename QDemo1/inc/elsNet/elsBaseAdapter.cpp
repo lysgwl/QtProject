@@ -119,24 +119,75 @@ void CElsBaseAdapter::setBasicPkgData(std::string &strKey, std::string &strValue
     }
     else if (strKey == "usrnum")
     {
-        pstBasePkgFmt->
+        snprintf(pstBasePkgFmt->acUsrName, STR_LEN_32, "%s", strValue.c_str());
     }
 }
 
 //设置Config数据
 void CElsBaseAdapter::setConfigPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
 {
+    stCfgPkgFormat *pstCfgPkgFmt = static_cast<stCfgPkgFormat*>(pstPkg);
+    if (pstCfgPkgFmt == Q_NULLPTR)
+    {
+        return;
+    }
 
+    if (strKey == "seq")
+    {
+        pstCfgPkgFmt->uiRequestID = std::stoul(strValue);
+    }
+    else if (strKey == "result")
+    {
+        pstCfgPkgFmt->uiResult = std::stoul(strValue);
+    }
+    else if (strKey == "usernum")
+    {
+        snprintf(pstCfgPkgFmt->acNumber, STR_LEN_64, "%s", strValue.c_str());
+    }
 }
 
 //设置Schedule数据
 void CElsBaseAdapter::setSchPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
 {
+    stSchPkgFormat *pstSchPkgFmt = static_cast<stSchPkgFormat*>(pstPkg);
+    if (pstSchPkgFmt == Q_NULLPTR)
+    {
+        return;
+    }
 
+    if (strKey == "seq")
+    {
+        pstSchPkgFmt->iReqId = std::stoul(strValue);
+    }
+    else if (strKey == "result")
+    {
+        pstSchPkgFmt->iResult = std::stoul(strValue);
+    }
+    else if (strKey == "usernum")
+    {
+        snprintf(pstSchPkgFmt->acNumber, STR_LEN_64, "%s", strValue.c_str());
+    }
 }
 
 //设置Event数据
 void CElsBaseAdapter::setEventPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
 {
+    stEventPkgFormat *pstEventPkgFmt = static_cast<stEventPkgFormat*>(pstPkg);
+    if (pstEventPkgFmt == Q_NULLPTR)
+    {
+        return;
+    }
 
+    if (strKey == "seq")
+    {
+        std::cout << strValue << std::endl;
+    }
+    else if (strKey == "result")
+    {
+        std::cout << strValue << std::endl;
+    }
+    else if (strKey == "usernum")
+    {
+        std::cout << strValue << std::endl;
+    }
 }

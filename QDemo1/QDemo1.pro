@@ -22,6 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 win32:{
         PlatformFolder = win32
+        LIBS += -lws2_32
 
         QMAKE_CXXFLAGS += -std=c++11
         QMAKE_CXXFLAGS += -std=c++14

@@ -18,6 +18,7 @@ CFuncTest::CFuncTest()
 {
 }
 
+//tuple
 void CFuncTest::tuple_test()
 {
     int s1;
@@ -77,6 +78,7 @@ void CFuncTest::tuple_test()
     }
 }
 
+//string
 void CFuncTest::string_test()
 {
     //1
