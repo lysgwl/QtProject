@@ -8,7 +8,7 @@ CElsMeetAdapter::~CElsMeetAdapter()
 {
 }
 
-//pkgÇëÇó×é°ü
+//pkgè¯·æ±‚ç»„åŒ…
 bool CElsMeetAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	bool bResult = false;
@@ -26,20 +26,20 @@ bool CElsMeetAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJs
 	return bResult;
 }
 
-//pkg°ü½âÎö
+//pkgåŒ…è§£æ
 bool CElsMeetAdapter::elsParsePkg(int iMsgType, char *pPayload, void* pstEvent)
 {
 	stSchPkgFormat jstSchPkgFmt = {0};
 	return true;
 }
 
-//pkg°ü×ª»»json
+//pkgåŒ…è½¬æ¢json
 bool CElsMeetAdapter::elsBuildJson(void* pstEvent, std::string &strJson)
 {
 	return true;
 }
 
-//stSchPkgFormat°ü
+//stSchPkgFormatåŒ…
 bool CElsMeetAdapter::buildPkg(void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	stSchPkgFormat *pstSchPkgMsg = static_cast<stSchPkgFormat*>(pstPkg);
@@ -61,7 +61,7 @@ bool CElsMeetAdapter::buildPkg(void *pstPkg, std::string &strJson, int &iMsgType
 	return true;
 }
 
-//req::createMeet´´½¨»áÒé
+//req::createMeetåˆ›å»ºä¼šè®®
 void CElsMeetAdapter::OnReqElsCreateMeet(const stSchPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
 {
 	if (pstPkg == Q_NULLPTR)

@@ -8,17 +8,17 @@ public:
 	~CElsStatusAdapter();
 
 public:
-	//pkgÇëÇó×é°ü
+	//pkgè¯·æ±‚ç»„åŒ…
 	bool elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType);
 	
-	//pkg°ü½âÎö
+	//pkgåŒ…è§£æ
 	bool elsParsePkg(int iMsgType, char *pPayload, void* pstEvent);
 	
-	//pkg°ü×ª»»json
+	//pkgåŒ…è½¬æ¢json
 	bool elsBuildJson(void* pstEvent, std::string &strJson);
 	
 protected:
-	//stEventPkgFormat°ü
+	//stEventPkgFormatåŒ…
 	bool buildEventPkg(void *pstPkg, std::string &strJson, int &iMsgType);
 
 protected:

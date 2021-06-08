@@ -8,7 +8,7 @@ CElsStatusAdapter::~CElsStatusAdapter()
 {
 }
 
-//pkgÇëÇó×é°ü
+//pkgè¯·æ±‚ç»„åŒ…
 bool CElsStatusAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	bool bResult = false;
@@ -25,20 +25,20 @@ bool CElsStatusAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &str
 	return bResult;
 }
 
-//pkg°ü½âÎö
+//pkgåŒ…è§£æ
 bool CElsStatusAdapter::elsParsePkg(int iMsgType, char *pPayload, void* pstEvent)
 {
 	stEventPkgFormat jstEventPkgFmt = {0};
 	return true;
 }
 
-//pkg°ü×ª»»json
+//pkgåŒ…è½¬æ¢json
 bool CElsStatusAdapter::elsBuildJson(void* pstEvent, std::string &strJson)
 {
 	return true;
 }
 
-//stEventPkgFormat°ü
+//stEventPkgFormatåŒ…
 bool CElsStatusAdapter::buildPkg(void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	return true;

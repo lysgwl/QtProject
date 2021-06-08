@@ -8,7 +8,7 @@ CElsDataAdapter::~CElsDataAdapter()
 {
 }
 
-//Pkg◊È∞¸«Î«Û
+//PkgÁªÑÂåÖËØ∑Ê±Ç
 bool CElsDataAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	bool bResult = false;
@@ -30,14 +30,9 @@ bool CElsDataAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJs
 	return bResult;
 }
 
-//Pkg∞¸Ω‚Œˆ
-bool CElsDataAdapter::elsParsePkg(int iPkgType, int iMsgType, char *pPayload, void* pstEvent)
+//PkgÂåÖËß£Êûê
+bool CElsDataAdapter::elsParsePkg(int iMsgType, char *pPayload, void* pstEvent)
 {
-	bool bResult = false;
-	
-	stCfgPkgFormat jstCfgPkgFmt = {0};
-	stBasicPkgFormat jstBasicPkgFmt = {0};
-	
 	if (pPayload == Q_NULLPTR)
 	{
 		return false;
@@ -49,64 +44,38 @@ bool CElsDataAdapter::elsParsePkg(int iPkgType, int iMsgType, char *pPayload, vo
 		return false;
 	}
 	
-	stMESSAGE *pstMessage = (stMESSAGE *)pstEvent;
-	if (pstMessage == Q_NULLPTR || pstMessage->pvMessage == Q_NULLPTR)
-	{
-		return false;
-	}
-	
-	pstMessage->ePskType = iPkgType;
+    bool bResult = false;
+
 	switch (iMsgType)
 	{
-	case BASIC_MSG_LOGINEXT_RESP:
-		pstMessage->ePskType = PKG_TYPE_BASIC;
-		OnRespElsLogin(true, &jstBasicPkgFmt, json);
+	case ELS_MSG_LOGIN_RESP:
+		bResult = buildBaseRespPkg(true, BASIC_MSG_LOGINEXT_RESP, pstEvent, json);
 		break;
-		
-	case BASIC_MSG_HEARTBEAT_ACK:
-		pstMessage->ePskType = PKG_TYPE_BASIC;
-		OnRespElsHeartBeat(true, &jstBasicPkgFmt, json);
-		break;
-		
+
+	case ELS_MSG_HEARTBEAT_RESP:
+		bResult = buildBaseRespPkg(true, BASIC_MSG_HEARTBEAT_ACK, pstEvent, json);
+		break;	
+	
 	default:
 		break;
 	}
-	
-	if (pstMessage->ePskType == PKG_TYPE_BASIC)
-	{
-		memcpy(pstMessage->pvMessage, &jstBasicPkgFmt, sizeof(stBasicPkgFormat));
-	}
-	else if (pstMessage->ePskType == PKG_TYPE_CONFIG)
-	{
-		memcpy(pstMessage->pvMessage, &jstCfgPkgFmt, sizeof(stCfgPkgFormat));
-	}
-	else
-	{
-		return false;
-	}
-	
-	return true;
+
+    return bResult;
 }
 
-//Pkg∞¸◊™ªªjson
-bool CElsDataAdapter::elsBuildJson(void* pstEvent, QJsonObject &json)
+//PkgÂåÖËΩ¨Êç¢json
+bool CElsDataAdapter::elsBuildJson(int iPkgType, void* pstEvent, QJsonObject &json)
 {
 	bool bResult = false;
 	
-	stMESSAGE *pstMessage = (stMESSAGE *)pstEvent;
-	if (pstMessage == Q_NULLPTR || pstMessage->pvMessage == Q_NULLPTR)
-	{
-		return false;
-	}
-	
-	swtich (pMessage->ePskType)
+    switch (iPkgType)
 	{
 	case PKG_TYPE_BASIC:
-		bResult = buildBaseRespPkg(pstMessage->pvMessage, json);
+		bResult = buildBaseRespPkg(false, -1, pstEvent, json);
 		break;
 		
 	case PKG_TYPE_CONFIG:
-		bResult = buildConfigRespPkg(pstMessage->pvMessage, json);
+		bResult = buildConfigRespPkg(false, -1, pstEvent, json);
 		break;
 		
 	default:
@@ -116,7 +85,7 @@ bool CElsDataAdapter::elsBuildJson(void* pstEvent, QJsonObject &json)
 	return bResult;
 }
 
-//stBasicPkgFormat«Î«Û
+//stBasicPkgFormatËØ∑Ê±Ç
 bool CElsDataAdapter::buildBaseReqPkg(void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	stBasicPkgFormat *pstBasicMsg = static_cast<stBasicPkgFormat*>(pstPkg);
@@ -146,63 +115,105 @@ bool CElsDataAdapter::buildBaseReqPkg(void *pstPkg, std::string &strJson, int &i
 	return true;
 }
 
-//stCfgPkgFormat«Î«Û
+//stCfgPkgFormatËØ∑Ê±Ç
 bool CElsDataAdapter::buildConfigReqPkg(void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	stCfgPkgFormat *pstCfgMsg = static_cast<stCfgPkgFormat*>(pstPkg);
-	if (pstCfgMsg == Q_NULLPTR || pPkgBuf == Q_NULLPTR)
+    if (pstCfgMsg == Q_NULLPTR)
 	{
 		return false;
 	}
 	
+    std::cout << strJson << iMsgType << std::endl;
 	return true;
 }
 
-//stBasicPkgFormatªÿ∏¥
-bool CElsDataAdapter::buildBaseRespPkg(void* pstPkg, QJsonObject &json)
+//stBasicPkgFormatÂõûÂ§ç
+bool CElsDataAdapter::buildBaseRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json)
 {
-	if (pstPkg == Q_NULLPTR)
+    stBasicPkgFormat jstBasicPkgFmt;
+	stBasicPkgFormat *pstBasicPkgFmt = Q_NULLPTR;
+
+    stMESSAGE *pstMsg = static_cast<stMESSAGE*>(pstEvent);
+	if (pstMsg == Q_NULLPTR || pstMsg->pvMessage == Q_NULLPTR)
 	{
 		return false;
 	}
-	
-	int iMsgType = static_cast<stBasicPkgFormat*>(pstPkg)->iMsgType;
+
+	if (bFlag == true)
+	{
+		pstBasicPkgFmt = &jstBasicPkgFmt;
+	}
+	else
+	{
+		pstBasicPkgFmt = static_cast<stBasicPkgFormat*>(pstMsg->pvMessage);
+		iMsgType = pstBasicPkgFmt->iMsgType;
+	}
+
 	switch (iMsgType)
 	{
 	case BASIC_MSG_LOGINEXT_RESP:
-		OnRespElsLogin(false, pstPkg, json);
+		OnRespElsLogin(bFlag, pstBasicPkgFmt, json);
 		break;
-		
+
 	case BASIC_MSG_HEARTBEAT_ACK:
-		OnRespElsHeartBeat(false, pstPkg, json);
-		break;
-		
+		OnRespElsHeartBeat(bFlag, pstBasicPkgFmt, json);
+		break;	
+	
 	default:
 		break;
 	}
-	
+
+	if (bFlag == true)
+	{
+		memcpy(pstMsg->pvMessage, pstBasicPkgFmt, sizeof(stBasicPkgFormat));
+	}
+
 	return true;
 }
 
-//stCfgPkgFormatªÿ∏¥
-bool CElsDataAdapter::buildConfigRespPkg(void* pstPkg, QJsonObject &json)
+//stCfgPkgFormatÂõûÂ§ç
+bool CElsDataAdapter::buildConfigRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json)
 {
-	if (pstPkg == Q_NULLPTR)
+    stCfgPkgFormat jstCfgPkgFmt;
+	stCfgPkgFormat *pstCfgPkgFmt = Q_NULLPTR;
+
+    stMESSAGE *pstMsg = static_cast<stMESSAGE*>(pstEvent);
+	if (pstMsg == Q_NULLPTR || pstMsg->pvMessage == Q_NULLPTR)
 	{
 		return false;
 	}
-	
-	int iMsgType = static_cast<stBasicPkgFormat*>(pstPkg)->iMsgType;
+
+    if (json.isEmpty())
+    {
+
+    }
+
+	if (bFlag == true)
+	{
+		pstCfgPkgFmt = &jstCfgPkgFmt;
+	}
+	else
+	{
+		pstCfgPkgFmt = static_cast<stCfgPkgFormat*>(pstMsg->pvMessage);
+		iMsgType = pstCfgPkgFmt->iMsgType;
+	}
+
 	switch (iMsgType)
 	{
 	default:
 		break;
 	}
-	
+
+	if (bFlag == true)
+	{
+		memcpy(pstMsg->pvMessage, pstCfgPkgFmt, sizeof(stCfgPkgFormat));
+	}
+
 	return true;
 }
 
-//µ«¬ºReq
+//ÁôªÂΩïReq
 void CElsDataAdapter::OnReqElsLogin(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
 {
 	if (pstPkg == Q_NULLPTR)
@@ -220,7 +231,7 @@ void CElsDataAdapter::OnReqElsLogin(const stBasicPkgFormat *pstPkg, std::string 
 	strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
 }
 
-//◊¢œ˙Req
+//Ê≥®ÈîÄReq
 void CElsDataAdapter::OnReqElsLoginOut(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
 {
 	if (pstPkg == Q_NULLPTR)
@@ -236,7 +247,7 @@ void CElsDataAdapter::OnReqElsLoginOut(const stBasicPkgFormat *pstPkg, std::stri
 	strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
 }
 
-//–ƒÃ¯Req
+//ÂøÉË∑≥Req
 void CElsDataAdapter::OnReqElsHeartBeat(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
 {
 	if (pstPkg == Q_NULLPTR)
@@ -252,7 +263,7 @@ void CElsDataAdapter::OnReqElsHeartBeat(const stBasicPkgFormat *pstPkg, std::str
 	strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
 }
 
-//µ«¬ºResp
+//ÁôªÂΩïResp
 void CElsDataAdapter::OnRespElsLogin(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json)
 {
 	if (pstPkg == Q_NULLPTR)
@@ -277,7 +288,7 @@ void CElsDataAdapter::OnRespElsLogin(bool bFlag, stBasicPkgFormat *pstPkg, QJson
 	}
 }
 
-//–ƒÃ¯Resp
+//ÂøÉË∑≥Resp
 void CElsDataAdapter::OnRespElsHeartBeat(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json)
 {
 	if (pstPkg == Q_NULLPTR)
@@ -297,7 +308,7 @@ void CElsDataAdapter::OnRespElsHeartBeat(bool bFlag, stBasicPkgFormat *pstPkg, Q
 		QJsonObject data;
 		data.insert("requestId", pstPkg->iReqId);
 		data.insert("webTime", pstPkg->acData);
-		data.insert("webMTime", int(stMsg.iRight/1000.0));
-		json.insert("feedback", data);
+        //data.insert("webMTime", int(stMsg.iRight/1000.0));
+        //json.insert("feedback", data);
 	}
 }

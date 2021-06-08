@@ -8,21 +8,21 @@ public:
 	~CElsMeetAdapter();
 
 public:
-	//pkgÇëÇó×é°ü
+	//pkgè¯·æ±‚ç»„åŒ…
 	bool elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType);
 	
-	//pkg°ü½âÎö
+	//pkgåŒ…è§£æ
 	bool elsParsePkg(int iMsgType, char *pPayload, void* pstEvent);
 	
-	//pkg°ü×ª»»json
+	//pkgåŒ…è½¬æ¢json
 	bool elsBuildJson(void* pstEvent, std::string &strJson);
 
 protected:
-	//stSchPkgFormat°ü
+	//stSchPkgFormatåŒ…
 	bool buildPkg(void *pstPkg, std::string &strJson, int &iMsgType);
 
 protected:
-	//req::createMeet´´½¨»áÒé
+	//req::createMeetåˆ›å»ºä¼šè®®
 	void OnReqElsCreateMeet(const stSchPkgFormat *pstPkg, std::string &strJson, int &iMsgType);	
 };
 

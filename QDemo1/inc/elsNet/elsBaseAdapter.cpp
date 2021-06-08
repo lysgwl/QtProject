@@ -8,6 +8,7 @@ CElsBaseAdapter::~CElsBaseAdapter()
 {
 }
 
+//解析json数据段
 bool CElsBaseAdapter::elsParseSegment(const QJsonObject &json, int iPkgType, void *pstPkgEvent)
 {
 	if (json.isEmpty())
@@ -53,7 +54,7 @@ bool CElsBaseAdapter::elsParseSegment(const QJsonObject &json, int iPkgType, voi
 		else if (json.contains("meetid"))
 		{
 			std::string meetid = json.value("meetid").toString().toStdString();
-			vecstr.push_back(std::make_tuple("meetid", token));
+            //vecstr.push_back(std::make_tuple("meetid", token));
 		}
 	}
 	
@@ -65,18 +66,13 @@ bool CElsBaseAdapter::elsParseSegment(const QJsonObject &json, int iPkgType, voi
 	return true;
 }
 
+//解析消息数据
 bool CElsBaseAdapter::parseSegment(int iPkgType, void *pstPkgEvent, std::vector<std::tuple<std::string, std::string>> &vecTuple)
 {
-	if (pstPkgEvent == NULL)
+    if (pstPkgEvent == Q_NULLPTR)
 	{
 		return false;
 	}
-	
-	stCfgPkgFormat *pstCfgPkgFmt = Q_NULLPTR;
-	stBasicPkgFormat *pstBasePkgFmt = Q_NULLPTR;
-	
-	stSchPkgFormat *pstSchPkgFmt = Q_NULLPTR;
-	stEventPkgFormat *pstEventPkgFmt = Q_NULLPTR;
 	
 	for (auto iter=vecTuple.cbegin(); iter != vecTuple.cend(); iter++)
 	{
@@ -85,66 +81,62 @@ bool CElsBaseAdapter::parseSegment(int iPkgType, void *pstPkgEvent, std::vector<
 		
 		if (iPkgType == PKG_TYPE_BASIC)
 		{
-			pstCfgPkgFmt = static_cast<stCfgPkgFormat*>(pstPkgEvent);
-			
-			if (strKey == "seq")
-			{
-				pstCfgPkgFmt->iReqId = std::stoi(strValue);
-			}
-			else if (strKey == "result")
-			{
-				pstCfgPkgFmt->iResult = std::stoi(strValue);
-			}
-			else if (strKey == "usrnum")
-			{
-			}
+            setBasicPkgData(strKey, strValue, pstPkgEvent);
 		}
 		else if (iPkgType == PKG_TYPE_CONFIG)
 		{
-			pstBasePkgFmt = static_cast<stBasicPkgFormat*>(pstPkgEvent);
-			if (strKey == "seq")
-			{
-				pstBasePkgFmt->iReqId = std::stoi(strValue);
-			}
-			else if (strKey == "result")
-			{
-				pstBasePkgFmt->iResult = std::stoi(strValue);
-			}
-			else if (strKey == "usrnum")
-			{
-			}
+            setConfigPkgData(strKey, strValue, pstPkgEvent);
 		}
 		else if (iPkgType == PKG_TYPE_SCHEDULE)
 		{
-			pstSchPkgFmt = static_cast<stSchPkgFormat*>(pstPkgEvent);
-			if (strKey == "seq")
-			{
-				pstSchPkgFmt->iReqId = std::stoi(strValue);
-			}
-			else if (strKey == "result")
-			{
-				pstSchPkgFmt->iResult = std::stoi(strValue);
-			}
-			else if (strKey == "usrnum")
-			{
-			}
+            setSchPkgData(strKey, strValue, pstPkgEvent);
 		}
 		else if (iPkgType == PKG_TYPE_EVENT)
 		{
-			pstEventPkgFmt = static_cast<stEventPkgFormat*>(pstPkgEvent);
-			if (strKey == "seq")
-			{
-				pstEventPkgFmt->iReqId = std::stoi(strValue);
-			}
-			else if (strKey == "result")
-			{
-				pstEventPkgFmt->iResult = std::stoi(strValue);
-			}
-			else if (strKey == "usrnum")
-			{
-			}
+            setEventPkgData(strKey, strValue, pstPkgEvent);
 		}
 	}
 	
 	return true;
+}
+
+//设置Basic数据
+void CElsBaseAdapter::setBasicPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
+{
+    stBasicPkgFormat *pstBasePkgFmt = static_cast<stBasicPkgFormat*>(pstPkg);
+    if (pstBasePkgFmt == Q_NULLPTR)
+    {
+        return;
+    }
+
+    if (strKey == "seq")
+    {
+        pstBasePkgFmt->iReqId = std::stoi(strValue);
+    }
+    else if (strKey == "result")
+    {
+        pstBasePkgFmt->iResult = std::stoi(strValue);
+    }
+    else if (strKey == "usrnum")
+    {
+        pstBasePkgFmt->
+    }
+}
+
+//设置Config数据
+void CElsBaseAdapter::setConfigPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
+{
+
+}
+
+//设置Schedule数据
+void CElsBaseAdapter::setSchPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
+{
+
+}
+
+//设置Event数据
+void CElsBaseAdapter::setEventPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
+{
+
 }

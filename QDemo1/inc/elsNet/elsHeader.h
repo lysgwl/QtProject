@@ -24,7 +24,32 @@
 #define BUF_SIZE_4096 	4096
 #define BUF_SIZE_8192 	8192
 
-//pkg������
+#define AC_MAX_PROTOCOL_PKG_LEN     4096
+#define AC_RECV_BUF_MAX_SIZE        BUF_SIZE_4096 * 10 * 10
+
+enum PACKAGE_TYPE
+{
+	PKG_TYPE_INVALID = 0,
+	PKG_TYPE_BASIC = 1,
+	PKG_TYPE_CONFIG = 2,
+	PKG_TYPE_SCHEDULE = 3,
+	PKG_TYPE_EVENT = 4,
+	PKG_TYPE_MAX
+};
+
+enum BASIC_MSG_TYPE
+{
+	BASIC_MSG_MIN = 0,
+	BASIC_MSG_LOGIN_REQ = 1,
+	BASIC_MSG_LOGIN_RESP = 2,
+	BASIC_MSG_LOGOUT_IND = 3,
+	BASIC_MSG_HEARTBEAT = 4,
+	BASIC_MSG_HEARTBEAT_ACK = 5,
+	BASIC_MSG_LOGINEXT_REQ = 20,
+	BASIC_MSG_LOGINEXT_RESP = 21,
+};
+
+//pkg包类型
 enum ELS_PKG_TYPE
 {
 	ELS_PKG_TYPE_DATA = 0,
@@ -32,7 +57,7 @@ enum ELS_PKG_TYPE
 	ELS_PKG_TYPE_STATUS
 };
 
-//���ݽӿ�
+//数据接口
 enum ELS_DATA_MSG_TYPE 
 {
 	ELS_MSG_DATA_EMPTY = 0,
@@ -43,19 +68,19 @@ enum ELS_DATA_MSG_TYPE
 	ELS_MSG_HEARTBEAT_RESP,
 };
 
-//����ӿ�
+//会议接口
 enum ELS_MEET_MSG_TYPE
 {
-	ELS_MSG_DATA_EMPTY = 0,
+	ELS_MSG_MEET_EMPTY = 0,
 };
 
-//״̬�ӿ�
+//状态接口
 enum ELS_STATUS_MSG_TYPE
 {
 	ELS_MSG_STATUS_EMPTY = 0,
 };
 
-//pkg��ͷ
+//pkg包头
 struct stTerminalPkgHeader
 {    
 	int iProtocolId;
@@ -66,7 +91,7 @@ struct stTerminalPkgHeader
 	char body[0];
 };
 
-//msg��
+//msg包
 typedef struct _MESSAGE_
 {
 	int ePskType;

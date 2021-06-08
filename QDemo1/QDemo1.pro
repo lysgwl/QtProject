@@ -77,6 +77,10 @@ HEADERS += \
 	widget/BottomMenuView.h \
 	inc/test/FuncTest.h \
 	inc/test/ThreadTest.h \
+	inc/elsNet/elsHeader.h \
+	inc/elsNet/elsServer.h \
+	inc/elsNet/elsBaseAdapter.h \
+	inc/elsNet/elsDataAdapter.h \
 
 SOURCES += \
 	main/main.cpp \
@@ -97,6 +101,9 @@ SOURCES += \
 	widget/BottomMenuView.cpp \
 	inc/test/FuncTest.cpp \
 	inc/test/ThreadTest.cpp \
+	inc/elsNet/elsServer.cpp \
+	inc/elsNet/elsBaseAdapter.cpp \
+	inc/elsNet/elsDataAdapter.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc

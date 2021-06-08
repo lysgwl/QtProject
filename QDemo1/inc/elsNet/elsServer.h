@@ -1,6 +1,9 @@
 #ifndef ELS_SERVER_H
 #define ELS_SERVER_H
 
+#include "elsHeader.h"
+#include "elsDataAdapter.h"
+
 class CElsServer
 {
 public:
@@ -8,26 +11,26 @@ public:
 	virtual ~CElsServer();
 
 public:
-	//ÊÇ·ñÖ§³Öels·şÎñ
+	//æ˜¯å¦æ”¯æŒelsæœåŠ¡
 	bool isElsServer(const QJsonObject &jsonObject);
 
-	//ÏûÏ¢ÇëÇó
+	//æ¶ˆæ¯è¯·æ±‚
 	bool elsSendMessage(stMESSAGE *pstMsg, QByteArray &arSend);
 	
-	//pkg°ü½âÎö
+	//pkgåŒ…è§£æ
 	bool elsParsePkg(char *pPkgBuf, int iLen, void *pstEvent);
 	
-	//ÏûÏ¢×ª»»json
-	void elsBuildJson(const stMESSAGE *pMessage, std::string &strJson);
+	//æ¶ˆæ¯è½¬æ¢json
+	void elsBuildJson(const stMESSAGE *pstMsg, std::string &strJson);
 
 protected:
-	//pkg°üÍ·½âÎö
+	//pkgåŒ…å¤´è§£æ
 	bool parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader);
 	
 private:
 	CElsDataAdapter *m_pDataAdapter = Q_NULLPTR;
-	CElsMeetAdapter *m_pMeetAdapter = Q_NULLPTR;
-	CElsStatusAdapter *m_pStatusAdapter = Q_NULLPTR;	
+	//CElsMeetAdapter *m_pMeetAdapter = Q_NULLPTR;
+	//CElsStatusAdapter *m_pStatusAdapter = Q_NULLPTR;	
 };
 
 #endif

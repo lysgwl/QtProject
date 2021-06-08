@@ -1,6 +1,8 @@
 #ifndef ELS_DATA_ADAPTER_H
 #define ELS_DATA_ADAPTER_H
 
+#include "elsBaseAdapter.h"
+
 class CElsDataAdapter : public CElsBaseAdapter
 {
 public:
@@ -8,42 +10,42 @@ public:
 	~CElsDataAdapter();
 	
 public:	
-	//Pkg×é°üÇëÇó
+	//Pkgç»„åŒ…è¯·æ±‚
 	bool elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType);	
 	
-	//Pkg°ü½âÎö
-	bool elsParsePkg(int iPkgType, int iMsgType, char *pPayload, void* pstEvent);
+	//PkgåŒ…è§£æ
+	bool elsParsePkg(int iMsgType, char *pPayload, void* pstEvent);
 	
-	//Pkg°ü×ª»»json
-	bool elsBuildJson(void* pstEvent, QJsonObject &json);
+	//PkgåŒ…è½¬æ¢json
+	bool elsBuildJson(int iPkgType, void* pstEvent, QJsonObject &json);
 	
 protected:
-	//stBasicPkgFormatÇëÇó
+	//stBasicPkgFormatè¯·æ±‚
 	bool buildBaseReqPkg(void *pstPkg, std::string &strJson, int &iMsgType);
 	
-	//stCfgPkgFormatÇëÇó
+	//stCfgPkgFormatè¯·æ±‚
 	bool buildConfigReqPkg(void *pstPkg, std::string &strJson, int &iMsgType);
 	
-	//stBasicPkgFormat»Ø¸´
-	bool buildBaseRespPkg(void* pstPkg, QJsonObject &json);
+	//stBasicPkgFormatå›å¤
+	bool buildBaseRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json);
 	
-	//stCfgPkgFormat»Ø¸´
-	bool buildConfigRespPkg(void* pstPkg, QJsonObject &json);
+	//stCfgPkgFormatå›å¤
+	bool buildConfigRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json);
 	
 protected:
-	//µÇÂ¼Req
+	//ç™»å½•Req
 	void OnReqElsLogin(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType);
 	
-	//×¢ÏúReq
+	//æ³¨é”€Req
 	void OnReqElsLoginOut(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType);
 	
-	//ĞÄÌøReq
+	//å¿ƒè·³Req
 	void OnReqElsHeartBeat(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType);
 	
-	//µÇÂ¼Resp
+	//ç™»å½•Resp
 	void OnRespElsLogin(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json);
 	
-	//ĞÄÌøResp
+	//å¿ƒè·³Resp
 	void OnRespElsHeartBeat(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json);
 };
 
