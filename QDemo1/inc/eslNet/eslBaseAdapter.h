@@ -1,5 +1,5 @@
-#ifndef ELS_BASE_ADAPTER_H
-#define ELS_BASE_ADAPTER_H
+#ifndef ESL_BASE_ADAPTER_H
+#define ESL_BASE_ADAPTER_H
 
 #include <iostream>
 #include <string>
@@ -11,17 +11,17 @@
 #include <QJsonDocument>
 
 #include <winsock2.h>
-#include "elsHeader.h"
+#include "eslHeader.h"
 
-class CElsBaseAdapter
+class CEslBaseAdapter
 {
 public:
-	CElsBaseAdapter();
-	virtual ~CElsBaseAdapter();
+	CEslBaseAdapter();
+	virtual ~CEslBaseAdapter();
 
 public:
     //解析json数据段
-    bool elsParseSegment(const QJsonObject &json, int iPkgType, void *pstPkg);
+    bool eslParseSegment(const QJsonObject &json, int iPkgType, void *pstPkg);
 	
 protected:
     //解析消息数据

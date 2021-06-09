@@ -1,13 +1,13 @@
-#include "elsServer.h"
+#include "eslServer.h"
 
-CElsServer::CElsServer()
+CEslServer::CEslServer()
 {
-	m_pDataAdapter = new CElsDataAdapter();
+    m_pDataAdapter = new CEslDataAdapter();
 	//m_pMeetAdapter = new CElsMeetAdapter();
 	//m_pStatusAdapter = new CElsStatusAdapter();
 }
 
-CElsServer::~CElsServer()
+CEslServer::~CEslServer()
 {
 	if (m_pDataAdapter)
 	{
@@ -29,7 +29,7 @@ CElsServer::~CElsServer()
 }
 
 //是否支持els服务
-bool CElsServer::isElsServer(const QJsonObject &jsonObject)
+bool CEslServer::isEslServer(const QJsonObject &jsonObject)
 {
     if (jsonObject.isEmpty())
 	{
@@ -42,7 +42,7 @@ bool CElsServer::isElsServer(const QJsonObject &jsonObject)
 	}
 	
     uint uiPkgId = static_cast<uint>(jsonObject.value("protocol").toInt());
-    if (uiPkgId != htonl(ELS_PROTOCOL_ID))
+    if (uiPkgId != htonl(ESL_PROTOCOL_ID))
 	{
 		return false;
     }
@@ -51,7 +51,7 @@ bool CElsServer::isElsServer(const QJsonObject &jsonObject)
 }
 
 //消息请求
-bool CElsServer::elsSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
+bool CEslServer::eslSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
 {
 	bool bResult = false;
 	
@@ -68,13 +68,13 @@ bool CElsServer::elsSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
 	{
 	case PKG_TYPE_BASIC:
 	case PKG_TYPE_CONFIG:
-		bResult = m_pDataAdapter->elsBuildPkg(pstMsg->ePskType, pstMsg->pvMessage, strJson, iMsgType);
-		iPkgType = ELS_PKG_TYPE_DATA;
+        bResult = m_pDataAdapter->eslBuildPkg(pstMsg->ePskType, pstMsg->pvMessage, strJson, iMsgType);
+        iPkgType = ESL_PKG_TYPE_DATA;
 		break;
 		
 	case PKG_TYPE_SCHEDULE:
 		//bResult = m_pMeetAdapter->elsBuildPkg(pstMsg->ePskType, pstMsg->pvMessage, strJson, iMsgType);
-		iPkgType = ELS_PKG_TYPE_MEET;
+        iPkgType = ESL_PKG_TYPE_MEET;
 		break;
 	
 	default:
@@ -86,7 +86,7 @@ bool CElsServer::elsSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
         char acBuffer[AC_MAX_PROTOCOL_PKG_LEN];
         stTerminalPkgHeader *pstPkgHeader = reinterpret_cast<stTerminalPkgHeader*>(acBuffer);
 
-        pstPkgHeader->iProtocolId = static_cast<int>(htonl(ELS_PROTOCOL_ID));
+        pstPkgHeader->iProtocolId = static_cast<int>(htonl(ESL_PROTOCOL_ID));
         pstPkgHeader->cPkgType = static_cast<char>(iPkgType);
         pstPkgHeader->cMsgType = static_cast<char>(iMsgType);
 		
@@ -101,7 +101,7 @@ bool CElsServer::elsSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
 }
 
 //Pkg包解析
-bool CElsServer::elsParsePkg(char *pPkgBuf, void *pstEvent)
+bool CEslServer::eslParsePkg(char *pPkgBuf, void *pstEvent)
 {
 	bool bResult = false;
 	
@@ -113,16 +113,16 @@ bool CElsServer::elsParsePkg(char *pPkgBuf, void *pstEvent)
 	
 	switch (pstPkgHeader->cPkgType)
 	{
-	case ELS_PKG_TYPE_DATA:
-		bResult = m_pDataAdapter->elsParsePkg(pstPkgHeader->cMsgType, pstPkgHeader->body, pstEvent);
+	case ESL_PKG_TYPE_DATA:
+		bResult = m_pDataAdapter->eslParsePkg(pstPkgHeader->cMsgType, pstPkgHeader->body, pstEvent);
 		break;
 		
-	case ELS_PKG_TYPE_MEET:
-		//bResult = m_pMeetAdapter->elsParsePkg(pstPkgHeader->cMsgType, pstPkgHeader->body, pstEvent);
+	case ESL_PKG_TYPE_MEET:
+		//bResult = m_pMeetAdapter->eslParsePkg(pstPkgHeader->cMsgType, pstPkgHeader->body, pstEvent);
 		break;
 		
-	case ELS_PKG_TYPE_STATUS:
-		//bResult = m_pStatusAdapter->elsParsePkg(pstPkgHeader->cMsgType, pstPkgHeader->body, pstEvent);
+	case ESL_PKG_TYPE_STATUS:
+		//bResult = m_pStatusAdapter->eslParsePkg(pstPkgHeader->cMsgType, pstPkgHeader->body, pstEvent);
 		break;
 		
 	default:
@@ -133,7 +133,7 @@ bool CElsServer::elsParsePkg(char *pPkgBuf, void *pstEvent)
 }
 
 //消息转换json
-void CElsServer::elsBuildJson(const stMESSAGE *pstMsg, std::string &strJson)
+void CEslServer::eslBuildJson(stMESSAGE *pstMsg, std::string &strJson)
 {
     if (pstMsg == Q_NULLPTR)
 	{
@@ -146,16 +146,16 @@ void CElsServer::elsBuildJson(const stMESSAGE *pstMsg, std::string &strJson)
     switch (iPkgType)
 	{
 	case PKG_TYPE_BASIC:
-	case PKG_TYPE_CONFIG:
-        m_pDataAdapter->elsBuildJson(iPkgType, Q_NULLPTR, json);
+    case PKG_TYPE_CONFIG:
+        m_pDataAdapter->eslBuildJson(iPkgType, pstMsg, json);
 		break;
 	
 	case PKG_TYPE_SCHEDULE:
-		//m_pMeetAdapter->elsBuildJson(iPkgType, pstMsg, json);
+		//m_pMeetAdapter->eslBuildJson(iPkgType, pstMsg, json);
 		break;
 	
 	case PKG_TYPE_EVENT:
-		//m_pStatusAdapter->elsBuildJson(iPkgType, pstMsg, json);
+		//m_pStatusAdapter->eslBuildJson(iPkgType, pstMsg, json);
 		break;
 		
     default:
@@ -166,7 +166,7 @@ void CElsServer::elsBuildJson(const stMESSAGE *pstMsg, std::string &strJson)
 }
 
 //Pkg包头解析
-bool CElsServer::parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader)
+bool CEslServer::parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader)
 {
     *pstPkgHeader = reinterpret_cast<stTerminalPkgHeader*>(pPkgBuf);
 	if ((*pstPkgHeader) == Q_NULLPTR)
@@ -174,15 +174,15 @@ bool CElsServer::parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader)
 		return false;
     }
 
-    if ((*pstPkgHeader)->iProtocolId != static_cast<int>(htonl(ELS_PROTOCOL_ID)))
+    if ((*pstPkgHeader)->iProtocolId != static_cast<int>(htonl(ESL_PROTOCOL_ID)))
 	{
 		return false;
     }
 	
 	char cPkgType = (*pstPkgHeader)->cPkgType;
-	if (cPkgType != ELS_PKG_TYPE_DATA && 
-		cPkgType != ELS_PKG_TYPE_MEET && 
-		cPkgType != ELS_PKG_TYPE_STATUS)
+	if (cPkgType != ESL_PKG_TYPE_DATA && 
+		cPkgType != ESL_PKG_TYPE_MEET && 
+		cPkgType != ESL_PKG_TYPE_STATUS)
 	{
 		return false;
 	}

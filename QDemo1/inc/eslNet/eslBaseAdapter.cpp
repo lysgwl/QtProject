@@ -1,15 +1,15 @@
-#include "elsBaseAdapter.h"
+#include "eslBaseAdapter.h"
 
-CElsBaseAdapter::CElsBaseAdapter()
+CEslBaseAdapter::CEslBaseAdapter()
 {
 }
 
-CElsBaseAdapter::~CElsBaseAdapter()
+CEslBaseAdapter::~CEslBaseAdapter()
 {
 }
 
 //解析json数据段
-bool CElsBaseAdapter::elsParseSegment(const QJsonObject &json, int iPkgType, void *pstPkgEvent)
+bool CEslBaseAdapter::eslParseSegment(const QJsonObject &json, int iPkgType, void *pstPkgEvent)
 {
 	if (json.isEmpty())
 	{
@@ -17,46 +17,55 @@ bool CElsBaseAdapter::elsParseSegment(const QJsonObject &json, int iPkgType, voi
 	}
 	
 	std::vector<std::tuple<std::string, std::string>> vecstr;
-	
-	int iSize = json.size();
-	for (int iIndex=0; iIndex<iSize; iIndex++)
-	{
-		if (json.contains("seq"))
-		{
-			std::string seq = std::to_string(json.value("seq").toInt());
-			vecstr.push_back(std::make_tuple("seq", seq));
-		}
-		else if (json.contains("result"))
-		{
-			std::string result = json.value("result").toString().toStdString();
-			vecstr.push_back(std::make_tuple("result", result));
-		}
-		else if (json.contains("lgtype"))
-		{
-			std::string lgtype = json.value("lgtype").toString().toStdString();
-			vecstr.push_back(std::make_tuple("lgtype", lgtype));
-		}
-		else if (json.contains("lgnum"))
-		{
-			std::string lgnum = json.value("lgnum").toString().toStdString();
-			vecstr.push_back(std::make_tuple("lgnum", lgnum));
-		}
-		else if (json.contains("lgpwd"))
-		{
-			std::string lgpwd = json.value("lgpwd").toString().toStdString();
-			vecstr.push_back(std::make_tuple("lgpwd", lgpwd));
-		}
-		else if (json.contains("token"))
-		{
-			std::string token = json.value("token").toString().toStdString();
-			vecstr.push_back(std::make_tuple("token", token));
-		}
-		else if (json.contains("meetid"))
-		{
-			std::string meetid = json.value("meetid").toString().toStdString();
-            //vecstr.push_back(std::make_tuple("meetid", token));
-		}
-	}
+
+    //seq
+    if (json.contains("seq"))
+    {
+        std::string seq = std::to_string(json.value("seq").toInt());
+        vecstr.push_back(std::make_tuple("seq", seq));
+    }
+
+    //result
+    if (json.contains("result"))
+    {
+        std::string result = std::to_string(json.value("result").toInt());
+        vecstr.push_back(std::make_tuple("result", result));
+    }
+
+    //lgtype
+    if (json.contains("lgtype"))
+    {
+        std::string lgtype = json.value("lgtype").toString().toStdString();
+        vecstr.push_back(std::make_tuple("lgtype", lgtype));
+    }
+
+    //lgnum
+    if (json.contains("lgnum"))
+    {
+        std::string lgnum = json.value("lgnum").toString().toStdString();
+        vecstr.push_back(std::make_tuple("lgnum", lgnum));
+    }
+
+    //lgpwd
+    if (json.contains("lgpwd"))
+    {
+        std::string lgpwd = json.value("lgpwd").toString().toStdString();
+        vecstr.push_back(std::make_tuple("lgpwd", lgpwd));
+    }
+
+    //token
+    if (json.contains("token"))
+    {
+        std::string token = json.value("token").toString().toStdString();
+        vecstr.push_back(std::make_tuple("token", token));
+    }
+
+    //meetid
+    if (json.contains("meetid"))
+    {
+        std::string meetid = json.value("meetid").toString().toStdString();
+        vecstr.push_back(std::make_tuple("meetid", meetid));
+    }
 	
 	if (parseSegment(iPkgType, pstPkgEvent, vecstr) == false)
 	{
@@ -67,14 +76,14 @@ bool CElsBaseAdapter::elsParseSegment(const QJsonObject &json, int iPkgType, voi
 }
 
 //解析消息数据
-bool CElsBaseAdapter::parseSegment(int iPkgType, void *pstPkgEvent, std::vector<std::tuple<std::string, std::string>> &vecTuple)
+bool CEslBaseAdapter::parseSegment(int iPkgType, void *pstPkgEvent, std::vector<std::tuple<std::string, std::string>> &vecTuple)
 {
     if (pstPkgEvent == Q_NULLPTR)
 	{
 		return false;
 	}
 	
-	for (auto iter=vecTuple.cbegin(); iter != vecTuple.cend(); iter++)
+    for (auto iter=vecTuple.cbegin(); iter != vecTuple.cend(); ++iter)
 	{
 		std::string strKey = std::get<0>(*iter);
 		std::string strValue = std::get<1>(*iter);
@@ -101,7 +110,7 @@ bool CElsBaseAdapter::parseSegment(int iPkgType, void *pstPkgEvent, std::vector<
 }
 
 //设置Basic数据
-void CElsBaseAdapter::setBasicPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
+void CEslBaseAdapter::setBasicPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
 {
     stBasicPkgFormat *pstBasePkgFmt = static_cast<stBasicPkgFormat*>(pstPkg);
     if (pstBasePkgFmt == Q_NULLPTR)
@@ -117,14 +126,18 @@ void CElsBaseAdapter::setBasicPkgData(std::string &strKey, std::string &strValue
     {
         pstBasePkgFmt->iResult = std::stoi(strValue);
     }
-    else if (strKey == "usrnum")
+    else if (strKey == "lgnum")
     {
         snprintf(pstBasePkgFmt->acUsrName, STR_LEN_32, "%s", strValue.c_str());
+    }
+    else if (strKey == "token")
+    {
+        pstBasePkgFmt->iTerminalId = std::stoi(strValue);
     }
 }
 
 //设置Config数据
-void CElsBaseAdapter::setConfigPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
+void CEslBaseAdapter::setConfigPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
 {
     stCfgPkgFormat *pstCfgPkgFmt = static_cast<stCfgPkgFormat*>(pstPkg);
     if (pstCfgPkgFmt == Q_NULLPTR)
@@ -140,14 +153,14 @@ void CElsBaseAdapter::setConfigPkgData(std::string &strKey, std::string &strValu
     {
         pstCfgPkgFmt->uiResult = std::stoul(strValue);
     }
-    else if (strKey == "usernum")
+    else if (strKey == "lgnum")
     {
         snprintf(pstCfgPkgFmt->acNumber, STR_LEN_64, "%s", strValue.c_str());
     }
 }
 
 //设置Schedule数据
-void CElsBaseAdapter::setSchPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
+void CEslBaseAdapter::setSchPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
 {
     stSchPkgFormat *pstSchPkgFmt = static_cast<stSchPkgFormat*>(pstPkg);
     if (pstSchPkgFmt == Q_NULLPTR)
@@ -163,14 +176,14 @@ void CElsBaseAdapter::setSchPkgData(std::string &strKey, std::string &strValue, 
     {
         pstSchPkgFmt->iResult = std::stoul(strValue);
     }
-    else if (strKey == "usernum")
+    else if (strKey == "lgnum")
     {
         snprintf(pstSchPkgFmt->acNumber, STR_LEN_64, "%s", strValue.c_str());
     }
 }
 
 //设置Event数据
-void CElsBaseAdapter::setEventPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
+void CEslBaseAdapter::setEventPkgData(std::string &strKey, std::string &strValue, void *pstPkg)
 {
     stEventPkgFormat *pstEventPkgFmt = static_cast<stEventPkgFormat*>(pstPkg);
     if (pstEventPkgFmt == Q_NULLPTR)
@@ -186,7 +199,7 @@ void CElsBaseAdapter::setEventPkgData(std::string &strKey, std::string &strValue
     {
         std::cout << strValue << std::endl;
     }
-    else if (strKey == "usernum")
+    else if (strKey == "lgnum")
     {
         std::cout << strValue << std::endl;
     }

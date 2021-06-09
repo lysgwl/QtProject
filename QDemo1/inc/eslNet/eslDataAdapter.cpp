@@ -1,15 +1,15 @@
-#include "elsDataAdapter.h"
+#include "eslDataAdapter.h"
 
-CElsDataAdapter::CElsDataAdapter()
+CEslDataAdapter::CEslDataAdapter()
 {
 }
 
-CElsDataAdapter::~CElsDataAdapter()
+CEslDataAdapter::~CEslDataAdapter()
 {
 }
 
 //Pkg组包请求
-bool CElsDataAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType)
+bool CEslDataAdapter::eslBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	bool bResult = false;
 
@@ -31,7 +31,7 @@ bool CElsDataAdapter::elsBuildPkg(int iPkgType, void *pstPkg, std::string &strJs
 }
 
 //Pkg包解析
-bool CElsDataAdapter::elsParsePkg(int iMsgType, char *pPayload, void* pstEvent)
+bool CEslDataAdapter::eslParsePkg(int iMsgType, char *pPayload, void* pstEvent)
 {
 	if (pPayload == Q_NULLPTR)
 	{
@@ -48,11 +48,11 @@ bool CElsDataAdapter::elsParsePkg(int iMsgType, char *pPayload, void* pstEvent)
 
 	switch (iMsgType)
 	{
-	case ELS_MSG_LOGIN_RESP:
+    case ESL_MSG_LOGIN_RESP:
 		bResult = buildBaseRespPkg(true, BASIC_MSG_LOGINEXT_RESP, pstEvent, json);
 		break;
 
-	case ELS_MSG_HEARTBEAT_RESP:
+    case ESL_MSG_HEARTBEAT_RESP:
 		bResult = buildBaseRespPkg(true, BASIC_MSG_HEARTBEAT_ACK, pstEvent, json);
 		break;	
 	
@@ -64,7 +64,7 @@ bool CElsDataAdapter::elsParsePkg(int iMsgType, char *pPayload, void* pstEvent)
 }
 
 //Pkg包转换json
-bool CElsDataAdapter::elsBuildJson(int iPkgType, void* pstEvent, QJsonObject &json)
+bool CEslDataAdapter::eslBuildJson(int iPkgType, void* pstEvent, QJsonObject &json)
 {
 	bool bResult = false;
 	
@@ -86,7 +86,7 @@ bool CElsDataAdapter::elsBuildJson(int iPkgType, void* pstEvent, QJsonObject &js
 }
 
 //stBasicPkgFormat请求
-bool CElsDataAdapter::buildBaseReqPkg(void *pstPkg, std::string &strJson, int &iMsgType)
+bool CEslDataAdapter::buildBaseReqPkg(void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	stBasicPkgFormat *pstBasicMsg = static_cast<stBasicPkgFormat*>(pstPkg);
 	if (pstBasicMsg == Q_NULLPTR)
@@ -97,15 +97,15 @@ bool CElsDataAdapter::buildBaseReqPkg(void *pstPkg, std::string &strJson, int &i
 	switch (pstBasicMsg->iMsgType)
 	{
 	case BASIC_MSG_LOGINEXT_REQ:
-		OnReqElsLogin(pstBasicMsg, strJson, iMsgType);
+		OnReqEslLogin(pstBasicMsg, strJson, iMsgType);
 		break;
 		
 	case BASIC_MSG_LOGOUT_IND:
-		OnReqElsLoginOut(pstBasicMsg, strJson, iMsgType);
+		OnReqEslLoginOut(pstBasicMsg, strJson, iMsgType);
 		break;
 		
 	case BASIC_MSG_HEARTBEAT:
-		OnReqElsHeartBeat(pstBasicMsg, strJson, iMsgType);
+		OnReqEslHeartBeat(pstBasicMsg, strJson, iMsgType);
 		break;
 		
 	default:
@@ -116,7 +116,7 @@ bool CElsDataAdapter::buildBaseReqPkg(void *pstPkg, std::string &strJson, int &i
 }
 
 //stCfgPkgFormat请求
-bool CElsDataAdapter::buildConfigReqPkg(void *pstPkg, std::string &strJson, int &iMsgType)
+bool CEslDataAdapter::buildConfigReqPkg(void *pstPkg, std::string &strJson, int &iMsgType)
 {
 	stCfgPkgFormat *pstCfgMsg = static_cast<stCfgPkgFormat*>(pstPkg);
     if (pstCfgMsg == Q_NULLPTR)
@@ -129,7 +129,7 @@ bool CElsDataAdapter::buildConfigReqPkg(void *pstPkg, std::string &strJson, int 
 }
 
 //stBasicPkgFormat回复
-bool CElsDataAdapter::buildBaseRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json)
+bool CEslDataAdapter::buildBaseRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json)
 {
     stBasicPkgFormat jstBasicPkgFmt;
 	stBasicPkgFormat *pstBasicPkgFmt = Q_NULLPTR;
@@ -142,7 +142,9 @@ bool CElsDataAdapter::buildBaseRespPkg(bool bFlag, int iMsgType, void* pstEvent,
 
 	if (bFlag == true)
 	{
+        memset(&jstBasicPkgFmt, 0x0, sizeof(stBasicPkgFormat));
 		pstBasicPkgFmt = &jstBasicPkgFmt;
+        pstMsg->ePskType = PKG_TYPE_BASIC;
 	}
 	else
 	{
@@ -153,11 +155,11 @@ bool CElsDataAdapter::buildBaseRespPkg(bool bFlag, int iMsgType, void* pstEvent,
 	switch (iMsgType)
 	{
 	case BASIC_MSG_LOGINEXT_RESP:
-		OnRespElsLogin(bFlag, pstBasicPkgFmt, json);
+		OnRespEslLogin(bFlag, pstBasicPkgFmt, json);
 		break;
 
 	case BASIC_MSG_HEARTBEAT_ACK:
-		OnRespElsHeartBeat(bFlag, pstBasicPkgFmt, json);
+		OnRespEslHeartBeat(bFlag, pstBasicPkgFmt, json);
 		break;	
 	
 	default:
@@ -173,7 +175,7 @@ bool CElsDataAdapter::buildBaseRespPkg(bool bFlag, int iMsgType, void* pstEvent,
 }
 
 //stCfgPkgFormat回复
-bool CElsDataAdapter::buildConfigRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json)
+bool CEslDataAdapter::buildConfigRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json)
 {
     stCfgPkgFormat jstCfgPkgFmt;
 	stCfgPkgFormat *pstCfgPkgFmt = Q_NULLPTR;
@@ -184,13 +186,9 @@ bool CElsDataAdapter::buildConfigRespPkg(bool bFlag, int iMsgType, void* pstEven
 		return false;
 	}
 
-    if (json.isEmpty())
-    {
-
-    }
-
 	if (bFlag == true)
 	{
+        memset(&jstCfgPkgFmt, 0x0, sizeof(stCfgPkgFormat));
 		pstCfgPkgFmt = &jstCfgPkgFmt;
 	}
 	else
@@ -214,7 +212,7 @@ bool CElsDataAdapter::buildConfigRespPkg(bool bFlag, int iMsgType, void* pstEven
 }
 
 //登录Req
-void CElsDataAdapter::OnReqElsLogin(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
+void CEslDataAdapter::OnReqEslLogin(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
 {
 	if (pstPkg == Q_NULLPTR)
 	{
@@ -227,12 +225,12 @@ void CElsDataAdapter::OnReqElsLogin(const stBasicPkgFormat *pstPkg, std::string 
 	json.insert("lgnum", pstPkg->acUsrName);
 	json.insert("lgpwd", pstPkg->acPwd);
 	
-	iMsgType = ELS_MSG_LOGIN_REQ;
+    iMsgType = ESL_MSG_LOGIN_REQ;
 	strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
 }
 
 //注销Req
-void CElsDataAdapter::OnReqElsLoginOut(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
+void CEslDataAdapter::OnReqEslLoginOut(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
 {
 	if (pstPkg == Q_NULLPTR)
 	{
@@ -243,12 +241,12 @@ void CElsDataAdapter::OnReqElsLoginOut(const stBasicPkgFormat *pstPkg, std::stri
 	json.insert("seq", pstPkg->iReqId);
 	json.insert("lgnum", pstPkg->acUsrName);
 	
-	iMsgType = ELS_MSG_LOGOUT_IND;
+    iMsgType = ESL_MSG_LOGOUT_IND;
 	strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
 }
 
 //心跳Req
-void CElsDataAdapter::OnReqElsHeartBeat(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
+void CEslDataAdapter::OnReqEslHeartBeat(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType)
 {
 	if (pstPkg == Q_NULLPTR)
 	{
@@ -259,12 +257,12 @@ void CElsDataAdapter::OnReqElsHeartBeat(const stBasicPkgFormat *pstPkg, std::str
 	json.insert("seq", pstPkg->iReqId);
 	json.insert("lgnum", pstPkg->acUsrName);
 	
-	iMsgType = ELS_MSG_HEARTBEAT_REQ;
+    iMsgType = ESL_MSG_HEARTBEAT_REQ;
 	strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
 }
 
 //登录Resp
-void CElsDataAdapter::OnRespElsLogin(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json)
+void CEslDataAdapter::OnRespEslLogin(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json)
 {
 	if (pstPkg == Q_NULLPTR)
 	{
@@ -274,7 +272,7 @@ void CElsDataAdapter::OnRespElsLogin(bool bFlag, stBasicPkgFormat *pstPkg, QJson
 	if (bFlag)
 	{
 		pstPkg->iMsgType = BASIC_MSG_LOGINEXT_RESP;
-		elsParseSegment(json, PKG_TYPE_BASIC, pstPkg);
+        eslParseSegment(json, PKG_TYPE_BASIC, pstPkg);
 	}
 	else
 	{
@@ -289,7 +287,7 @@ void CElsDataAdapter::OnRespElsLogin(bool bFlag, stBasicPkgFormat *pstPkg, QJson
 }
 
 //心跳Resp
-void CElsDataAdapter::OnRespElsHeartBeat(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json)
+void CEslDataAdapter::OnRespEslHeartBeat(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json)
 {
 	if (pstPkg == Q_NULLPTR)
 	{
@@ -299,7 +297,7 @@ void CElsDataAdapter::OnRespElsHeartBeat(bool bFlag, stBasicPkgFormat *pstPkg, Q
 	if (bFlag)
 	{
 		pstPkg->iMsgType = BASIC_MSG_HEARTBEAT_ACK;
-		elsParseSegment(json, PKG_TYPE_BASIC, pstPkg);
+        eslParseSegment(json, PKG_TYPE_BASIC, pstPkg);
 	}
 	else
 	{
