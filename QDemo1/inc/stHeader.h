@@ -1,12 +1,24 @@
 #ifndef ST_HEAD_H
 #define ST_HEAD_H
 
+#include <map>
+#include <tuple>
+
+#include <string>
+#include <sstream>
+#include <iostream>
+
+#include <utility>
+#include <functional>
+
 #include <QMap>
 #include <QHash>
 
 #include <QDir>
 #include <QObject>
 #include <QString>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include <QtGui>
 #include <QDebug>

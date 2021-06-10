@@ -1,18 +1,6 @@
 #include "FuncTest.h"
 
-#include <map>
-#include <tuple>
-
-#include <string>
-#include <iostream>
-
-#include <utility>
-#include <functional>
-
-#include <QMap>
-#include <QString>
-#include <QJsonObject>
-#include <QJsonDocument>
+#include <internal.h>
 
 CFuncTest::CFuncTest()
 {
@@ -96,18 +84,37 @@ void CFuncTest::string_test()
             //int value = std::stoi(seq);
             //int iseq = json.value("requestId").toInt();
 
-            std::string str1 = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
-            //std::string str2 = str1.toStdString();
+            std::string s1 = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
+            //std::string s2 = str1.toStdString();
         }
 
-        QJsonObject s1;
-        s1.insert("test1", 123);
-        json.insert("test", s1);
+        QJsonObject jsonObject;
+        jsonObject.insert("test1", 123);
+        jsonObject.insert("test2", 123);
+        jsonObject.insert("test3", "");
+        json.insert("test", jsonObject);
+
+        if (jsonObject.contains("test3"))
+        {
+            std::string s1 = jsonObject.value("test3").toString().toStdString();
+            if (jsonObject.value("test3").toString() == (""))
+            {
+                jsonObject.remove("test3");
+            }
+        }
     }
 
     //2
     {
         std::string s1 = "{\"t1\":\"123\",\"t2\":321}";
         QJsonObject json = QJsonDocument::fromJson(s1.c_str()).object();
+
+        std::stringstream stream;
+        stream << "http://" << "192.168.0.1" << 80;
+        std::string s2 = stream.str();
+
+        std::ostringstream  strss;
+        strss << "http://" << "192.168.0.1" << 80 << "/" << s1;
+        std::string s3 = strss.str();
     }
 }
