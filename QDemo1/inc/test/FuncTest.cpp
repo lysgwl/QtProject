@@ -90,16 +90,35 @@ void CFuncTest::string_test()
 
         QJsonObject jsonObject;
         jsonObject.insert("test1", 123);
-        jsonObject.insert("test2", 123);
-        jsonObject.insert("test3", "");
-        json.insert("test", jsonObject);
-
+        jsonObject.insert("test2", 213);
+        jsonObject.insert("test3", 321);
         if (jsonObject.contains("test3"))
         {
             std::string s1 = jsonObject.value("test3").toString().toStdString();
             if (jsonObject.value("test3").toString() == (""))
             {
                 jsonObject.remove("test3");
+            }
+        }
+
+        json.insert("test", jsonObject);
+        //json.insert("test", QJsonValue(jsonObject));
+
+        if (json.contains("test"))
+        {
+            //1
+            {
+                QJsonValueRef RefPage = json.find("test").value();
+                QJsonObject obj = RefPage.toObject();
+
+                std::string s1 = std::to_string(obj.value("test1").toInt());
+                std::string s2 = std::to_string(json["test"].toObject().value("test1").toInt());
+            }
+
+            //2
+            {
+                QJsonObject obj = json["test"].toObject();
+                std::string s1 = std::to_string(obj["test1"].toInt());
             }
         }
     }
@@ -116,5 +135,17 @@ void CFuncTest::string_test()
         std::ostringstream  strss;
         strss << "http://" << "192.168.0.1" << 80 << "/" << s1;
         std::string s3 = strss.str();
+    }
+
+    //3
+    {
+        std::stringstream stream;
+        stream << 1 << 2 << 3;
+
+        stream.str("");
+        stream << 3 << 4 << 5;
+
+        std::string str = stream.str();
+        QString s1 = str.c_str();
     }
 }

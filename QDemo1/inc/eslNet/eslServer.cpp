@@ -2,9 +2,9 @@
 
 CEslServer::CEslServer()
 {
-    m_pDataAdapter = new CEslDataAdapter();
-	//m_pMeetAdapter = new CElsMeetAdapter();
-	//m_pStatusAdapter = new CElsStatusAdapter();
+    m_pDataAdapter = new CEslDataAdapter;
+	//m_pMeetAdapter = new CElsMeetAdapter;
+	//m_pStatusAdapter = new CElsStatusAdapter;
 }
 
 CEslServer::~CEslServer()
