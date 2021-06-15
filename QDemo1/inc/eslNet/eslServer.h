@@ -1,7 +1,6 @@
 #ifndef ESL_SERVER_H
 #define ESL_SERVER_H
 
-#include "eslHeader.h"
 #include "eslDataAdapter.h"
 
 class CEslServer

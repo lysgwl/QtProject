@@ -1,16 +1,6 @@
 #ifndef ESL_BASE_ADAPTER_H
 #define ESL_BASE_ADAPTER_H
 
-#include <iostream>
-#include <string>
-
-#include <vector>
-#include <tuple>
-
-#include <QJsonObject>
-#include <QJsonDocument>
-
-#include <winsock2.h>
 #include "eslHeader.h"
 
 class CEslBaseAdapter

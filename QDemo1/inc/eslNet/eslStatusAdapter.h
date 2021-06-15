@@ -1,6 +1,8 @@
 #ifndef ESL_STATUS_ADAPTER_H
 #define ESL_STATUS_ADAPTER_H
 
+#include "eslBaseAdapter.h"
+
 class CEslStatusAdapter : public CEslBaseAdapter
 {
 public:

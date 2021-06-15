@@ -1,7 +1,9 @@
 #ifndef ESL_MEET_ADAPTER_H
 #define ESL_MEET_ADAPTER_H
 
-class CEslMeetAdapter : CEslBaseAdapter
+#include "eslBaseAdapter.h"
+
+class CEslMeetAdapter : public CEslBaseAdapter
 {
 public:
 	CEslMeetAdapter();
