@@ -91,14 +91,18 @@ void CFuncTest::string_test()
         QJsonObject jsonObject;
         jsonObject.insert("test1", 123);
         jsonObject.insert("test2", 213);
-        jsonObject.insert("test3", 321);
+        jsonObject.insert("test3", "");
+        jsonObject.insert("test4", false);
         if (jsonObject.contains("test3"))
         {
             std::string s1 = jsonObject.value("test3").toString().toStdString();
-            if (jsonObject.value("test3").toString() == (""))
+            if (jsonObject.value("test3").toString() == ("") || jsonObject.value("test3").toString().isEmpty())
             {
                 jsonObject.remove("test3");
             }
+
+            bool bFlag = jsonObject.value("test4").toBool();
+            std::cout << bFlag;
         }
 
         json.insert("test", jsonObject);

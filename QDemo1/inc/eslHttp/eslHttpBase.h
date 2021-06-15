@@ -8,7 +8,7 @@ public:
 	virtual ~CEslHttpBase();
 	
 public:
-	void postHttpRequest(const std::string &strUrl, const std::string &strParam, const QJsonObject &json, QJsonObject &jsonResult);
+	bool postHttpRequest(const std::string &strUrl, const std::string &strParam, const QJsonObject &json, QJsonObject &jsonResult);
 };
 
 #endif
