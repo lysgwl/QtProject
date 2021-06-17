@@ -1,18 +1,18 @@
-#ifndef ESL_SERVER_H
-#define ESL_SERVER_H
+#ifndef ESL_NET_CONTROL_H
+#define ESL_NET_CONTROL_H
 
 #include "eslDataAdapter.h"
 
-class CEslServer
+class CEslNetControl
 {
 public:
-	CEslServer();
-	virtual ~CEslServer();
+	CEslNetControl();
+	virtual ~CEslNetControl();
 
 public:
-	//是否支持els服务
-	bool isEslServer(const QJsonObject &jsonObject);
-
+	//是否开启服务
+	bool isEslServer();
+	
 	//消息请求
     bool eslSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend);
 	

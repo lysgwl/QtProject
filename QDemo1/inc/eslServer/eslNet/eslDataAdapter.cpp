@@ -224,6 +224,7 @@ void CEslDataAdapter::OnReqEslLogin(const stBasicPkgFormat *pstPkg, std::string 
 	json.insert("lgtype", "PC");
 	json.insert("lgnum", pstPkg->acUsrName);
 	json.insert("lgpwd", pstPkg->acPwd);
+	json.insert("devmask", "12345565");
 	
     iMsgType = ESL_MSG_LOGIN_REQ;
 	strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));

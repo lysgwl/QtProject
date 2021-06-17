@@ -1,13 +1,13 @@
-#include "eslServer.h"
+#include "eslNetControl.h"
 
-CEslServer::CEslServer()
+CEslNetControl::CEslNetControl()
 {
     m_pDataAdapter = new CEslDataAdapter;
 	//m_pMeetAdapter = new CElsMeetAdapter;
 	//m_pStatusAdapter = new CElsStatusAdapter;
 }
 
-CEslServer::~CEslServer()
+CEslNetControl::~CEslNetControl()
 {
 	if (m_pDataAdapter)
 	{
@@ -28,30 +28,14 @@ CEslServer::~CEslServer()
 	}*/
 }
 
-//是否支持els服务
-bool CEslServer::isEslServer(const QJsonObject &jsonObject)
+//是否开启服务
+bool CEslNetControl::isEslServer()
 {
-    if (jsonObject.isEmpty())
-	{
-		return false;
-	}
-	
-	if (!jsonObject.contains("protocol"))
-	{
-		return false;
-	}
-	
-    uint uiPkgId = static_cast<uint>(jsonObject.value("protocol").toInt());
-    if (uiPkgId != htonl(ESL_PROTOCOL_ID))
-	{
-		return false;
-    }
-	
 	return true;
 }
 
 //消息请求
-bool CEslServer::eslSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
+bool CEslNetControl::eslSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
 {
 	bool bResult = false;
 	
@@ -91,17 +75,17 @@ bool CEslServer::eslSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
         pstPkgHeader->cMsgType = static_cast<char>(iMsgType);
 		
         int iLen = static_cast<int>(strJson.length());
-        pstPkgHeader->iBodyLength = static_cast<int>(iLen);
+        pstPkgHeader->iBodyLength = htonl(static_cast<int>(iLen));
 
         strncpy(pstPkgHeader->body, strJson.c_str(), strJson.length());
-        arSend = QByteArray(acBuffer, iLen);
+        arSend = QByteArray(acBuffer, iLen + sizeof(stTerminalPkgHeader));
 	}
 	
 	return bResult;
 }
 
 //Pkg包解析
-bool CEslServer::eslParsePkg(char *pPkgBuf, void *pstEvent)
+bool CEslNetControl::eslParsePkg(char *pPkgBuf, void *pstEvent)
 {
 	bool bResult = false;
 	
@@ -133,7 +117,7 @@ bool CEslServer::eslParsePkg(char *pPkgBuf, void *pstEvent)
 }
 
 //消息转换json
-void CEslServer::eslBuildJson(stMESSAGE *pstMsg, std::string &strJson)
+void CEslNetControl::eslBuildJson(stMESSAGE *pstMsg, std::string &strJson)
 {
     if (pstMsg == Q_NULLPTR)
 	{
@@ -166,7 +150,7 @@ void CEslServer::eslBuildJson(stMESSAGE *pstMsg, std::string &strJson)
 }
 
 //Pkg包头解析
-bool CEslServer::parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader)
+bool CEslNetControl::parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader)
 {
     *pstPkgHeader = reinterpret_cast<stTerminalPkgHeader*>(pPkgBuf);
 	if ((*pstPkgHeader) == Q_NULLPTR)

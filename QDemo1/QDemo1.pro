@@ -78,10 +78,6 @@ HEADERS += \
 	widget/BottomMenuView.h \
 	inc/test/FuncTest.h \
 	inc/test/ThreadTest.h \
-	inc/eslNet/eslHeader.h \
-	inc/eslNet/eslServer.h \
-	inc/eslNet/eslBaseAdapter.h \
-	inc/eslNet/eslDataAdapter.h \
 
 SOURCES += \
 	main/main.cpp \
@@ -102,9 +98,6 @@ SOURCES += \
 	widget/BottomMenuView.cpp \
 	inc/test/FuncTest.cpp \
 	inc/test/ThreadTest.cpp \
-	inc/eslNet/eslServer.cpp \
-	inc/eslNet/eslBaseAdapter.cpp \
-	inc/eslNet/eslDataAdapter.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc
