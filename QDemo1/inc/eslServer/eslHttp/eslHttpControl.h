@@ -12,13 +12,13 @@ public:
 	
 public:
 	//esl获取数据
-	void eslGetDataFromSrv(std::string &strCallNum, std::string &strToken);
+	void eslGetDataFromSrv(QJsonObject &json);
 	
 	//esl设置数据
-	void eslSetSrvData(bool bIsSeat, std::string &strCallNum, std::string &strToken);
+	void eslSetSrvData(QJsonObject &json);
 	
 	//esl设置事件
-	void eslSetUserEvent();
+	void eslSetUserEvent(QJsonObject &json);
 	
 public:	
 	//获取data对象指针

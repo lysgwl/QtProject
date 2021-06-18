@@ -2,6 +2,7 @@
 #define ESL_SERVER_H
 
 #include "STHeader.h"
+#include "./eslHttp/eslHttpControl.h"
 
 class CEslServer
 {
@@ -27,6 +28,9 @@ protected:
 	
 	//连接服务器
 	bool connectSvr(const QJsonObject &json);
+	
+protected:
+	CEslHttpControl *m_pHttpCtrl = Q_NULLPTR;	
 };
 
 #endif

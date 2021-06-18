@@ -1,5 +1,13 @@
 #include "eslHttpControl.h"
 
+#include "RztCommonUtils.h"
+#include "RztEventHeader.h"
+
+#include "IRztSettingMgr.h"
+#include "IRztServerInfoMgr.h"
+#include "IRztIpcController.h"
+#include "IRztFaceDistinguishController.h"
+
 CEslHttpControl::CEslHttpControl()
 {
 	//data对象指针
@@ -25,19 +33,12 @@ CEslHttpControl::~CEslHttpControl()
 }
 
 //esl获取数据
-void CEslHttpControl::eslGetDataFromSrv(std::string &strCallNum, std::string &strToken)
+void CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
 {
-	if (strCallNum == "" || strToken == "")
+	if (json.isEmpty())
 	{
 		return;
 	}
-	
-	QJsonObject json;
-	json.insert("user", strCallNum);
-	json.insert("token", strToken);
-	
-	//获取系统配置
-	m_pEslHttpData->eslGetSysConfig(json);
 	
 	//获取设备配置
 	m_pEslHttpData->eslSetDevConfig(false, json);
@@ -46,33 +47,22 @@ void CEslHttpControl::eslGetDataFromSrv(std::string &strCallNum, std::string &st
 	m_pEslHttpData->eslSetUserConfig(false, json);
 	
 	//获取快捷通讯录
-	m_pEslHttpData->eslSetPageData(FileHandle_Get, json);
+	//m_pEslHttpData->eslSetPageData(FileHandle_Get, json);
 	
 	//获取公共通讯录
-	m_pEslHttpData->eslSetPublicContact(json);
+	//m_pEslHttpData->eslSetPublicContact(json);
 	
 	//获取席位通讯录
-	m_pEslHttpData->eslSetSeatContact(json);
-	
-	//获取通话记录
-	m_pEslHttpCall->eslSetCallLog(false, json);
-	
-	//获取电台列表
-	m_pEslHttpCall->eslSetRadioList(json);
+	//m_pEslHttpData->eslSetSeatContact(0, json);
 }
 
 //esl设置数据
-void CEslHttpControl::eslSetSrvData(bool bIsSeat, std::string &strCallNum, std::string &strToken)
+void CEslHttpControl::eslSetSrvData(QJsonObject &json)
 {
-	if (strCallNum == "" || strToken == "")
+	if (json.isEmpty())
 	{
 		return;
 	}
-	
-	QJsonObject json;
-	json.insert("user", strCallNum);
-	json.insert("token", strToken);
-	json.insert("seat", bIsSeat);
 	
 	//设置设备配置
 	m_pEslHttpData->eslSetDevConfig(true, json);
@@ -82,13 +72,39 @@ void CEslHttpControl::eslSetSrvData(bool bIsSeat, std::string &strCallNum, std::
 }
 
 //esl设置事件
-void CEslHttpControl::eslSetUserEvent()
+void CEslHttpControl::eslSetUserEvent(QJsonObject &json)
 {
 	ObjectPtr<IRztServerInfoMgr> severInfo;
 	STSvrInfo svrInfo = severInfo->getCurSvrInfo();
 	
+	std::string strSvrIp = svrInfo.strIP.toStdString();
+	if  (strSvrIp == "")
+	{
+		return;
+	}
+	
 	//ntp 对时
-	RztCommonUtils::ntpToServer(svrInfo.strIP);
+	RztCommonUtils::ntpToServer(strSvrIp.c_str());
+	
+	//人脸sdk初始化
+	std::thread([=](){
+		safeCallInterface(IRztFaceDistinguishController, initFacePlugin());
+	}).detach();
+	
+	//emit sglLoginStateChanged(true);//切到主界面
+    qRztEmitEvent(RztEventKey::event_login_loginChange, true);
+	
+	//通知monitor
+	QJsonObject jsonSeatLogin;
+	jsonSeatLogin.insert("seatNumber", json["user"].toString());
+	
+	ObjectPtr<IRztIpcController> ipcController;
+	ipcController->sendIpcMsg(MsgType_SeatNumberLogined, true, 2000, jsonSeatLogin);
+	
+	//推荐通道 voip
+	ObjectPtr<IRztSettingMgr> settingMgr;
+    settingMgr->setValue(RztSettingKey::SKey_PreferredChannel, VC_Voip);
+	settingMgr->flush();
 }
 
 //获取data对象指针

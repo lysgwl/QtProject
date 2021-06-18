@@ -1,7 +1,6 @@
 #include "ToolStatusView.h"
 
 #include <internal.h>
-#include "../inc/eslNet/eslServer.h"
 
 CToolStatusView::CToolStatusView(QWidget *parent)
     : QWidget(parent)
@@ -146,69 +145,4 @@ void CToolStatusView::timerTest()
 
 void CToolStatusView::vsSdkTest()
 {
-    //1
-    {
-        stBasicPkgFormat stBasicPkgFmt;
-        memset(&stBasicPkgFmt, 0x0, sizeof(stBasicPkgFormat));
-
-        stBasicPkgFmt.iMsgType = BASIC_MSG_LOGINEXT_REQ;
-        stBasicPkgFmt.iReqId = 123;
-        stBasicPkgFmt.iTerminalType = TERMINAL_TYPE_SCHEDULE;
-        stBasicPkgFmt.iReserver0 = LOGIN_NEED_CUSTOMED_SCHEDULER_NUMB;
-        stBasicPkgFmt.iReserver1 = 1;
-
-        snprintf(stBasicPkgFmt.acUsrName, STR_LEN_32, "%s", "16104016001");
-        snprintf(stBasicPkgFmt.acReserver2, STR_LEN_1024, "%s", "192.168.0.1");
-        snprintf(stBasicPkgFmt.acPwd, STR_LEN_32, "%s", "123456");
-
-        QString strData = QString("%1,%2,%3").arg("16104026001").arg("c1:d2:e3:f4:g5:h6").arg("0001");
-        stBasicPkgFmt.uiDataLen = static_cast<uint>(strData.length());
-        snprintf(stBasicPkgFmt.acData, BUF_SIZE_2048, "%s", strData.toUtf8().data());
-
-        stMESSAGE stMsg;
-        memset(&stMsg, 0x0, sizeof(stMESSAGE));
-
-        stMsg.ePskType = PKG_TYPE_BASIC;
-        stMsg.pvMessage = reinterpret_cast<void*>(&stBasicPkgFmt);
-
-        QByteArray arSend;
-
-        CEslServer server;
-        server.eslSendMessage(&stMsg, arSend);
-    }
-
-    //2
-    {
-        QJsonObject json;
-        json.insert("seq", 123);
-        json.insert("result", 0);
-        json.insert("lgnum", "16104016001");
-        json.insert("token", "12345678");
-        std::string strJson = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
-
-        char acBuffer[AC_MAX_PROTOCOL_PKG_LEN];
-        memset(acBuffer, 0x0, AC_MAX_PROTOCOL_PKG_LEN);
-
-        stTerminalPkgHeader *pstPkgHeader = reinterpret_cast<stTerminalPkgHeader*>(acBuffer);
-        pstPkgHeader->iProtocolId = static_cast<int>(htonl(ESL_PROTOCOL_ID));
-        pstPkgHeader->cPkgType = static_cast<char>(ESL_PKG_TYPE_DATA);
-        pstPkgHeader->cMsgType = static_cast<char>(BASIC_MSG_LOGIN_RESP);
-
-        int iLen = static_cast<int>(strJson.length());
-        pstPkgHeader->iBodyLength = static_cast<int>(iLen);
-        strncpy(pstPkgHeader->body, strJson.c_str(), strJson.length());
-
-        stMESSAGE stMsg;
-        memset(&stMsg, 0x0, sizeof(stMESSAGE));
-
-        stSchPkgFormat stSchPkgFmt;
-        memset(&stSchPkgFmt, 0x0, sizeof(stSchPkgFormat));
-        stMsg.pvMessage = static_cast<void*>(&stSchPkgFmt);
-
-        CEslServer server;
-        server.eslParsePkg(acBuffer, &stMsg);
-
-        strJson = "";
-        server.eslBuildJson(&stMsg, strJson);
-    }
 }

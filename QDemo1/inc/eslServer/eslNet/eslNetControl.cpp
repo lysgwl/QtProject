@@ -68,17 +68,19 @@ bool CEslNetControl::eslSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend)
 	if (bResult)
 	{
         char acBuffer[AC_MAX_PROTOCOL_PKG_LEN];
-        stTerminalPkgHeader *pstPkgHeader = reinterpret_cast<stTerminalPkgHeader*>(acBuffer);
+		memset(acBuffer, 0x0, AC_MAX_PROTOCOL_PKG_LEN);
+        stProtocolPkgHeader *pstPkgHeader = reinterpret_cast<stProtocolPkgHeader*>(acBuffer);
 
         pstPkgHeader->iProtocolId = static_cast<int>(htonl(ESL_PROTOCOL_ID));
         pstPkgHeader->cPkgType = static_cast<char>(iPkgType);
         pstPkgHeader->cMsgType = static_cast<char>(iMsgType);
 		
-        int iLen = static_cast<int>(strJson.length());
-        pstPkgHeader->iBodyLength = htonl(static_cast<int>(iLen));
-
-        strncpy(pstPkgHeader->body, strJson.c_str(), strJson.length());
-        arSend = QByteArray(acBuffer, iLen + sizeof(stTerminalPkgHeader));
+		size_t len = strJson.length();
+        pstPkgHeader->iBodyLength = static_cast<int>(htonl(len));
+        strncpy(pstPkgHeader->body, strJson.c_str(), len);
+		
+		len += sizeof(stProtocolPkgHeader);
+        arSend = QByteArray(acBuffer, len);
 	}
 	
 	return bResult;
@@ -89,8 +91,8 @@ bool CEslNetControl::eslParsePkg(char *pPkgBuf, void *pstEvent)
 {
 	bool bResult = false;
 	
-	stTerminalPkgHeader *pstPkgHeader = Q_NULLPTR;
-	if (parsePkg(pPkgBuf, &pstPkgHeader) == false)
+	stProtocolPkgHeader *pstPkgHeader = Q_NULLPTR;
+	if (!parsePkg(pPkgBuf, &pstPkgHeader))
 	{
 		return false;
 	}
@@ -150,9 +152,9 @@ void CEslNetControl::eslBuildJson(stMESSAGE *pstMsg, std::string &strJson)
 }
 
 //Pkg包头解析
-bool CEslNetControl::parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader)
+bool CEslNetControl::parsePkg(char *pPkgBuf, stProtocolPkgHeader **pstPkgHeader)
 {
-    *pstPkgHeader = reinterpret_cast<stTerminalPkgHeader*>(pPkgBuf);
+    *pstPkgHeader = reinterpret_cast<stProtocolPkgHeader*>(pPkgBuf);
 	if ((*pstPkgHeader) == Q_NULLPTR)
 	{
 		return false;

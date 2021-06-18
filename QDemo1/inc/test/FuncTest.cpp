@@ -91,8 +91,11 @@ void CFuncTest::string_test()
         QJsonObject jsonObject;
         jsonObject.insert("test1", 123);
         jsonObject.insert("test2", 213);
-        jsonObject.insert("test3", "");
+        jsonObject.insert("test3", "321");
         jsonObject.insert("test4", false);
+
+        int s1 = jsonObject["test3"].toString().toInt();
+
         if (jsonObject.contains("test3"))
         {
             std::string s1 = jsonObject.value("test3").toString().toStdString();
@@ -110,7 +113,6 @@ void CFuncTest::string_test()
 
         if (json.contains("test"))
         {
-            //1
             {
                 QJsonValueRef RefPage = json.find("test").value();
                 QJsonObject obj = RefPage.toObject();
@@ -119,7 +121,6 @@ void CFuncTest::string_test()
                 std::string s2 = std::to_string(json["test"].toObject().value("test1").toInt());
             }
 
-            //2
             {
                 QJsonObject obj = json["test"].toObject();
                 std::string s1 = std::to_string(obj["test1"].toInt());
@@ -128,6 +129,14 @@ void CFuncTest::string_test()
     }
 
     //2
+    {
+        QJsonObject json;
+        json.insert("terminalId", "123456");
+        json.insert("LoginId/name", "eee");
+        json.insert("LoginId/test", "123");
+    }
+
+    //3
     {
         std::string s1 = "{\"t1\":\"123\",\"t2\":321}";
         QJsonObject json = QJsonDocument::fromJson(s1.c_str()).object();
@@ -141,7 +150,7 @@ void CFuncTest::string_test()
         std::string s3 = strss.str();
     }
 
-    //3
+    //4
     {
         std::stringstream stream;
         stream << 1 << 2 << 3;

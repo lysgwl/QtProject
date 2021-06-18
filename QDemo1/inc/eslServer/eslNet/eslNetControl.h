@@ -24,7 +24,7 @@ public:
 
 protected:
 	//pkg包头解析
-	bool parsePkg(char *pPkgBuf, stTerminalPkgHeader **pstPkgHeader);
+	bool parsePkg(char *pPkgBuf, stProtocolPkgHeader **pstPkgHeader);
 	
 private:
     CEslDataAdapter *m_pDataAdapter = Q_NULLPTR;

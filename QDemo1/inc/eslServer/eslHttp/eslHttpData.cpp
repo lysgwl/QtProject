@@ -1,5 +1,21 @@
 #include "eslHttpData.h"
 
+#include <sstream>
+#include <string>
+
+#include "RztEnvDef.h"
+#include "RztCommonUtils.h"
+#include "RztDownLoadFile.h"
+
+#include "IRztSettingMgr.h"
+#include "RztComUtilsInLine.h"
+
+#include "IRztBasePageMgr.h"
+#include "IRztCallNumberMgr.h"
+#include "IRztServerInfoMgr.h"
+#include "IRztPublicContactMgr.h"
+#include "IRztAppStateController.h"
+
 CEslHttpData::CEslHttpData()
 {
 }
@@ -17,16 +33,52 @@ bool CEslHttpData::eslGetSysConfig(const QJsonObject &json)
 		return false;
 	}
 	
-	std::string strParam;
-	std::string strUrl = "/api/v1/SystemConfig/getSystemConfig";
+	int iVsPort = json["vsport"].toInt();
+	int iHttpPort = json["httpport"].toInt();
 	
-	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, strParam, json, jsonRet))
+	std::string strHostIp = json["hostip"].toString().toStdString();
+	if (strHostIp == "")
 	{
 		return false;
 	}
 	
-	eslSetSysData(jsonRet);
+	QJsonObject jsonConfig(json);
+	jsonConfig.insert("type", 0);
+	
+	std::ostringstream ostr;
+	std::string strUrl = "/api/v1/SystemConfig/getSystemConfig";
+
+	ostr << "http://" << strHostIp << ":" << iHttpPort << strUrl;
+	std::string strPostUrl = ostr.str();
+	
+	QJsonObject jsonRet;
+	if (!postHttpRequest(strPostUrl, jsonConfig, jsonRet))
+	{
+		return false;
+	}
+	
+	QJsonObject jsonData(jsonRet["data"].toObject());
+	if (jsonData.isEmpty())
+	{
+		return false;
+	}
+	
+	if (!jsonData.contains("hostip"))
+	{
+		jsonData.insert("hostip", strHostIp.c_str());
+	}
+	
+	if (!jsonData.contains("vsport"))
+	{
+		jsonData.insert("vsport", iVsPort);
+	}
+	
+	if (!jsonData.contains("httpport"))
+	{
+		jsonData.insert("httpport", iHttpPort);
+	}
+	
+	eslSetSysData(jsonData);
 	return true;
 }
 
@@ -78,7 +130,7 @@ bool CEslHttpData::eslSetPageData(int iType, const QJsonObject &json)
 }
 
 //esl公共通讯录
-bool CEslHttpData::eslGetPublicContact(const QJsonObject &json)
+bool CEslHttpData::eslSetPublicContact(const QJsonObject &json)
 {
 	if (json.isEmpty())
 	{
@@ -87,6 +139,7 @@ bool CEslHttpData::eslGetPublicContact(const QJsonObject &json)
 	
 	std::string strUrl;
 	QJsonObject jsonPublic(json);
+	jsonPublic.insert("type", 0);
 	
 	bool file = false;
 	if (!jsonPublic.contains("file"))
@@ -115,13 +168,12 @@ bool CEslHttpData::eslGetPublicContact(const QJsonObject &json)
 	}
 	
 	QJsonObject jsonRet;
-	std::string strParam;
-	if (!postHttpRequest(strUrl, strParam, jsonPublic, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonPublic, jsonRet))
 	{
 		return false;
 	}
 	
-	eslSetPublicContact(jsonRet);
+	GetPublicContact(jsonRet);
 	return true;
 }
 
@@ -140,18 +192,55 @@ void CEslHttpData::eslSetSysData(const QJsonObject &json)
 		return;
 	}
 	
+	std::stringstream stream;
 	ObjectPtr<IRztSettingMgr> settingMgr;
 	
-	std::stringstream stream;
+	if (json.contains("hostip"))
+	{//服务器配置
+		QJsonObject localSvr;
+		localSvr.insert("ip", json["hostip"].toString());
+		localSvr.insert("vsPort", std::to_string(json["vsport"].toInt()).c_str());
+		localSvr.insert("httpPort", std::to_string(json["httpport"].toInt()).c_str());
+		localSvr.insert("sipPort", std::to_string(json["sipPort"].toInt()).c_str());
+		
+		localSvr.insert("sbcIp", json["sbcip"].toString());
+		localSvr.insert("sbcPort", std::to_string(json["sbcPort"].toInt()).c_str());
+		localSvr.insert("sbcMediaPort", std::to_string(json["sbcmediaport"].toInt()).c_str());
+	
+		QJsonObject jsonSvr;
+		jsonSvr.insert("localServer", localSvr);
+		
+		QJsonArray jsonArray;
+		jsonSvr.insert("standbyServer", jsonArray);
+		
+		ObjectPtr<IRztServerInfoMgr> severInfoMgr;
+		severInfoMgr->loadServerInfo(jsonSvr);
+		
+		STSvrInfo svrInfo = severInfoMgr->getCurSvrInfo();
+		settingMgr->setValue(RztSettingKey::SKey_GJB4908SvrPort, svrInfo.n4908SvrPort);
+		settingMgr->setValue(RztSettingKey::SKey_GJB4908SvrIP, svrInfo.str4908IP);
+		settingMgr->setValue(RztSettingKey::SKey_GJB4908LocalPort, svrInfo.n4908LocalPort);
+		settingMgr->setValue(RztSettingKey::SKey_SvrPowerOnUDPPort, svrInfo.nPoweronPort);
+		settingMgr->setValue(RztSettingKey::SKey_Enable28, svrInfo.bEnable28);
+		settingMgr->flush();
+	}
+	
 	if (json.contains("recordServerIp"))
 	{//录播配置
-		std::string strRecordIp = json.value("recordServerIp").toString().toStdString();
-		int iRecordPort = json.value("recordServerPort").toInt();
+		if (json["recordServerIp"].toString() != "")
+		{
+			int iRecordPort = json.value("recordServerPort").toInt();
+			std::string strRecordIp = json.value("recordServerIp").toString().toStdString();
+			if (strRecordIp == "localhost")
+			{
+				strRecordIp = "127.0.0.1";
+			}
+			
+			stream << strRecordIp << ":" << iRecordPort;
+			std::string strRecordUrl = stream.str();
 		
-		stream << strRecordIp << ":" << iRecordPort;
-		std::string strRecordUrl = stream.str();
-		
-		settingMgr->setValue(RztSettingKey::SKey_RecordFileUrl, strRecordUrl.c_str());
+			settingMgr->setValue(RztSettingKey::SKey_RecordFileUrl, strRecordUrl.c_str());
+		}
 	}
 	
 	if (json.contains("expires"))
@@ -188,35 +277,35 @@ bool CEslHttpData::eslSetDevData(const QJsonObject &json)
 	std::string strPstnNum = (pxoInfo.strPXO).toStdString();
 	
 	QJsonObject jsonData;
-	jsonData.insert("devuuid", strUuId);
-	jsonData.insert("seatid", strUuId);
+	jsonData.insert("devuuid", strUuId.c_str());
+	jsonData.insert("seatid", strUuId.c_str());
 	
 	if (bIsSeat)
 	{
-		jsonData.insert("seatnum", strNumber);
+		jsonData.insert("seatnum", strNumber.c_str());
 		jsonData.insert("usernum", "");
 	}
 	else
 	{
 		jsonData.insert("seatnum", "");
-		jsonData.insert("usernum", strNumber);
+		jsonData.insert("usernum", strNumber.c_str());
 	}
 	
-	jsonData.insert("pstn", strPstnNum);
-	jsonData.insert("terminalip", strLocalIp);
-	jsonData.insert("devmac", strDevAddr);
+	jsonData.insert("pstn", strPstnNum.c_str());
+	jsonData.insert("terminalip", strLocalIp.c_str());
+	jsonData.insert("devmac", strDevAddr.c_str());
 	jsonData.insert("devtype", 1);
 	jsonData.insert("version", "");
 	jsonData.insert("versionstate", 0);
 	
 	QJsonObject jsonDev(json);
+	jsonDev.insert("type", 0);
 	jsonDev.insert("data", jsonData);
 	
-	std::string strParam;
 	std::string strUrl = "/api/v1/upgrade/uploadTerminalInfo";
 	
 	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, strParam, jsonDev, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonDev, jsonRet))
 	{
 		return false;
 	}
@@ -232,13 +321,12 @@ bool CEslHttpData::eslGetDevData(const QJsonObject &json)
 		return false;
 	}
 	
-	std::string strParam;
+	QJsonObject jsonDev(json);
+	jsonDev.insert("type", 0);
 	std::string strUrl = "/api/v1/upgrade/getdeviceinfo";
 	
-	QJsonObject jsonDev(json);
-	
 	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, strParam, jsonDev, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonDev, jsonRet))
 	{
 		return false;
 	}
@@ -279,13 +367,13 @@ bool CEslHttpData::eslSetUserData(const QJsonObject &json)
 		}
 	}
 	
+	jsonUser.insert("type", 0);
 	jsonUser.insert("extend", "");
-	
-	std::string strParam;
+
 	std::string strUrl = "/api/v1/user/editUserInfo";
 	
 	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, strParam, jsonUser, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonUser, jsonRet))
 	{
 		return false;
 	}
@@ -301,21 +389,32 @@ bool CEslHttpData::eslGetUserData(const QJsonObject &json)
 		return false;
 	}
 	
-	std::string strParam;
+	QJsonObject jsonUser(json);
+	jsonUser.insert("type", 0);
 	std::string strUrl = "/api/v1/user/getUserInfo";
 	
-	QJsonObject jsonUser(json);
+	bool bIsSeat = false;
+	if (jsonUser.contains("seat"))
+	{
+		bIsSeat = jsonUser.value("seat").toBool();
+	}
 	
 	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, strParam, jsonDev, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonUser, jsonRet))
 	{
 		return false;
 	}
 	
-	if (jsonRet.contains("transfernumber"))
+	QJsonObject jsonData(jsonRet["data"].toObject());
+	if (jsonData.isEmpty())
+	{
+		return false;
+	}
+	
+	if (jsonData.contains("transfernumber"))
 	{//呼叫转移
-		std::string strUserNum = jsonRet["transfernumber"].toString().toStdString();
-		if (jsonRet["transferswitch"].toInt() == 0)
+		std::string strUserNum = jsonData["transfernumber"].toString().toStdString();
+		if (jsonData["transferswitch"].toInt() == 0)
 		{
 			strUserNum = "";
 		}
@@ -323,6 +422,33 @@ bool CEslHttpData::eslGetUserData(const QJsonObject &json)
 		ObjectPtr<IRztSettingMgr> settingMgr;
 		settingMgr->setValue(RztSettingKey::SKey_CallDivert, strUserNum.c_str());
 	}
+	
+	if (jsonData.contains("name"))
+	{//用户昵称
+		STNumber numberNew;
+		numberNew.type = bIsSeat ? NT_Seat : NT_Staff;
+		numberNew.gma = bIsSeat ? GMA_SeatNumber : GMA_UserNumber;
+		numberNew.strUID = jsonData["devuuid"].toString();
+		numberNew.strUIDPwd = jsonUser["passwd"].toString();
+		numberNew.strVsCallNumber = jsonUser["user"].toString();
+		numberNew.strVsPassword = jsonUser["passwd"].toString();
+		
+		QJsonObject jsonLogin;
+		jsonLogin.insert("DispatcherName", jsonData["name"].toString());
+		jsonLogin.insert("DispatcherNameAlias", jsonData["name"].toString());
+		jsonLogin.insert("DispatcherUserAlias", jsonData["name"].toString());
+		
+		QJsonObject jsonNum;
+		jsonNum.insert("terminalId", jsonUser["token"].toInt());
+		jsonNum.insert("LoginId", jsonLogin);
+		
+		ObjectPtr<IRztCallNumberMgr> callNumberMgr;
+		callNumberMgr->addNumber(numberNew, jsonNum);
+		callNumberMgr->setActiveNumber(jsonUser["user"].toString());
+	}
+	
+	ObjectPtr<IRztSettingMgr> settingMgr;
+	settingMgr->setValue(RztSettingKey::SKey_ConvergeOpen, jsonData["sbcswitch"].toInt());
 	
 	return true;
 }
@@ -337,6 +463,7 @@ bool CEslHttpData::eslGetPageData(const QJsonObject &json)
 	
 	std::string strUrl;
 	QJsonObject jsonPage(json);
+	jsonPage.insert("type", 0);
 	
 	bool folder = false;
 	if (!jsonPage.contains("folder"))
@@ -365,8 +492,7 @@ bool CEslHttpData::eslGetPageData(const QJsonObject &json)
 	}
 	
 	QJsonObject jsonRet;
-	std::string strParam;
-	if (!postHttpRequest(strUrl, strParam, jsonPage, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonPage, jsonRet))
 	{
 		return false;
 	}
@@ -383,7 +509,7 @@ bool CEslHttpData::eslGetPageData(const QJsonObject &json)
 		RztDownLoadFile downFile;
 		if (downFile.downLoad(strUrl.c_str(), strPath.c_str()))
 		{
-			return;
+			return false;
 		}
 		
 		ObjectPtr<IRztBasePageMgr> basepageMgr;
@@ -394,7 +520,7 @@ bool CEslHttpData::eslGetPageData(const QJsonObject &json)
 }
 
 //设置公共通讯录
-void CEslHttpData::eslSetPublicContact(const QJsonObject &json)
+void CEslHttpData::GetPublicContact(const QJsonObject &json)
 {
 	if (json.isEmpty())
 	{

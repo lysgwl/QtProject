@@ -1,5 +1,11 @@
 #include "eslHttpBase.h"
 
+#include <iostream>
+#include <sstream>
+
+#include "IRztRequestMgr.h"
+#include "IRztServerInfoMgr.h"
+
 CEslHttpBase::CEslHttpBase()
 {
 }
@@ -8,13 +14,55 @@ CEslHttpBase::~CEslHttpBase()
 {
 }
 
+//get request
+bool CEslHttpBase::postHttpRequest(const std::string &strUrl, const QJsonObject &json, QJsonObject &jsonResult)
+{
+	bool bWriteLog = false;
+	
+	if (strUrl == "")
+	{
+		return false;
+	}
+	
+	std::string strPostUrl = strUrl;
+	httpRequestJson(jsonResult, strPostUrl.c_str(), json);
+	
+	if (jsonResult.isEmpty())
+	{
+		return false;
+	}
+	
+	if (jsonResult.value("code").toInt() != 0)
+	{
+		std::cout << "setDevCOnfig error:" << jsonResult.value("code").toInt();
+		return false;
+	}
+	
+	return true;
+}
+
+//post request
 bool CEslHttpBase::postHttpRequest(const std::string &strUrl, const std::string &strParam, const QJsonObject &json, QJsonObject &jsonResult)
 {
+	bool bWriteLog = false;
+	
 	ObjectPtr<IRztServerInfoMgr> severInfo;
 	STSvrInfo svrInfo = severInfo->getCurSvrInfo();
 	
+	std::string strSvrIp = svrInfo.strIP.toStdString();
+	if (strSvrIp == "")
+	{
+		return false;
+	}
+	
+	int iSvrPort = svrInfo.nHttpPort;
+	if (iSvrPort <= 0)
+	{
+		iSvrPort = 80;
+	}
+	
 	std::ostringstream ostr;
-	ostr << "http://" << svrInfo.strIP << svrInfo.nHttpPort << strUrl << strParam;
+	ostr << "http://" << strSvrIp << ":" << iSvrPort << strUrl << strParam;
 	
 	std::string strPostUrl = ostr.str();
 	httpRequestJson(jsonResult, strPostUrl.c_str(), json);
@@ -26,7 +74,7 @@ bool CEslHttpBase::postHttpRequest(const std::string &strUrl, const std::string 
 	
 	if (jsonResult.value("code").toInt() != 0)
 	{
-		cout << "setDevCOnfig error:" << jsonResult.value("code").toInt();
+		std::cout << "setDevCOnfig error:" << jsonResult.value("code").toInt();
 		return false;
 	}
 	

@@ -1,6 +1,8 @@
 #ifndef ESL_HTTP_DATA_H
 #define ESL_HTTP_DATA_H
 
+#include "eslHttpBase.h"
+
 class CEslHttpData : public CEslHttpBase
 {
 public:
@@ -21,7 +23,7 @@ public:
 	bool eslSetPageData(int iType, const QJsonObject &json);
 	
 	//esl公共通讯录
-	bool eslGetPublicContact(const QJsonObject &json);
+	bool eslSetPublicContact(const QJsonObject &json);
 	
 	//esl席位通讯录
 	bool eslSetSeatContact(int iType, const QJsonObject &json);
@@ -46,7 +48,7 @@ protected:
 	bool eslGetPageData(const QJsonObject &json);
 	
 	//设置公共通讯录
-	void eslSetPublicContact(const QJsonObject &json);
+	void GetPublicContact(const QJsonObject &json);
 };
 
 #endif

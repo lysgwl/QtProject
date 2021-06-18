@@ -1,6 +1,8 @@
 #ifndef ESL_HTTP_CALL_H
 #define ESL_HTTP_CALL_H
 
+#include "eslHttpBase.h"
+
 class CEslHttpCall : public CEslHttpBase
 {
 public:
