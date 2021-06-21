@@ -1,9 +1,12 @@
 #include "eslHttpControl.h"
 
+#include "ISDKUtils.h"
 #include "RztCommonUtils.h"
 #include "RztEventHeader.h"
 
+#include "IRztDevice.h"
 #include "IRztSettingMgr.h"
+#include "IRztRegisterNumber.h"
 #include "IRztServerInfoMgr.h"
 #include "IRztIpcController.h"
 #include "IRztFaceDistinguishController.h"
@@ -77,11 +80,15 @@ void CEslHttpControl::eslSetUserEvent(QJsonObject &json)
 	ObjectPtr<IRztServerInfoMgr> severInfo;
 	STSvrInfo svrInfo = severInfo->getCurSvrInfo();
 	
+	std::string strUserNum = json["user"].toString().toStdString();
 	std::string strSvrIp = svrInfo.strIP.toStdString();
-	if  (strSvrIp == "")
+	if  (strSvrIp == "" || strUserNum == "")
 	{
 		return;
 	}
+	
+	ObjectPtr<ISDKUtils> sdkUtils;
+	sdkUtils->sendHeartBeat(strUserNum.c_str());
 	
 	//ntp 对时
 	RztCommonUtils::ntpToServer(strSvrIp.c_str());
@@ -96,7 +103,7 @@ void CEslHttpControl::eslSetUserEvent(QJsonObject &json)
 	
 	//通知monitor
 	QJsonObject jsonSeatLogin;
-	jsonSeatLogin.insert("seatNumber", json["user"].toString());
+	jsonSeatLogin.insert("seatNumber", strUserNum.c_str());
 	
 	ObjectPtr<IRztIpcController> ipcController;
 	ipcController->sendIpcMsg(MsgType_SeatNumberLogined, true, 2000, jsonSeatLogin);
@@ -105,6 +112,24 @@ void CEslHttpControl::eslSetUserEvent(QJsonObject &json)
 	ObjectPtr<IRztSettingMgr> settingMgr;
     settingMgr->setValue(RztSettingKey::SKey_PreferredChannel, VC_Voip);
 	settingMgr->flush();
+	
+	//
+	ObjectPtr<IRztDevice> device;
+	if (sdkUtils->initMediaModule(false))
+	{
+		STDeviceInfo info = device->getDeviceInfo();
+		sdkUtils->setSoundCardInfo(info.lstTotalSoundCardCap, info.lstTotalSoundCardPlay);
+	}
+	
+	//bindMgr
+    ObjectPtr<IRztRegisterNumber> registerNumber;
+    registerNumber->clearNumber();
+	
+	//register p2p, sip;
+    sdkUtils->registerNumbersIP(strUserNum.c_str());
+	
+	//注册完号，要重新设置Media env
+    sdkUtils->setMediaEnv();
 }
 
 //获取data对象指针

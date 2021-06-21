@@ -10,43 +10,27 @@ public:
 	~CEslDataAdapter();
 	
 public:	
-	//Pkg组包请求
-	bool eslBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType);	
-	
-	//Pkg包解析
-	bool eslParsePkg(int iMsgType, char *pPayload, void* pstEvent);
+	//Pkg请求包
+	void eslBuildPkg(QJsonObject &json, std::string &strJson, int &iPkgType, int &iMsgType);	
 	
 	//Pkg包转换json
-	bool eslBuildJson(int iPkgType, void* pstEvent, QJsonObject &json);
-	
-protected:
-	//stBasicPkgFormat请求
-	bool buildBaseReqPkg(void *pstPkg, std::string &strJson, int &iMsgType);
-	
-	//stCfgPkgFormat请求
-	bool buildConfigReqPkg(void *pstPkg, std::string &strJson, int &iMsgType);
-	
-	//stBasicPkgFormat回复
-	bool buildBaseRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json);
-	
-	//stCfgPkgFormat回复
-	bool buildConfigRespPkg(bool bFlag, int iMsgType, void* pstEvent, QJsonObject &json);
+	bool eslBuildJson(int iMsgType, char *pPayload, QJsonObject &jsonRet);
 	
 protected:
 	//登录Req
-	void OnReqEslLogin(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType);
+	void OnReqEslLogin(QJsonObject &json, std::string &strJson, int &iMsgType);
 	
 	//注销Req
-	void OnReqEslLoginOut(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType);
+	void OnReqEslLoginOut(QJsonObject &json, std::string &strJson, int &iMsgType);
 	
 	//心跳Req
-	void OnReqEslHeartBeat(const stBasicPkgFormat *pstPkg, std::string &strJson, int &iMsgType);
+	void OnReqEslHeartBeat(QJsonObject &json, std::string &strJson, int &iMsgType);
 	
 	//登录Resp
-	void OnRespEslLogin(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json);
+	bool OnRespEslLogin(const QJsonObject &json, QJsonObject &jsonRet);
 	
 	//心跳Resp
-	void OnRespEslHeartBeat(bool bFlag, stBasicPkgFormat *pstPkg, QJsonObject &json);
+	bool OnRespEslHeartBeat(const QJsonObject &json, QJsonObject &jsonRet);
 };
 
 #endif

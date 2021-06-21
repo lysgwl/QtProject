@@ -18,7 +18,7 @@ public:
 	
 	//登录用户
 	bool loginUser(int iType);
-
+	
 protected:
 	//登录席位号码
 	bool loginSeatNumber();

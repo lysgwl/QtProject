@@ -439,7 +439,7 @@ bool CEslHttpData::eslGetUserData(const QJsonObject &json)
 		jsonLogin.insert("DispatcherUserAlias", jsonData["name"].toString());
 		
 		QJsonObject jsonNum;
-		jsonNum.insert("terminalId", jsonUser["token"].toInt());
+		jsonNum.insert("terminalId", std::stoi(jsonUser["token"].toString().toStdString()));
 		jsonNum.insert("LoginId", jsonLogin);
 		
 		ObjectPtr<IRztCallNumberMgr> callNumberMgr;

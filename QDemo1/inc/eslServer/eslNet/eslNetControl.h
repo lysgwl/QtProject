@@ -14,17 +14,10 @@ public:
 	bool isEslServer();
 	
 	//消息请求
-    bool eslSendMessage(const stMESSAGE *pstMsg, QByteArray &arSend);
+    void eslSendMessage(const QJsonObject &json, QByteArray &arSend);
 	
-	//pkg包解析
-    bool eslParsePkg(char *pPkgBuf, void *pstEvent);
-	
-	//消息转换json
-    void eslBuildJson(stMESSAGE *pstMsg, std::string &strJson);
-
-protected:
-	//pkg包头解析
-	bool parsePkg(char *pPkgBuf, stProtocolPkgHeader **pstPkgHeader);
+	//消息接收
+	bool eslRecvMessage(char *pPkgBuf, std::string &strUserNum);
 	
 private:
     CEslDataAdapter *m_pDataAdapter = Q_NULLPTR;

@@ -51,6 +51,7 @@ bool CEslServer::loginUser(int iType)
 	return bResult;
 }
 
+//////////////////////////////////////////////////////////////////////////
 //登录席位号码
 bool CEslServer::loginSeatNumber()
 {
@@ -98,7 +99,7 @@ bool CEslServer::loginSeatNumber()
 	QJsonObject json;
 	json.insert("user", strUserNum.c_str());
 	json.insert("passwd", strPasswd.c_str());
-	json.insert("token", jsonLogin["terminalId"].toInt());
+	json.insert("token", jsonLogin["terminalId"].toString());
 	
 	json.insert("seat", true);
 	json.insert("vsport", iSvrVsPort);
