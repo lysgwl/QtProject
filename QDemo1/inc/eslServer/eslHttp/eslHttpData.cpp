@@ -425,18 +425,27 @@ bool CEslHttpData::eslGetUserData(const QJsonObject &json)
 	
 	if (jsonData.contains("name"))
 	{//用户昵称
+		std::string strUserNum = json["user"].toString().toStdString();
+		std::string strPasswd = jsonUser["passwd"].toString().toStdString();
+		std::string strUserName = jsonData["name"].toString().toStdString();
+	
 		STNumber numberNew;
 		numberNew.type = bIsSeat ? NT_Seat : NT_Staff;
 		numberNew.gma = bIsSeat ? GMA_SeatNumber : GMA_UserNumber;
 		numberNew.strUID = jsonData["devuuid"].toString();
-		numberNew.strUIDPwd = jsonUser["passwd"].toString();
-		numberNew.strVsCallNumber = jsonUser["user"].toString();
-		numberNew.strVsPassword = jsonUser["passwd"].toString();
+		numberNew.strUIDPwd = strPasswd.c_str();
+		numberNew.strVsCallNumber = strUserNum.c_str();
+		numberNew.strVsPassword = strPasswd.c_str();
+		
+		if (strUserName == "")
+		{
+			strUserName = strUserNum;
+		}
 		
 		QJsonObject jsonLogin;
-		jsonLogin.insert("DispatcherName", jsonData["name"].toString());
-		jsonLogin.insert("DispatcherNameAlias", jsonData["name"].toString());
-		jsonLogin.insert("DispatcherUserAlias", jsonData["name"].toString());
+		jsonLogin.insert("DispatcherName", strUserName.c_str());
+		jsonLogin.insert("DispatcherNameAlias", strUserName.c_str());
+		jsonLogin.insert("DispatcherUserAlias", strUserName.c_str());
 		
 		QJsonObject jsonNum;
 		jsonNum.insert("terminalId", std::stoi(jsonUser["token"].toString().toStdString()));
