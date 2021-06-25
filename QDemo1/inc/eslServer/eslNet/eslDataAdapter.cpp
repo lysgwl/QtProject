@@ -14,20 +14,18 @@ CEslDataAdapter::~CEslDataAdapter()
 //Pkg组包请求
 void CEslDataAdapter::eslBuildPkg(QJsonObject &json, std::string &strJson, int &iPkgType, int &iMsgType)
 {
+	iPkgType = ESL_PKG_TYPE_DATA;
 	switch (static_cast<int>(json["msgType"].toInt()))
 	{
 	case BASIC_MSG_LOGINEXT_REQ:
-		iPkgType = ESL_PKG_TYPE_DATA;
 		OnReqEslLogin(json, strJson, iMsgType);
 		break;
 		
 	case BASIC_MSG_LOGOUT_IND:
-		iPkgType = ESL_PKG_TYPE_DATA;
 		OnReqEslLoginOut(json, strJson, iMsgType);
 		break;
 		
 	case BASIC_MSG_HEARTBEAT:
-		iPkgType = ESL_PKG_TYPE_DATA;
 		OnReqEslHeartBeat(json, strJson, iMsgType);
 		break;
 
@@ -50,26 +48,22 @@ bool CEslDataAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &js
 		return false;
 	}
 	
-	if (iMsgType == ESL_MSG_LOGIN_RESP)
+	bool bRet = false;
+	switch (iMsgType)
 	{
-		if (!OnRespEslLogin(json, jsonRet))
-		{
-			return false;
-		}
-	}
-	else if (iMsgType == ESL_MSG_HEARTBEAT_RESP)
-	{
-		if (!OnRespEslHeartBeat(json, jsonRet))
-		{
-			return false;
-		}
-	}
-	else
-	{
-		return false;
+	case ESL_MSG_LOGIN_RESP:
+		bRet = OnRespEslLogin(json, jsonRet);
+		break;
+		
+	case ESL_MSG_HEARTBEAT_RESP:
+		bRet = OnRespEslHeartBeat(json, jsonRet);
+		break;
+		
+	default:
+		break;
 	}
 
-	return true;
+	return bRet;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,6 +85,30 @@ void CEslDataAdapter::OnReqEslLogin(QJsonObject &json, std::string &strJson, int
 	
 	iMsgType = ESL_MSG_LOGIN_REQ;
 	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
+}
+
+//登录Resp
+bool CEslDataAdapter::OnRespEslLogin(const QJsonObject &json, QJsonObject &jsonRet)
+{
+	if (json.isEmpty())
+	{
+		return false;
+	}
+	
+	if (json["result"].toInt() != 0 || json["token"].toString() == "")
+	{
+		return false;
+	}
+	
+	QJsonObject jsonData;
+	jsonData.insert("requestId", json["seq"].toInt());
+	jsonData.insert("terminalId", json["token"].toString());
+	jsonData.insert("terminalType", json["lgtype"].toString());
+	
+	jsonRet.insert("feedback", jsonData);
+	jsonRet.insert("msgType", BASIC_MSG_LOGINEXT_RESP);
+	
+	return true;
 }
 
 //注销Req
@@ -129,8 +147,8 @@ void CEslDataAdapter::OnReqEslHeartBeat(QJsonObject &json, std::string &strJson,
 	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
 }
 
-//登录Resp
-bool CEslDataAdapter::OnRespEslLogin(const QJsonObject &json, QJsonObject &jsonRet)
+//心跳Resp
+bool CEslDataAdapter::OnRespEslHeartBeat(const QJsonObject &json, QJsonObject &jsonRet)
 {
 	if (json.isEmpty())
 	{
@@ -138,25 +156,6 @@ bool CEslDataAdapter::OnRespEslLogin(const QJsonObject &json, QJsonObject &jsonR
 	}
 	
 	if (json["result"].toInt() != 0 || json["token"].toString() == "")
-	{
-		return false;
-	}
-	
-	QJsonObject jsonData;
-	jsonData.insert("requestId", json["seq"].toInt());
-	jsonData.insert("terminalId", json["token"].toString());
-	jsonData.insert("terminalType", json["lgtype"].toString());
-	
-	jsonRet.insert("feedback", jsonData);
-	jsonRet.insert("msgType", BASIC_MSG_LOGINEXT_RESP);
-	
-	return true;
-}
-
-//心跳Resp
-bool CEslDataAdapter::OnRespEslHeartBeat(const QJsonObject &json, QJsonObject &jsonRet)
-{
-	if (json.isEmpty())
 	{
 		return false;
 	}

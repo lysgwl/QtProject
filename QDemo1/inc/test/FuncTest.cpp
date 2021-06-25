@@ -130,10 +130,20 @@ void CFuncTest::string_test()
 
     //2
     {
+        QJsonArray array;
+        array.insert(0, "16104016001");
+        array.insert(1, "16104016002");
+        array.insert(2, "16104016003");
+
         QJsonObject json;
         json.insert("terminalId", "123456");
-        json.insert("LoginId/name", "eee");
-        json.insert("LoginId/test", "123");
+        json.insert("members", array);
+
+        QJsonArray membArray = json["members"].toArray();
+        if (membArray.isEmpty())
+        {
+            return;
+        }
     }
 
     //3

@@ -21,7 +21,7 @@ public:
 	
 private:
     CEslDataAdapter *m_pDataAdapter = Q_NULLPTR;
-	//CElsMeetAdapter *m_pMeetAdapter = Q_NULLPTR;
+	CElsMeetAdapter *m_pMeetAdapter = Q_NULLPTR;
 	//CElsStatusAdapter *m_pStatusAdapter = Q_NULLPTR;	
 };
 

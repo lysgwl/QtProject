@@ -1,11 +1,12 @@
 #include "eslNetControl.h"
 
+#include "IRztSettingMgr.h"
 #include "IRztMessageReceiver.h"
 
 CEslNetControl::CEslNetControl()
 {
     m_pDataAdapter = new CEslDataAdapter;
-	//m_pMeetAdapter = new CElsMeetAdapter;
+	m_pMeetAdapter = new CElsMeetAdapter;
 	//m_pStatusAdapter = new CElsStatusAdapter;
 }
 
@@ -17,13 +18,13 @@ CEslNetControl::~CEslNetControl()
 		m_pDataAdapter = Q_NULLPTR;
 	}
 		
-	/*if (m_pMeetAdapter)
+	if (m_pMeetAdapter)
 	{
 		delete m_pMeetAdapter;
 		m_pMeetAdapter = Q_NULLPTR;
 	}
 	
-	if (m_pStatusAdapter)
+	/*if (m_pStatusAdapter)
 	{
 		delete m_pStatusAdapter;
 		m_pStatusAdapter = Q_NULLPTR;
@@ -34,6 +35,14 @@ CEslNetControl::~CEslNetControl()
 //是否开启服务
 bool CEslNetControl::isEslServer()
 {
+	ObjectPtr<IRztSettingMgr> settingMgr;
+	
+	bool bFlag = settingMgr->toBool(RztSettingKey::SKey_EslOpen);
+	if (!bFlag)
+	{
+		return false;
+	}
+	
 	return true;
 }
 
@@ -98,28 +107,31 @@ bool CEslNetControl::eslRecvMessage(char *pPkgBuf, std::string &strUserNum)
 	QJsonObject jsonRet;
 	int iPkgType = static_cast<int>(pstPkgHeader->cPkgType);
 	
-	if (iPkgType == ESL_PKG_TYPE_DATA)
+	bool bRet = false;
+	switch (iPkgType)
 	{
-		if (!m_pDataAdapter->eslBuildJson(pstPkgHeader->cMsgType, pstPkgHeader->body, jsonRet))
-		{
-			return false;
-		}
-	}
-	else if (iPkgType == ESL_PKG_TYPE_MEET)
-	{
-	}
-	else if (iPkgType == ESL_PKG_TYPE_STATUS)
-	{
-	}
-	else
-	{
-		return false;
+	case ESL_PKG_TYPE_DATA:
+		bRet = m_pDataAdapter->eslBuildJson(pstPkgHeader->cMsgType, pstPkgHeader->body, jsonRet);
+		break;
+		
+	case ESL_PKG_TYPE_MEET:
+		bRet = m_pMeetAdapter->eslBuildJson(pstPkgHeader->cMsgType, pstPkgHeader->body, jsonRet);
+		break;
+		
+	case ESL_PKG_TYPE_STATUS:
+		break;
+		
+	default:
+		break;
 	}
 	
-	std::string strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
+	if (bRet)
+	{
+		std::string strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
+		
+		ObjectPtr<IRztMessageReceiver> msgReceiver;
+		msgReceiver->handleMessage(strJson.c_str(), strUserNum.c_str());
+	}
 	
-	ObjectPtr<IRztMessageReceiver> msgReceiver;
-	msgReceiver->handleMessage(strJson.c_str(), strUserNum.c_str());
-	
-	return true;
+	return bRet;
 }
