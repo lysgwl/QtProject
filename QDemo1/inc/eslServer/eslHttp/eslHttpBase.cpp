@@ -24,8 +24,14 @@ bool CEslHttpBase::postHttpRequest(const std::string &strUrl, const QJsonObject 
 		return false;
 	}
 	
+	QJsonObject jsonReq(json);
+	if(!jsonReq.contains("type"))
+	{
+		jsonReq.insert("type", 0);	//兼容cJson
+	}
+	
 	std::string strPostUrl = strUrl;
-	httpRequestJson(jsonResult, strPostUrl.c_str(), json);
+	httpRequestJson(jsonResult, strPostUrl.c_str(), jsonReq);
 	
 	if (jsonResult.isEmpty())
 	{
@@ -61,11 +67,17 @@ bool CEslHttpBase::postHttpRequest(const std::string &strUrl, const std::string 
 		iSvrPort = 80;
 	}
 	
+	QJsonObject jsonReq(json);
+	if(!jsonReq.contains("type"))
+	{
+		jsonReq.insert("type", 0);	//兼容cJson
+	}
+	
 	std::ostringstream ostr;
 	ostr << "http://" << strSvrIp << ":" << iSvrPort << strUrl << strParam;
 	
 	std::string strPostUrl = ostr.str();
-	httpRequestJson(jsonResult, strPostUrl.c_str(), json);
+	httpRequestJson(jsonResult, strPostUrl.c_str(), jsonReq);
 	
 	if (jsonResult.isEmpty())
 	{

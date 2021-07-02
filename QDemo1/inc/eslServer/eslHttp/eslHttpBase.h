@@ -1,7 +1,22 @@
 #ifndef ESL_HTTP_BASE_H
 #define ESL_HTTP_BASE_H
 
+#include <sstream>
+#include <string>
+
 #include "STHeader.h"
+
+#include "RztEnvDef.h"
+#include "RztCommonUtils.h"
+#include "RztDownLoadFile.h"
+
+//登录用户类型
+enum ESL_LOGINUSER_TYPE
+{
+	ESL_LOGIN_USER_EMPTY = 0,
+	ESL_LOGIN_USER_TYPE,
+	ESL_LOGIN_SEAT_TYPE,
+};
 
 class CEslHttpBase
 {

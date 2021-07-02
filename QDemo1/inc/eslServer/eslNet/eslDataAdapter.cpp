@@ -120,10 +120,16 @@ void CEslDataAdapter::OnReqEslLoginOut(QJsonObject &json, std::string &strJson, 
 		return;
 	}
 	
+	std::string strTernimalId = std::to_string(jsonMsg["ternimalId"].toInt());
+	if (strTernimalId == "")
+	{
+		return;
+	}
+	
 	QJsonObject jsonRet;
 	jsonRet.insert("seq", json["requestId"].toInt());
 	jsonRet.insert("lgnum", json["connector"].toString());
-	jsonRet.insert("token", jsonMsg["ternimalId"].toInt());
+	jsonRet.insert("token", strTernimalId.c_str());
 	
     iMsgType = ESL_MSG_LOGOUT_IND;
 	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
@@ -138,10 +144,16 @@ void CEslDataAdapter::OnReqEslHeartBeat(QJsonObject &json, std::string &strJson,
 		return;
 	}
 	
+	std::string strTernimalId = std::to_string(jsonMsg["ternimalId"].toInt());
+	if (strTernimalId == "")
+	{
+		return;
+	}
+	
 	QJsonObject jsonRet;
 	jsonRet.insert("seq", json["requestId"].toInt());
 	jsonRet.insert("lgnum", json["connector"].toString());
-	jsonRet.insert("token", jsonMsg["ternimalId"].toInt());
+	jsonRet.insert("token", strTernimalId.c_str());
 	
     iMsgType = ESL_MSG_HEARTBEAT_REQ;
 	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));

@@ -71,59 +71,59 @@ void CFuncTest::string_test()
 {
     //1
     {
-        QJsonObject json;
-        json.insert("requestId", 1);
-        json.insert("protocol", 0x1234abcd);
-        json.insert("reserve", "this is a test!");
-
-        if (!json.isEmpty() && json.contains("protocol"))
-        {
-            std::string seq = std::to_string(json.value("requestId").toInt());
-            std::string reserve = json.value("reserve").toString().toStdString();
-
-            //int value = std::stoi(seq);
-            //int iseq = json.value("requestId").toInt();
-
-            std::string s1 = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
-            //std::string s2 = str1.toStdString();
-        }
-
         QJsonObject jsonObject;
         jsonObject.insert("test1", 123);
         jsonObject.insert("test2", 213);
         jsonObject.insert("test3", "321");
         jsonObject.insert("test4", false);
-
-        int s1 = jsonObject["test3"].toString().toInt();
-
-        if (jsonObject.contains("test3"))
+        if (!jsonObject.isEmpty())
         {
-            std::string s1 = jsonObject.value("test3").toString().toStdString();
-            if (jsonObject.value("test3").toString() == ("") || jsonObject.value("test3").toString().isEmpty())
+            if (jsonObject.contains("test3"))
             {
-                jsonObject.remove("test3");
-            }
+                std::string s1 = jsonObject.value("test3").toString().toStdString();
+                if (jsonObject.value("test3").toString() == ("") || jsonObject.value("test3").toString().isEmpty())
+                {
+                    jsonObject.remove("test3");
+                }
 
-            bool bFlag = jsonObject.value("test4").toBool();
-            std::cout << bFlag;
+                bool bFlag = jsonObject.value("test4").toBool();
+                std::cout << bFlag;
+            }
         }
 
-        json.insert("test", jsonObject);
-        //json.insert("test", QJsonValue(jsonObject));
-
-        if (json.contains("test"))
+        QJsonObject json;
+        json.insert("requestId", 1);
+        json.insert("protocol", 0x1234abcd);
+        json.insert("reserve", "this is a test!");
+        json.insert("data", jsonObject);    //QJsonValue(jsonObject)
+        if (!json.isEmpty())
         {
+            if (json.contains("protocol"))
             {
-                QJsonValueRef RefPage = json.find("test").value();
-                QJsonObject obj = RefPage.toObject();
+                std::string seq = std::to_string(json.value("requestId").toInt());
+                std::string reserve = json.value("reserve").toString().toStdString();
 
-                std::string s1 = std::to_string(obj.value("test1").toInt());
-                std::string s2 = std::to_string(json["test"].toObject().value("test1").toInt());
+                //int value = std::stoi(seq);
+                //int iseq = json.value("requestId").toInt();
+
+                std::string s1 = std::string(QJsonDocument(json).toJson(QJsonDocument::Compact));
+                //std::string s2 = str1.toStdString();
             }
 
+            if (json.contains("data"))
             {
-                QJsonObject obj = json["test"].toObject();
-                std::string s1 = std::to_string(obj["test1"].toInt());
+                {
+                    QJsonValueRef RefPage = json.find("data").value();
+                    QJsonObject obj = RefPage.toObject();
+
+                    std::string s1 = std::to_string(obj.value("test1").toInt());
+                    std::string s2 = std::to_string(json["test"].toObject().value("test1").toInt());
+                }
+
+                {
+                    QJsonObject obj = json["data"].toObject();
+                    std::string s1 = std::to_string(obj["test1"].toInt());
+                }
             }
         }
     }
@@ -131,18 +131,58 @@ void CFuncTest::string_test()
     //2
     {
         QJsonArray array;
-        array.insert(0, "16104016001");
-        array.insert(1, "16104016002");
-        array.insert(2, "16104016003");
+        qint64 iNum = 16104016000;
+
+        for (int i=0; i<2; i++)
+        {
+            QJsonObject jsonData;
+            jsonData.insert("id", i);
+            jsonData.insert("status", 0);
+            jsonData.insert("user", iNum+i);
+            array.insert(i, jsonData);
+        }
 
         QJsonObject json;
-        json.insert("terminalId", "123456");
-        json.insert("members", array);
+        json.insert("count", array.size());
+        json.insert("data", array);
 
-        QJsonArray membArray = json["members"].toArray();
-        if (membArray.isEmpty())
+        QJsonArray membArray = json["data"].toArray();
+        if (!membArray.isEmpty())
         {
-            return;
+            const QJsonValue jsonValue = membArray.at(0);
+            QJsonObject object = jsonValue.toObject();
+            if (object.isEmpty())
+            {
+                return;
+            }
+        }
+
+        for (QJsonArray::Iterator iter = membArray.begin(); iter != membArray.end(); iter++)
+        {
+            QJsonObject object = iter[0].toObject();
+            if (object.isEmpty())
+            {
+                continue;
+            }
+        }
+
+        foreach(QJsonValue value, membArray)
+        {
+            QJsonObject object = value.toObject();
+            if (object.isEmpty())
+            {
+                continue;
+            }
+        }
+
+        if (0)
+        {
+            /*QJsonArray::iterator arrayIter = membArray.begin();
+            QJsonValueRef ElementOneValueRef = arrayIter[0];
+            QJsonObject ElementOneObject = ElementOneValueRef.toObject();
+
+            QByteArray byte_array = QJsonDocument(membArray).toJson();
+            QJsonObject object = QJsonDocument::fromJson(byte_array).object();*/
         }
     }
 
@@ -158,17 +198,11 @@ void CFuncTest::string_test()
         std::ostringstream  strss;
         strss << "http://" << "192.168.0.1" << 80 << "/" << s1;
         std::string s3 = strss.str();
-    }
-
-    //4
-    {
-        std::stringstream stream;
-        stream << 1 << 2 << 3;
 
         stream.str("");
-        stream << 3 << 4 << 5;
+        stream << 1 << 2 << 3;
 
-        std::string str = stream.str();
-        QString s1 = str.c_str();
+        std::string s4 = stream.str();
+        QString qs4 = s4.c_str();
     }
 }

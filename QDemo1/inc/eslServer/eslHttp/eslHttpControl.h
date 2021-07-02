@@ -3,6 +3,7 @@
 
 #include "eslHttpData.h"
 #include "eslHttpCall.h"
+#include "eslHttpMeet.h"
 
 class CEslHttpControl
 {
@@ -12,10 +13,10 @@ public:
 	
 public:
 	//esl获取数据
-	void eslGetDataFromSrv(QJsonObject &json);
+	bool eslGetDataFromSrv(QJsonObject &json);
 	
 	//esl设置数据
-	void eslSetSrvData(QJsonObject &json);
+	bool eslSetSrvData(QJsonObject &json);
 	
 	//esl设置事件
 	void eslSetUserEvent(QJsonObject &json);
@@ -27,9 +28,13 @@ public:
 	//获取call对象指针
 	CEslHttpCall *eslGetCallPtr() const;
 	
+	//获取meet对象指针
+	CEslHttpMeet *eslGetMeetPtr() const;
+	
 protected:
 	CEslHttpData *m_pEslHttpData = Q_NULLPTR;
 	CEslHttpCall *m_pEslHttpCall = Q_NULLPTR;
+	CEslHttpMeet *m_pEslHttpMeet = Q_NULLPTR;
 };
 
 #endif

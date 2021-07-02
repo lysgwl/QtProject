@@ -1,12 +1,6 @@
 #include "eslHttpData.h"
 
-#include <sstream>
-#include <string>
-
-#include "RztEnvDef.h"
-#include "RztCommonUtils.h"
-#include "RztDownLoadFile.h"
-
+#include "IRztDBMgr.h"
 #include "IRztSettingMgr.h"
 #include "RztComUtilsInLine.h"
 
@@ -42,12 +36,10 @@ bool CEslHttpData::eslGetSysConfig(const QJsonObject &json)
 		return false;
 	}
 	
-	QJsonObject jsonConfig(json);
-	jsonConfig.insert("type", 0);
-	
 	std::ostringstream ostr;
 	std::string strUrl = "/api/v1/SystemConfig/getSystemConfig";
 
+	QJsonObject jsonConfig(json);
 	ostr << "http://" << strHostIp << ":" << iHttpPort << strUrl;
 	std::string strPostUrl = ostr.str();
 	
@@ -137,9 +129,7 @@ bool CEslHttpData::eslSetPublicContact(const QJsonObject &json)
 		return false;
 	}
 	
-	std::string strUrl;
 	QJsonObject jsonPublic(json);
-	jsonPublic.insert("type", 0);
 	
 	bool file = false;
 	if (!jsonPublic.contains("file"))
@@ -158,6 +148,7 @@ bool CEslHttpData::eslSetPublicContact(const QJsonObject &json)
 		}
 	}
 	
+	std::string strUrl;
 	if (file)
 	{
 		strUrl = "/api/v1/book/getPublicBook";
@@ -194,7 +185,7 @@ void CEslHttpData::eslSetSysData(const QJsonObject &json)
 	
 	std::stringstream stream;
 	ObjectPtr<IRztSettingMgr> settingMgr;
-	
+
 	if (json.contains("hostip"))
 	{//服务器配置
 		QJsonObject localSvr;
@@ -216,6 +207,7 @@ void CEslHttpData::eslSetSysData(const QJsonObject &json)
 		ObjectPtr<IRztServerInfoMgr> severInfoMgr;
 		severInfoMgr->loadServerInfo(jsonSvr);
 		
+		//getParamFromServer
 		STSvrInfo svrInfo = severInfoMgr->getCurSvrInfo();
 		settingMgr->setValue(RztSettingKey::SKey_GJB4908SvrPort, svrInfo.n4908SvrPort);
 		settingMgr->setValue(RztSettingKey::SKey_GJB4908SvrIP, svrInfo.str4908IP);
@@ -247,6 +239,25 @@ void CEslHttpData::eslSetSysData(const QJsonObject &json)
 	{//sip超时设置
 		int iTimeOut = json.value("expires").toInt();
 		settingMgr->setValue(RztSettingKey::SKey_SipExpiresTime, iTimeOut);
+	}
+	
+	//号码范围
+	{
+		//getCallNumberAlgorithm
+		QJsonObject jsonData;
+		jsonData.insert("fixedNum", json["numberRange"].toString()); 		//固定电话号码范围
+		jsonData.insert("scheduleUserNum", "");		//调度电话号码范围
+		jsonData.insert("staticNum", json["meetingNumRange"].toString());	//私人会议号码范围
+		jsonData.insert("talkBackAccessNum", "");	//移动对讲组号码范围
+		jsonData.insert("radioNum", json["atisNumRange"].toString());		//通播号码范围
+		jsonData.insert("cameraMonitorNum", "");	//视频监控号码范围
+		jsonData.insert("manyRadioUserNum", "");	//电台号码范围
+		
+		ObjectPtr<IRztCallNumberMgr> callNumMgr;
+		callNumMgr->setAlgorithm(jsonData);
+		
+		ObjectPtr<IRztDBMgr> dbMgr;
+		dbMgr->writeGlobalInfo(GlobalInfoType_CallAlgorithm, jsonData);
 	}
 }
 
@@ -299,7 +310,6 @@ bool CEslHttpData::eslSetDevData(const QJsonObject &json)
 	jsonData.insert("versionstate", 0);
 	
 	QJsonObject jsonDev(json);
-	jsonDev.insert("type", 0);
 	jsonDev.insert("data", jsonData);
 	
 	std::string strUrl = "/api/v1/upgrade/uploadTerminalInfo";
@@ -322,7 +332,6 @@ bool CEslHttpData::eslGetDevData(const QJsonObject &json)
 	}
 	
 	QJsonObject jsonDev(json);
-	jsonDev.insert("type", 0);
 	std::string strUrl = "/api/v1/upgrade/getdeviceinfo";
 	
 	QJsonObject jsonRet;
@@ -343,6 +352,8 @@ bool CEslHttpData::eslSetUserData(const QJsonObject &json)
 	}
 	
 	QJsonObject jsonUser(json);
+	jsonUser.insert("extend", "");
+	
 	if (jsonUser.contains("name"))
 	{
 		if (jsonUser.value("name").toString().isEmpty())
@@ -367,9 +378,6 @@ bool CEslHttpData::eslSetUserData(const QJsonObject &json)
 		}
 	}
 	
-	jsonUser.insert("type", 0);
-	jsonUser.insert("extend", "");
-
 	std::string strUrl = "/api/v1/user/editUserInfo";
 	
 	QJsonObject jsonRet;
@@ -390,7 +398,6 @@ bool CEslHttpData::eslGetUserData(const QJsonObject &json)
 	}
 	
 	QJsonObject jsonUser(json);
-	jsonUser.insert("type", 0);
 	std::string strUrl = "/api/v1/user/getUserInfo";
 	
 	bool bIsSeat = false;
@@ -472,7 +479,6 @@ bool CEslHttpData::eslGetPageData(const QJsonObject &json)
 	
 	std::string strUrl;
 	QJsonObject jsonPage(json);
-	jsonPage.insert("type", 0);
 	
 	bool folder = false;
 	if (!jsonPage.contains("folder"))

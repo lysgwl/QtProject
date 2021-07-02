@@ -6,8 +6,8 @@
 CEslNetControl::CEslNetControl()
 {
     m_pDataAdapter = new CEslDataAdapter;
-	m_pMeetAdapter = new CElsMeetAdapter;
-	//m_pStatusAdapter = new CElsStatusAdapter;
+	m_pMeetAdapter = new CEslMeetAdapter;
+	//m_pStatusAdapter = new CEslStatusAdapter;
 }
 
 CEslNetControl::~CEslNetControl()
@@ -68,6 +68,7 @@ void CEslNetControl::eslSendMessage(const QJsonObject &json, QByteArray &arSend)
 		break;
 		
 	case PKG_TYPE_SCHEDULE:
+		m_pMeetAdapter->eslBuildPkg(jsonMsg, strJson, iPkgType, iMsgType);
 		break;
 		
 	default:

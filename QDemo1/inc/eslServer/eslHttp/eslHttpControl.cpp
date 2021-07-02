@@ -18,6 +18,9 @@ CEslHttpControl::CEslHttpControl()
 	
 	//call对象指针
 	m_pEslHttpCall = new CEslHttpCall;
+	
+	//meet对象指针
+	m_pEslHttpMeet = new CEslHttpMeet;
 }
 
 CEslHttpControl::~CEslHttpControl()
@@ -33,21 +36,33 @@ CEslHttpControl::~CEslHttpControl()
 		delete m_pEslHttpCall;
 		m_pEslHttpCall = Q_NULLPTR;
 	}
+	
+	if (m_pEslHttpMeet)
+	{
+		delete m_pEslHttpMeet;
+		m_pEslHttpMeet = Q_NULLPTR;
+	}
 }
 
 //esl获取数据
-void CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
+bool CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
 {
 	if (json.isEmpty())
 	{
-		return;
+		return false;
 	}
 	
 	//获取设备配置
-	m_pEslHttpData->eslSetDevConfig(false, json);
+	if (!m_pEslHttpData->eslSetDevConfig(false, json))
+	{
+		return false;
+	}
 	
 	//获取用户配置
-	m_pEslHttpData->eslSetUserConfig(false, json);
+	if (!m_pEslHttpData->eslSetUserConfig(false, json))
+	{
+		return false;
+	}
 	
 	//获取快捷通讯录
 	//m_pEslHttpData->eslSetPageData(FileHandle_Get, json);
@@ -57,21 +72,31 @@ void CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
 	
 	//获取席位通讯录
 	//m_pEslHttpData->eslSetSeatContact(0, json);
+	
+	return true;
 }
 
 //esl设置数据
-void CEslHttpControl::eslSetSrvData(QJsonObject &json)
+bool CEslHttpControl::eslSetSrvData(QJsonObject &json)
 {
 	if (json.isEmpty())
 	{
-		return;
+		return false;
 	}
 	
 	//设置设备配置
-	m_pEslHttpData->eslSetDevConfig(true, json);
+	if (!m_pEslHttpData->eslSetDevConfig(true, json))
+	{
+		return false;
+	}
 	
 	//设置用户配置
-	m_pEslHttpData->eslSetUserConfig(true, json);
+	if (!m_pEslHttpData->eslSetUserConfig(true, json))
+	{
+		return false;
+	}
+	
+	return true;
 }
 
 //esl设置事件
@@ -142,4 +167,10 @@ CEslHttpData* CEslHttpControl::eslGetDataPtr() const
 CEslHttpCall* CEslHttpControl::eslGetCallPtr() const
 {
 	return m_pEslHttpCall;
+}
+
+//获取meet对象指针
+CEslHttpMeet* CEslHttpControl::eslGetMeetPtr() const
+{
+	return m_pEslHttpMeet;
 }

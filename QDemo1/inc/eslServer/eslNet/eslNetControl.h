@@ -2,6 +2,7 @@
 #define ESL_NET_CONTROL_H
 
 #include "eslDataAdapter.h"
+#include "eslMeetAdapter.h"
 
 class CEslNetControl
 {
@@ -21,8 +22,8 @@ public:
 	
 private:
     CEslDataAdapter *m_pDataAdapter = Q_NULLPTR;
-	CElsMeetAdapter *m_pMeetAdapter = Q_NULLPTR;
-	//CElsStatusAdapter *m_pStatusAdapter = Q_NULLPTR;	
+	CEslMeetAdapter *m_pMeetAdapter = Q_NULLPTR;
+	//CEslStatusAdapter *m_pStatusAdapter = Q_NULLPTR;	
 };
 
 #endif
