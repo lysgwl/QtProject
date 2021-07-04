@@ -68,7 +68,7 @@ bool CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
 	//m_pEslHttpData->eslSetPageData(FileHandle_Get, json);
 	
 	//获取公共通讯录
-	//m_pEslHttpData->eslSetPublicContact(json);
+	m_pEslHttpData->eslSetPublicContact(json);
 	
 	//获取席位通讯录
 	//m_pEslHttpData->eslSetSeatContact(0, json);

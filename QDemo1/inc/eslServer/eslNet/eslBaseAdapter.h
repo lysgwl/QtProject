@@ -10,24 +10,8 @@ public:
 	virtual ~CEslBaseAdapter();
 
 public:
-    //解析json数据段
-    bool eslParseSegment(const QJsonObject &json, int iPkgType, void *pstPkg);
-	
-protected:
-    //解析消息数据
-    bool parseSegment(int iPkgType, void *pstPkg, std::vector<std::tuple<std::string, std::string>> &vecTuple);
-
-    //设置Basic数据
-    void setBasicPkgData(std::string &strKey, std::string &strValue, void *pstPkg);
-
-    //设置Config数据
-    void setConfigPkgData(std::string &strKey, std::string &strValue, void *pstPkg);
-
-    //设置Schedule数据
-    void setSchPkgData(std::string &strKey, std::string &strValue, void *pstPkg);
-
-    //设置Event数据
-    void setEventPkgData(std::string &strKey, std::string &strValue, void *pstPkg);
+	//获取会议状态
+	int eslGetMeetStatus(int iStatus);
 };
 
 #endif

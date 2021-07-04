@@ -7,7 +7,7 @@ CEslNetControl::CEslNetControl()
 {
     m_pDataAdapter = new CEslDataAdapter;
 	m_pMeetAdapter = new CEslMeetAdapter;
-	//m_pStatusAdapter = new CEslStatusAdapter;
+	m_pStatusAdapter = new CEslStatusAdapter;
 }
 
 CEslNetControl::~CEslNetControl()
@@ -24,11 +24,11 @@ CEslNetControl::~CEslNetControl()
 		m_pMeetAdapter = Q_NULLPTR;
 	}
 	
-	/*if (m_pStatusAdapter)
+	if (m_pStatusAdapter)
 	{
 		delete m_pStatusAdapter;
 		m_pStatusAdapter = Q_NULLPTR;
-	}*/
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -120,6 +120,7 @@ bool CEslNetControl::eslRecvMessage(char *pPkgBuf, std::string &strUserNum)
 		break;
 		
 	case ESL_PKG_TYPE_STATUS:
+		bRet = m_pStatusAdapter->eslBuildJson(pstPkgHeader->cMsgType, pstPkgHeader->body, jsonRet);
 		break;
 		
 	default:

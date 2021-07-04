@@ -1,4 +1,4 @@
-#include "elsStatusAdapter.h"
+#include "eslStatusAdapter.h"
 
 CEslStatusAdapter::CEslStatusAdapter()
 {
@@ -8,38 +8,89 @@ CEslStatusAdapter::~CEslStatusAdapter()
 {
 }
 
-//pkg请求组包
-bool CEslStatusAdapter::eslBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType)
+//Pkg包转换json
+bool CEslStatusAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &jsonRet)
 {
-	bool bResult = false;
-	
-	switch (iPkgType)
+	if (pPayload == Q_NULLPTR)
 	{
-	case PKG_TYPE_EVENT:
-		break;
-		
-	default:
-		break;
+		return false;
 	}
 	
-	return bResult;
-}
-
-//pkg包解析
-bool CEslStatusAdapter::eslParsePkg(int iMsgType, char *pPayload, void* pstEvent)
-{
-	stEventPkgFormat jstEventPkgFmt = {0};
+	QJsonObject json = QJsonDocument::fromJson(pPayload).object();
+	if (json.isEmpty())
+	{
+		return false;
+	}
+	
+	if (!eslGetUserStatus(json, jsonRet))
+	{
+		return false;
+	}
+	
 	return true;
 }
 
-//pkg包转换json
-bool CEslStatusAdapter::eslBuildJson(void* pstEvent, std::string &strJson)
+//状态通知
+bool CEslStatusAdapter::eslGetUserStatus(const QJsonObject &json, QJsonObject &jsonRet)
 {
+	if (json.isEmpty())
+	{
+		return false;
+	}
+	
+	std::string strType = json["type"].toString().toStdString();
+	if (strType == "")
+	{
+		return false;
+	}
+	
+	if (strType == "call")
+	{
+		OnEslCallStatus(json, jsonRet);
+	}
+	else if (strType == "meet")
+	{
+		OnEslMeetStatus(json, jsonRet);
+	}
+	else if (strType == "atis")
+	{
+		OnEslAnnounceStatus(json, jsonRet);
+	}
+	else
+	{
+		return false;
+	}
+	
 	return true;
 }
 
-//stEventPkgFormat包
-bool CEslStatusAdapter::buildPkg(void *pstPkg, std::string &strJson, int &iMsgType)
+//通话状态
+void CEslStatusAdapter::OnEslCallStatus(const QJsonObject &json, QJsonObject &jsonRet)
 {
-	return true;
+}
+
+//会议状态
+void CEslStatusAdapter::OnEslMeetStatus(const QJsonObject &json, QJsonObject &jsonRet)
+{
+	std::string strMeetId = json["othernum"].toString().toStdString();
+	if (strMeetId == "")
+	{
+		return;
+	}
+	
+	int iStatus = eslGetMeetStatus(json["status"].toInt());
+	
+	QJsonObject jsonData;
+	jsonData.insert("meetid", std::stoi(strMeetId));
+	jsonData.insert("meetcode", strMeetId.c_str());
+	jsonData.insert("usernum", json["lgnum"].toString());
+	jsonData.insert("state", iStatus);
+	
+	jsonRet.insert("feedback", jsonData);
+	jsonRet.insert("msgType", EVENT_UPDATE_MEETING_MEMB_STATE);
+}
+
+//通播状态
+void CEslStatusAdapter::OnEslAnnounceStatus(const QJsonObject &json, QJsonObject &jsonRet)
+{
 }

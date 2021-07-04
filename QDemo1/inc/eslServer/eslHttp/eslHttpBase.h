@@ -10,12 +10,11 @@
 #include "RztCommonUtils.h"
 #include "RztDownLoadFile.h"
 
-//登录用户类型
+//鐧诲綍鐢ㄦ埛绫诲瀷
 enum ESL_LOGINUSER_TYPE
 {
-	ESL_LOGIN_USER_EMPTY = 0,
-	ESL_LOGIN_USER_TYPE,
-	ESL_LOGIN_SEAT_TYPE,
+	ESL_LOGIN_USER_TYPE,		//鐢ㄦ埛鐧诲綍
+	ESL_LOGIN_SEAT_TYPE,		//甯綅鐧诲綍
 };
 
 class CEslHttpBase

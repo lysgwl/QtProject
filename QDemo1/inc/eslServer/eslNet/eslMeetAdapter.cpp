@@ -154,8 +154,10 @@ bool CEslMeetAdapter::OnRespEslCreateMeet(const QJsonObject &json, QJsonObject &
 	
 	QJsonObject jsonData;
 	jsonData.insert("requestId", json["seq"].toInt());
+	jsonData.insert("result", json["result"].toInt());
 	jsonData.insert("meetid", std::stoi(strMeetId));
-	jsonData.insert("meetcode", strMeetId.c_str());
+	jsonData.insert("usernum", json["lgnum"].toString());
+	jsonData.insert("token", json["token"].toString());
 	
 	jsonRet.insert("feedback", jsonData);
 	jsonRet.insert("msgType", SCH_MEETING_CREATE_RESP);
@@ -222,7 +224,10 @@ bool CEslMeetAdapter::OnRespEslAddMeetMemb(const QJsonObject &json, QJsonObject 
 	
 	QJsonObject jsonData;
 	jsonData.insert("requestId", json["seq"].toInt());
+	jsonData.insert("result", json["result"].toInt());
 	jsonData.insert("meetid", std::stoi(strMeetId));
+	jsonData.insert("usernum", json["lgnum"].toString());
+	jsonData.insert("token", json["token"].toString());
 	
 	jsonRet.insert("feedback", jsonData);
 	jsonRet.insert("msgType", SCH_MEETING_MEMB_ADD_RESP);
@@ -472,7 +477,7 @@ void CEslMeetAdapter::OnReqEslSpeechMeetMemb(QJsonObject &json, std::string &str
 	jsonRet.insert("token", strTernimalId.c_str());
 	jsonRet.insert("speecher", strUserNum.c_str());
 	
-	iMsgType = ESL_MSG_SPLITSCREENMEET_REQ;
+	iMsgType = ESL_MSG_SPEECHMEETMEMB_REQ;
 	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
 }
 
@@ -528,7 +533,7 @@ void CEslMeetAdapter::OnReqEslCloseMeet(QJsonObject &json, std::string &strJson,
 	jsonRet.insert("meetid", strMeetId.c_str());
 	jsonRet.insert("token", strTernimalId.c_str());
 	
-	iMsgType = ESL_MSG_SPLITSCREENMEET_REQ;
+	iMsgType = ESL_MSG_CLOSEMEET_REQ;
 	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
 }
 

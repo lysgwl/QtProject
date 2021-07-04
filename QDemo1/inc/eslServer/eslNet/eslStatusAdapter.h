@@ -10,20 +10,21 @@ public:
 	~CEslStatusAdapter();
 
 public:
-	//pkg请求组包
-	bool eslBuildPkg(int iPkgType, void *pstPkg, std::string &strJson, int &iMsgType);
-	
-	//pkg包解析
-	bool eslParsePkg(int iMsgType, char *pPayload, void* pstEvent);
-	
-	//pkg包转换json
-	bool eslBuildJson(void* pstEvent, std::string &strJson);
+	//Pkg包转换json
+	bool eslBuildJson(int iMsgType, char *pPayload, QJsonObject &jsonRet);
 	
 protected:
-	//stEventPkgFormat包
-	bool buildEventPkg(void *pstPkg, std::string &strJson, int &iMsgType);
-
-protected:
+	//状态通知
+	bool eslGetUserStatus(const QJsonObject &json, QJsonObject &jsonRet);
+	
+	//通话状态
+	void OnEslCallStatus(const QJsonObject &json, QJsonObject &jsonRet);
+	
+	//会议状态
+	void OnEslMeetStatus(const QJsonObject &json, QJsonObject &jsonRet);
+	
+	//通播状态
+	void OnEslAnnounceStatus(const QJsonObject &json, QJsonObject &jsonRet);
 };
 
 #endif

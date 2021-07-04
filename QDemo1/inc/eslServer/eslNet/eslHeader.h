@@ -14,6 +14,7 @@
 	#include <winsock2.h>
 #endif
 
+#include "STHeader.h"
 #include <DCProtocol.h>
 #define ESL_PROTOCOL_ID		0x1234abcd
 
@@ -80,7 +81,7 @@
 enum ELS_PKG_TYPE
 {
 	ESL_PKG_TYPE_DATA = 0,			//数据包类型
-	ESL_PKG_TYPE_STATUS,				//状态包类型
+	ESL_PKG_TYPE_STATUS,			//状态包类型
 	ESL_PKG_TYPE_MEET,				//会议包类型
 };
 
@@ -115,17 +116,24 @@ enum ESL_MEET_MSG_TYPE
 	ESL_MSG_MUTEMEETMEMB_REQ,		//静音会议成员请求
 	ESL_MSG_MUTEMEETMEMB_RESP,		//静音会议成员回复
 	
-	ESL_MSG_SPLITSCREENMEET_REQ,	//会议成员演讲请求
-	ESL_MSG_SPLITSCREENMEET_RESP,	//会议成员演讲回复
+	ESL_MSG_SPEECHMEETMEMB_REQ,		//会议成员演讲请求
+	ESL_MSG_SPEECHMEETMEMB_RESP,	//会议成员演讲回复
 	
-	ESL_MSG_SPEECHMEETMEMB_REQ,		//视频会议画面分割请求
-	ESL_MSG_SPEECHMEETMEMB_RESP,	//视频会议画面分割回复
+	ESL_MSG_SPLITSCREENMEET_REQ,	//视频会议画面分割请求
+	ESL_MSG_SPLITSCREENMEET_RESP,	//视频会议画面分割回复
 };
 
-//状态接口
-enum ELS_STATUS_MSG_TYPE
+enum ESL_MEETMEMB_STATE
 {
-	ELS_MSG_STATUS_EMPTY = 0,
+	ESL_MEMB_STATE_INIT = -1,	//初始状态
+	ESL_MEMB_STATE_INVITING,	//入会中
+	ESL_MEMB_STATE_ANSWER,		//会议中
+	ESL_MEMB_STATE_NOANSWER,	//未应答
+	ESL_MEMB_STATE_REJECT,		//拒绝
+	ESL_MEMB_STATE_EXIT,		//离开
+	ESL_MEMB_STATE_SILENCE,		//禁言
+	ESL_MEMB_STATE_HOLDING,		//保持
+	ESL_MEMB_STATE_SPEECHING,	//演讲
 };
 
 #if 0

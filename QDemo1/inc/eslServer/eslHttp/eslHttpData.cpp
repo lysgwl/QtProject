@@ -130,6 +130,7 @@ bool CEslHttpData::eslSetPublicContact(const QJsonObject &json)
 	}
 	
 	QJsonObject jsonPublic(json);
+	jsonPublic.insert("file", 1);
 	
 	bool file = false;
 	if (!jsonPublic.contains("file"))
@@ -138,7 +139,7 @@ bool CEslHttpData::eslSetPublicContact(const QJsonObject &json)
 	}
 	else
 	{
-		if (jsonPublic.value("file").toString() == "0")
+		if (jsonPublic.value("file").toInt() == 0)
 		{
 			file = false;
 		}
@@ -557,7 +558,7 @@ void CEslHttpData::GetPublicContact(const QJsonObject &json)
 		settingMgr->setValue(RztSettingKey::SKey_PublicContactUrl, strUrl.c_str());
 		
 		RztDownLoadFile downFile;
-		if (downFile.downLoad(strUrl.c_str(), strPath.c_str()))
+		if (!downFile.downLoad(strUrl.c_str(), strPath.c_str()))
 		{
 			return;
 		}
