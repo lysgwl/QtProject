@@ -61,6 +61,7 @@ bool CEslStatusAdapter::eslGetUserStatus(const QJsonObject &json, QJsonObject &j
 		return false;
 	}
 	
+	jsonRet.insert("businessType", PKG_TYPE_EVENT);
 	return true;
 }
 

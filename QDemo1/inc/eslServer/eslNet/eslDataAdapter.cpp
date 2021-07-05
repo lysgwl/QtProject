@@ -107,6 +107,7 @@ bool CEslDataAdapter::OnRespEslLogin(const QJsonObject &json, QJsonObject &jsonR
 	
 	jsonRet.insert("feedback", jsonData);
 	jsonRet.insert("msgType", BASIC_MSG_LOGINEXT_RESP);
+	jsonRet.insert("businessType", PKG_TYPE_BASIC);
 	
 	return true;
 }
@@ -181,6 +182,7 @@ bool CEslDataAdapter::OnRespEslHeartBeat(const QJsonObject &json, QJsonObject &j
 	
 	jsonRet.insert("feedback", jsonData);
 	jsonRet.insert("msgType", BASIC_MSG_HEARTBEAT_ACK);
+	jsonRet.insert("businessType", PKG_TYPE_BASIC);
 	
 	return true;
 }

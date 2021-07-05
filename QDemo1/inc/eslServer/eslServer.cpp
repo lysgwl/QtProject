@@ -211,7 +211,7 @@ bool CEslServer::getMeetingUserList(int iMeetId, QVector<STMeetingMemberVs> &vec
 			continue;
 		}
 		
-		int iState = MMS_INVITING;//getMeetMembState(object["state"].toInt());
+		int iState = MMS_JOINED;//getMeetMembState(object["state"].toInt());
 		
 		STMeetingMemberVs stItemData;
 		stItemData.strCaller = std::to_string(iMeetId).c_str();

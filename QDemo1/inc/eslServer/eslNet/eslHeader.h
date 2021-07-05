@@ -15,6 +15,7 @@
 #endif
 
 #include "STHeader.h"
+#include "mcBaseDef.h"
 #include <DCProtocol.h>
 #define ESL_PROTOCOL_ID		0x1234abcd
 
