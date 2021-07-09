@@ -33,11 +33,6 @@ bool CEslStatusAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &
 //状态通知
 bool CEslStatusAdapter::eslGetUserStatus(const QJsonObject &json, QJsonObject &jsonRet)
 {
-	if (json.isEmpty())
-	{
-		return false;
-	}
-	
 	std::string strType = json["type"].toString().toStdString();
 	if (strType == "")
 	{
@@ -79,7 +74,7 @@ void CEslStatusAdapter::OnEslMeetStatus(const QJsonObject &json, QJsonObject &js
 		return;
 	}
 	
-	int iStatus = eslGetMeetStatus(json["status"].toInt());
+	int iStatus = json["status"].toInt();
 	
 	QJsonObject jsonData;
 	jsonData.insert("meetid", std::stoi(strMeetId));

@@ -64,6 +64,12 @@ protected:
 	
 	//关闭会议Resp
 	bool OnRespEslCloseMeet(const QJsonObject &json, QJsonObject &jsonRet);
+	
+	//通话转会议Req
+	void OnReqEslCallToMeet(QJsonObject &json, std::string &strJson, int &iMsgType);
+	
+	//通话转会议Resp
+	bool OnRespEslCallToMeet(const QJsonObject &json, QJsonObject &jsonRet);
 };
 
 #endif

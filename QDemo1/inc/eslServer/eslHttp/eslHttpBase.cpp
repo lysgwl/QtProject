@@ -27,7 +27,7 @@ bool CEslHttpBase::postHttpRequest(const std::string &strUrl, const QJsonObject 
 	QJsonObject jsonReq(json);
 	if(!jsonReq.contains("type"))
 	{
-		jsonReq.insert("type", 0);
+		jsonReq.insert("type", 1);
 	}
 	
 	std::string strPostUrl = strUrl;
@@ -70,7 +70,7 @@ bool CEslHttpBase::postHttpRequest(const std::string &strUrl, const std::string 
 	QJsonObject jsonReq(json);
 	if(!jsonReq.contains("type"))
 	{
-		jsonReq.insert("type", 0);
+		jsonReq.insert("type", 1);
 	}
 	
 	std::ostringstream ostr;

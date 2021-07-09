@@ -8,6 +8,7 @@
 #include "IRztConnectorMgr.h"
 
 #include "ISDKMeeting.h"
+#include "IRztServerInfoMgr.h"
 #include "IRztCreateMeetingCondition.h"
 
 CEslServer::CEslServer()
@@ -46,18 +47,23 @@ bool CEslServer::isEslServer()
 }
 
 //登录用户
-bool CEslServer::loginUser(int iType)
+bool CEslServer::loginUser(const QJsonObject &json)
 {
 	bool bResult = false;
+
+	if (json.isEmpty())
+	{
+		return false;
+	}
 	
-	switch (iType)
+	switch (json["type"].toInt())
 	{
 	case ESL_LOGIN_USER_TYPE:
-		bResult = loginUserNumber();
+		bResult = loginUserNumber(json);
 		break;
 		
 	case ESL_LOGIN_SEAT_TYPE:
-		bResult = loginSeatNumber();
+		bResult = loginSeatNumber(json);
 		break;
 		
 	default:
@@ -211,7 +217,7 @@ bool CEslServer::getMeetingUserList(int iMeetId, QVector<STMeetingMemberVs> &vec
 			continue;
 		}
 		
-		int iState = MMS_JOINED;//getMeetMembState(object["state"].toInt());
+		int iState = getMeetStatusFromEsl(object["state"].toInt());
 		
 		STMeetingMemberVs stItemData;
 		stItemData.strCaller = std::to_string(iMeetId).c_str();
@@ -225,93 +231,289 @@ bool CEslServer::getMeetingUserList(int iMeetId, QVector<STMeetingMemberVs> &vec
 	return true;
 }
 
+//获取会议状态
+int CEslServer::getMeetStatusFromEsl(int iStatus)
+{
+	int iMmsState = MMS_OFFLINE;
+	switch (iStatus)
+	{
+	case ESL_MEMB_STATE_INIT:
+		iMmsState = static_cast<int>(MMS_INIT);
+		break;
+		
+	case ESL_MEMB_STATE_OFFLINE:
+		iMmsState = static_cast<int>(MMS_OFFLINE);
+		break;
+		
+	case ESL_MEMB_STATE_INVITING:
+		iMmsState = static_cast<int>(MMS_INVITING);
+		break;
+		
+	case ESL_MEMB_STATE_ANSWER:
+		iMmsState = static_cast<int>(MMS_JOINED);
+		break;
+		
+	case ESL_MEMB_STATE_NOANSWER:
+		iMmsState = static_cast<int>(MMS_NO_ANSWER);
+		break;
+		
+	case ESL_MEMB_STATE_REJECT:
+		iMmsState = static_cast<int>(MMS_REJECT);
+		break;
+		
+	case ESL_MEMB_STATE_EXIT:
+		iMmsState = static_cast<int>(MMS_EXIT);
+		break;
+		
+	case ESL_MEMB_STATE_SILENCE:
+		iMmsState = static_cast<int>(MMS_MUTED);
+		break;
+		
+	case ESL_MEMB_STATE_HOLDING:
+		iMmsState = static_cast<int>(MMS_NON_TALK);
+		break;
+		
+	case ESL_MEMB_STATE_SPEECHING:
+		iMmsState = static_cast<int>(MMS_TALK);
+		break;
+		
+	default:
+		break;
+	}
+	
+	return iMmsState;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //登录席位号码
-bool CEslServer::loginSeatNumber()
+bool CEslServer::loginSeatNumber(const QJsonObject &json)
 {
-	ObjectPtr<IRztSettingMgr> settingMgr;
-	std::string strUserNum = settingMgr->toString(RztSettingKey::Skey_SeatNumber).toStdString();
-	std::string strPasswd = settingMgr->toString(RztSettingKey::Skey_SeatPwd).toStdString();
-	
-	if (strUserNum == "" || strPasswd == "")
-	{
-		addLastErr("席位用户密码不能为空!");
-		return false;
-	}
-	
-	int iSvrVsPort = 20000;
-	int iSvrHttpPort = settingMgr->toInt(RztSettingKey::SKey_SvrPrimaryHttpPort);
-	std::string strSvrIp = settingMgr->toString(RztSettingKey::SKey_SvrPrimaryIP).toStdString();
-	
-	QJsonObject jsonData;
-	jsonData.insert("timeout", 3000);
-	jsonData.insert("usernum", strUserNum.c_str());
-	
-	jsonData.insert("svrport", iSvrVsPort);
-	jsonData.insert("svrip", strSvrIp.c_str());
-	
-	if (!connectSvr(jsonData))
-	{	
-		addLastErr("连接服务器失败!");
-		return false;
-	}
-	
+	bool bRet = false;
+	bool bLogined = false;
+
 	ObjectPtr<ISDKUtils> sdkUtils;
-	ObjectPtr<IRztConnectorMgr> connectorMgr;
-	
-	QJsonObject jsonLogin;
-	if (!sdkUtils->loginVs(jsonLogin, strUserNum.c_str(), strPasswd.c_str()))
-	{
-		addLastErr("登录服务器失败!");
-		connectorMgr->releaseConnector(strUserNum.c_str());
-		return false;
-	}
-	
-	QJsonObject json;
-	json.insert("user", strUserNum.c_str());
-	json.insert("passwd", strPasswd.c_str());
-	json.insert("token", jsonLogin["terminalId"].toString());
-	
-	json.insert("seat", true);
-	json.insert("vsport", iSvrVsPort);
-	json.insert("httpport", iSvrHttpPort);
-	json.insert("hostip", strSvrIp.c_str());
 	
 	CEslHttpData *pEslHttpData = m_pHttpCtrl->eslGetDataPtr();
-	if (pEslHttpData != Q_NULLPTR)
+	if (pEslHttpData == Q_NULLPTR)
 	{
+		addLastErr("软件内部发生错误!");
+		return false;
+	}
+
+	std::string strUserNum = json["usernum"].toString().toStdString();
+	std::string strPasswd = json["userpasswd"].toString().toStdString();
+	if (strUserNum == "" || strPasswd == "")
+	{
+		addLastErr("用户密码不能为空!");
+		return false;
+	}
+	
+	do
+	{	
+		int iSvrVsPort = 20000;
+		int iSvrHttpPort = json["httpport"].toInt();
+		std::string strSvrIp = json["hostip"].toString().toStdString();
+
+		std::string strUid = json["uid"].toString().toStdString();
+		std::string strUidPasswd = json["uidpasswd"].toString().toStdString();
+		
+		QJsonObject jsonSystem;
+		jsonSystem.insert("uid", strUid.c_str());
+		jsonSystem.insert("httpport", iSvrHttpPort);
+		jsonSystem.insert("hostip", strSvrIp.c_str());
+		
 		//获取系统配置
-		if (!pEslHttpData->eslGetSysConfig(json))
+		QJsonObject jsonRet;
+		if (!pEslHttpData->eslGetSysConfig(jsonSystem, jsonRet))
 		{
 			addLastErr("获取系统配置参数失败!");
-			return false;
+			break;
+		}
+		else
+		{
+			iSvrVsPort = jsonRet["tcp_port"].toInt();
+			
+			QJsonObject jsonConnect;
+			jsonConnect.insert("timeout", 3000);
+			jsonConnect.insert("svrport", iSvrVsPort);
+			jsonConnect.insert("svrip", strSvrIp.c_str());
+			jsonConnect.insert("usernum", strUserNum.c_str());
+			
+			if (!connectSvr(jsonConnect))
+			{
+				addLastErr("连接服务器失败!");
+				break;
+			}
+		}
+		
+		QJsonObject jsonLogin;
+		if (!sdkUtils->loginVs(jsonLogin, strUserNum.c_str(), strPasswd.c_str()))
+		{
+			addLastErr("登录服务器失败!");
+			break;
+		}
+		else
+		{
+			bLogined = true;
+		
+			QJsonObject jsonParam;
+			jsonParam.insert("user", strUserNum.c_str());
+			jsonParam.insert("passwd", strPasswd.c_str());
+			jsonParam.insert("uid", strUid.c_str());
+			jsonParam.insert("uidpasswd", strUidPasswd.c_str());
+			jsonParam.insert("devuid", strUid.c_str());
+			jsonParam.insert("token", jsonLogin["terminalId"].toString());
+			
+			jsonParam.insert("seat", true);
+			jsonParam.insert("vsport", iSvrVsPort);
+			jsonParam.insert("httpport", iSvrHttpPort);
+			jsonParam.insert("hostip", strSvrIp.c_str());
+			
+			//设置服务器数据
+			if (!m_pHttpCtrl->eslSetSrvData(jsonParam))
+			{
+				addLastErr("设置服务器数据失败!");
+				break;
+			}
+			
+			//获取服务器数据
+			if (!m_pHttpCtrl->eslGetDataFromSrv(jsonParam))
+			{
+				addLastErr("获取服务器数据失败!");
+				break;
+			}
+			
+			//设置运行事件
+			m_pHttpCtrl->eslSetUserEvent(jsonParam);
+		}
+		
+		bRet = true;
+	} while (false);
+
+	if (!bRet)
+	{
+		if (bLogined)
+		{
+			sdkUtils->logoutVs(strUserNum.c_str());
+		}
+
+		ObjectPtr<IRztConnectorMgr> connectorMgr;
+		if (connectorMgr->getConnector(strUserNum.c_str()) != Q_NULLPTR)
+		{
+			connectorMgr->releaseConnector(strUserNum.c_str());
 		}
 	}
 	
-	//设置服务器数据
-	if (!m_pHttpCtrl->eslSetSrvData(json))
-	{
-		addLastErr("设置服务器数据失败!");
-		return false;
-	}
-	
-	//获取服务器数据
-	if (!m_pHttpCtrl->eslGetDataFromSrv(json))
-	{
-		addLastErr("获取服务器数据失败!");
-		return false;
-	}
-	
-	//设置运行事件
-	m_pHttpCtrl->eslSetUserEvent(json);
-	
-	return true;
+	return bRet;
 }
 
 //登录用户号码
-bool CEslServer::loginUserNumber()
+bool CEslServer::loginUserNumber(const QJsonObject &json)
 {
-	return true;
+	bool bRet = false;
+	bool bLogined = false;
+
+	ObjectPtr<ISDKUtils> sdkUtils;
+
+	CEslHttpData *pEslHttpData = m_pHttpCtrl->eslGetDataPtr();
+	if (pEslHttpData == Q_NULLPTR)
+	{
+		addLastErr("软件内部发生错误!");
+		return false;
+	}
+
+	std::string strUserNum = json["usernum"].toString().toStdString();
+	std::string strPasswd = json["userpasswd"].toString().toStdString();
+	if (strUserNum == "" || strPasswd == "")
+	{
+		addLastErr("用户密码不能为空!");
+		return false;
+	}
+
+	do
+	{
+		ObjectPtr<IRztServerInfoMgr> severInfo;
+		STSvrInfo svrInfo = severInfo->getCurSvrInfo();
+
+		int iSvrPort = svrInfo.nVsPort;
+		int iHttpPort = svrInfo.nHttpPort;
+		std::string strSvrIp = svrInfo.strIP.toStdString();
+
+		std::string strUid = json["uid"].toString().toStdString();
+		std::string strUidPasswd = json["uidpasswd"].toString().toStdString();
+
+		std::string strDevUid = json["devuid"].toString().toStdString();
+
+		QJsonObject jsonConnect;
+		jsonConnect.insert("timeout", 3000);
+		jsonConnect.insert("svrport", iSvrPort);
+		jsonConnect.insert("svrip", strSvrIp.c_str());
+		jsonConnect.insert("usernum", strUserNum.c_str());
+		if (!connectSvr(jsonConnect))
+		{
+			addLastErr("连接服务器失败!");
+			break;
+		}
+
+		QJsonObject jsonLogin;
+		if (!sdkUtils->loginVs(jsonLogin, strUserNum.c_str(), strPasswd.c_str()))
+		{
+			addLastErr("登录服务器失败!");
+			break;
+		}
+		else
+		{
+			bLogined = true;
+
+			QJsonObject jsonParam;
+			jsonParam.insert("user", strUserNum.c_str());
+			jsonParam.insert("passwd", strPasswd.c_str());
+			jsonParam.insert("uid", strUid.c_str());
+			jsonParam.insert("uidpasswd", strUidPasswd.c_str());
+			jsonParam.insert("devuid", strDevUid.c_str());
+			jsonParam.insert("token", jsonLogin["terminalId"].toString());
+
+			jsonParam.insert("seat", false);
+			jsonParam.insert("vsport", iSvrPort);
+			jsonParam.insert("httpport", iHttpPort);
+			jsonParam.insert("hostip", strSvrIp.c_str());
+
+			//设置服务器数据
+			if (!m_pHttpCtrl->eslSetSrvData(jsonParam))
+			{
+				addLastErr("设置服务器数据失败!");
+				break;
+			}
+
+			//获取服务器数据
+			if (!m_pHttpCtrl->eslGetDataFromSrv(jsonParam))
+			{
+				addLastErr("获取服务器数据失败!");
+				break;
+			}
+
+			//设置运行事件
+			//m_pHttpCtrl->eslSetUserEvent(jsonParam);
+		}
+
+		bRet = true;
+	} while (false);
+
+	if (!bRet)
+	{
+		if (bLogined)
+		{
+			sdkUtils->logoutVs(strUserNum.c_str());
+		}
+
+		ObjectPtr<IRztConnectorMgr> connectorMgr;
+		if (connectorMgr->getConnector(strUserNum.c_str()) != Q_NULLPTR)
+		{
+			connectorMgr->releaseConnector(strUserNum.c_str());
+		}
+	}
+	
+	return bRet;
 }
 
 //连接服务器
@@ -324,6 +526,7 @@ bool CEslServer::connectSvr(const QJsonObject &json)
 	
 	int iTimeout = json["timeout"].toInt();
 	int iSvrPort = json["svrport"].toInt();
+
 	std::string strSvrIp = json["svrip"].toString().toStdString();
 	std::string strUserNum = json["usernum"].toString().toStdString();
 	
@@ -331,15 +534,13 @@ bool CEslServer::connectSvr(const QJsonObject &json)
 	{
 		return false;
 	}
-	
-	ObjectPtr<IRztConnectorMgr> connectorMgr;
-	
+
 	//connnect vs
+	ObjectPtr<IRztConnectorMgr> connectorMgr;
 	IRztConnector* connector = connectorMgr->getConnector(strUserNum.c_str());
 	if (connector == Q_NULLPTR)
 	{
 		ObjectPtr<IRztVsNet> vsNet;
-		
 		connector = vsNet->createConnector(strSvrIp.c_str(), iSvrPort);
 		connector->setVsCallNum(strUserNum.c_str());
 	}

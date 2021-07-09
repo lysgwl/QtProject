@@ -11,7 +11,7 @@ public:
 	
 public:
 	//esl系统配置
-	bool eslGetSysConfig(const QJsonObject &json);
+	bool eslGetSysConfig(const QJsonObject &json, QJsonObject &jsonValue);
 
 	//esl设备配置
 	bool eslSetDevConfig(bool bFlag, const QJsonObject &json);
@@ -30,7 +30,7 @@ public:
 	
 protected:
 	//设置系统数据
-	void eslSetSysData(const QJsonObject &json);
+	void eslSetSysData(const QJsonObject &json, const QJsonObject &jsonData);
 
 	//设置设备数据
 	bool eslSetDevData(const QJsonObject &json);

@@ -67,8 +67,11 @@ bool CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
 	//获取快捷通讯录
 	//m_pEslHttpData->eslSetPageData(FileHandle_Get, json);
 	
-	//获取公共通讯录
-	m_pEslHttpData->eslSetPublicContact(json);
+	if (json.value("seat").toBool())
+	{
+		//获取公共通讯录
+		m_pEslHttpData->eslSetPublicContact(json);
+	}
 	
 	//获取席位通讯录
 	//m_pEslHttpData->eslSetSeatContact(0, json);
@@ -102,59 +105,62 @@ bool CEslHttpControl::eslSetSrvData(QJsonObject &json)
 //esl设置事件
 void CEslHttpControl::eslSetUserEvent(QJsonObject &json)
 {
-	ObjectPtr<IRztServerInfoMgr> severInfo;
-	STSvrInfo svrInfo = severInfo->getCurSvrInfo();
-	
-	std::string strUserNum = json["user"].toString().toStdString();
-	std::string strSvrIp = svrInfo.strIP.toStdString();
-	if  (strSvrIp == "" || strUserNum == "")
+	bool bIsSeat = false;
+	if (json.contains("seat"))
 	{
-		return;
+		bIsSeat = json.value("seat").toBool();
 	}
+
+	std::string strUid = json["uid"].toString().toStdString();
+	std::string strUserNum = json["user"].toString().toStdString();
+	std::string strSvrIp = json["hostip"].toString().toStdString();
 	
 	ObjectPtr<ISDKUtils> sdkUtils;
 	sdkUtils->sendHeartBeat(strUserNum.c_str());
-	
-	//ntp 对时
-	RztCommonUtils::ntpToServer(strSvrIp.c_str());
-	
-	//人脸sdk初始化
-	std::thread([=](){
-		safeCallInterface(IRztFaceDistinguishController, initFacePlugin());
-	}).detach();
-	
-	//emit sglLoginStateChanged(true);//切到主界面
-    qRztEmitEvent(RztEventKey::event_login_loginChange, true);
-	
-	//通知monitor
-	QJsonObject jsonSeatLogin;
-	jsonSeatLogin.insert("seatNumber", strUserNum.c_str());
-	
-	ObjectPtr<IRztIpcController> ipcController;
-	ipcController->sendIpcMsg(MsgType_SeatNumberLogined, true, 2000, jsonSeatLogin);
-	
-	//推荐通道 voip
+
 	ObjectPtr<IRztSettingMgr> settingMgr;
-    settingMgr->setValue(RztSettingKey::SKey_PreferredChannel, VC_Voip);
-	settingMgr->flush();
+	ObjectPtr<IRztIpcController> ipcController;
 	
-	//
-	ObjectPtr<IRztDevice> device;
-	if (sdkUtils->initMediaModule(false))
+	if (bIsSeat)
 	{
-		STDeviceInfo info = device->getDeviceInfo();
-		sdkUtils->setSoundCardInfo(info.lstTotalSoundCardCap, info.lstTotalSoundCardPlay);
+		//ntp 对时
+		RztCommonUtils::ntpToServer(strSvrIp.c_str());
+
+		//人脸sdk初始化
+		std::thread([=](){
+			safeCallInterface(IRztFaceDistinguishController, initFacePlugin());
+		}).detach();
+
+		//emit sglLoginStateChanged(true);//切到主界面
+		qRztEmitEvent(RztEventKey::event_login_loginChange, true);
+
+		//通知monitor
+		QJsonObject jsonSeatLogin;
+		jsonSeatLogin.insert("seatNumber", strUserNum.c_str());
+		ipcController->sendIpcMsg(MsgType_SeatNumberLogined, true, 2000, jsonSeatLogin);
+
+		//推荐通道 voip
+		settingMgr->setValue(RztSettingKey::SKey_PreferredChannel, VC_Voip);
+		settingMgr->flush();
+
+		//
+		ObjectPtr<IRztDevice> device;
+		if (sdkUtils->initMediaModule(false))
+		{
+			STDeviceInfo info = device->getDeviceInfo();
+			sdkUtils->setSoundCardInfo(info.lstTotalSoundCardCap, info.lstTotalSoundCardPlay);
+		}
+
+		//bindMgr
+		ObjectPtr<IRztRegisterNumber> registerNumber;
+		registerNumber->clearNumber();
+
+		//register p2p, sip;
+		sdkUtils->registerNumbersIP(strUserNum.c_str());
+
+		//注册完号，要重新设置Media env
+		sdkUtils->setMediaEnv();
 	}
-	
-	//bindMgr
-    ObjectPtr<IRztRegisterNumber> registerNumber;
-    registerNumber->clearNumber();
-	
-	//register p2p, sip;
-    sdkUtils->registerNumbersIP(strUserNum.c_str());
-	
-	//注册完号，要重新设置Media env
-    sdkUtils->setMediaEnv();
 }
 
 //获取data对象指针

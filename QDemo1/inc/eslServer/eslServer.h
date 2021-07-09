@@ -17,14 +17,29 @@ public:
 	bool isEslServer();
 	
 	//登录用户
-	bool loginUser(int iType);
+	bool loginUser(const QJsonObject &json);
+	
+	//创建会议
+	bool createMeeting(STMeetingDetailInfo &detailInfo, const QVector<QString> &vecMember);
+	
+	//关闭会议
+	void closeMeeting(int iMeetId);
+	
+	//获取会议信息
+	bool getMeetingInfo(int iMeetId, QJsonObject &jsonValue);
+	
+	//获取会议成员
+	bool getMeetingUserList(int iMeetId, QVector<STMeetingMemberVs> &vecMember);
+	
+	//获取会议状态
+	int getMeetStatusFromEsl(int iStatus);
 	
 protected:
 	//登录席位号码
-	bool loginSeatNumber();
+	bool loginSeatNumber(const QJsonObject &json);
 
 	//登录用户号码
-	bool loginUserNumber();	
+	bool loginUserNumber(const QJsonObject &json);	
 	
 	//连接服务器
 	bool connectSvr(const QJsonObject &json);

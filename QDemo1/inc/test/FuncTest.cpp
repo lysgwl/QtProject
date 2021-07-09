@@ -199,6 +199,8 @@ void CFuncTest::string_test()
         strss << "http://" << "192.168.0.1" << 80 << "/" << s1;
         std::string s3 = strss.str();
 
+        int pos = s3.compare(s2);
+
         stream.str("");
         stream << 1 << 2 << 3;
 
