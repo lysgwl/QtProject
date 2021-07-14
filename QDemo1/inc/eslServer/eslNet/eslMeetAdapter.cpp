@@ -118,7 +118,7 @@ bool CEslMeetAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &js
 //创建会议Req
 void CEslMeetAdapter::OnReqEslCreateMeet(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -177,7 +177,7 @@ bool CEslMeetAdapter::OnRespEslCreateMeet(const QJsonObject &json, QJsonObject &
 //关闭会议Req
 void CEslMeetAdapter::OnReqEslCloseMeet(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -233,7 +233,7 @@ bool CEslMeetAdapter::OnRespEslCloseMeet(const QJsonObject &json, QJsonObject &j
 //增加会议成员Req
 void CEslMeetAdapter::OnReqEslAddMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -320,7 +320,7 @@ bool CEslMeetAdapter::OnRespEslAddMeetMemb(const QJsonObject &json, QJsonObject 
 //删除会议成员Req
 void CEslMeetAdapter::OnReqEslDelMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -398,7 +398,7 @@ bool CEslMeetAdapter::OnRespEslDelMeetMemb(const QJsonObject &json, QJsonObject 
 //静音会议成员Req
 void CEslMeetAdapter::OnReqEslMuteMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -430,7 +430,7 @@ bool CEslMeetAdapter::OnRespEslMuteMeetMemb(const QJsonObject &json, QJsonObject
 //禁言会议成员Req
 void CEslMeetAdapter::OnReqEslSilenceMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -496,7 +496,7 @@ bool CEslMeetAdapter::OnRespEslSilenceMeetMemb(const QJsonObject &json, QJsonObj
 //视频会议分屏Req
 void CEslMeetAdapter::OnReqEslSplitScrMeet(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -557,7 +557,7 @@ bool CEslMeetAdapter::OnRespEslSplitScrMeet(const QJsonObject &json, QJsonObject
 //演讲会议成员Req
 void CEslMeetAdapter::OnReqEslSpeechMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -621,7 +621,7 @@ bool CEslMeetAdapter::OnRespEslSpeechMeetMemb(const QJsonObject &json, QJsonObje
 //通话转会议Req
 void CEslMeetAdapter::OnReqEslCallToMeet(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;

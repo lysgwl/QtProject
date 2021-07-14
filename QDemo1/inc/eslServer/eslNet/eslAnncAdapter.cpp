@@ -82,7 +82,7 @@ bool CEslAnncAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &js
 //创建通播Req
 void CEslAnncAdapter::OnReqEslCreateAnnc(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg	= json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -141,7 +141,7 @@ bool CEslAnncAdapter::OnRespEslCreateAnnc(const QJsonObject &json, QJsonObject &
 //关闭通播Req
 void CEslAnncAdapter::OnReqEslCloseAnnc(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -197,7 +197,7 @@ bool CEslAnncAdapter::OnRespEslCloseAnnc(const QJsonObject &json, QJsonObject &j
 //增加通播成员Req
 void CEslAnncAdapter::OnReqEslAddAnncMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -284,7 +284,7 @@ bool CEslAnncAdapter::OnRespEslAddAnncMemb(const QJsonObject &json, QJsonObject 
 //删除通播成员Req
 void CEslAnncAdapter::OnReqEslDelAnncMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-	QJsonObject jsonMsg(json["msg"].toObject());
+	QJsonObject jsonMsg = json.value("msg").toObject();
 	if (jsonMsg.isEmpty())
 	{
 		return;
@@ -325,7 +325,7 @@ void CEslAnncAdapter::OnReqEslDelAnncMemb(const QJsonObject &json, std::string &
 	jsonRet.insert("token", strTernimalId.c_str());
 	jsonRet.insert("memlist", jsonArray);
 
-	iMsgType = ESL_MSG_DELANNCMEMB_RESP;
+	iMsgType = ESL_MSG_DELANNCMEMB_REQ;
 	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
 }
 
@@ -355,7 +355,7 @@ bool CEslAnncAdapter::OnRespEslDelAnncMemb(const QJsonObject &json, QJsonObject 
 	jsonRet.insert("feedback", jsonData);
 	jsonRet.insert("msgType", SCH_MEETING_MEMB_KICKOUT_RESP);
 	jsonRet.insert("businessType", PKG_TYPE_SCHEDULE);
-	
+
 	return true;
 }
 

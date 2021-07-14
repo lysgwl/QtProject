@@ -305,7 +305,7 @@ int CEslServer::getMeetStatusFromEsl(int iStatus)
 		break;
 		
 	case MEET_MEMB_STATE_KICKOUT:
-		iMmsState = static_cast<int>(MMS_KICKOUTED);
+		iMmsState = static_cast<int>(MMS_EXIT);	//MMS_KICKOUTED
 		break;
 		
 	case MEET_MEMB_STATE_SILENCE:
@@ -362,7 +362,7 @@ int CEslServer::getAnncStatusFromEsl(int iStatus)
 		break;
 
 	case ANNC_MEMB_STATE_KICKOUT:
-		iMmsState = static_cast<int>(MMS_KICKOUTED);
+		iMmsState = static_cast<int>(MMS_EXIT);	//MMS_KICKOUTED
 		break;
 
 	case ANNC_MEMB_STATE_REJECT:
