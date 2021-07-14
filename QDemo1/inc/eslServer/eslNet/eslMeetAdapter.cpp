@@ -12,7 +12,7 @@ CEslMeetAdapter::~CEslMeetAdapter()
 
 //////////////////////////////////////////////////////////////////////////
 //Pkg请求包
-void CEslMeetAdapter::eslBuildPkg(QJsonObject &json, std::string &strJson, int &iPkgType, int &iMsgType)
+void CEslMeetAdapter::eslBuildPkg(const QJsonObject &json, std::string &strJson, int &iPkgType, int &iMsgType)
 {
 	iPkgType = ESL_PKG_TYPE_MEET;
 	switch (static_cast<int>(json["msgType"].toInt()))
@@ -20,6 +20,10 @@ void CEslMeetAdapter::eslBuildPkg(QJsonObject &json, std::string &strJson, int &
 	case SCH_MEETING_CREATE_REQ:			//创建会议
 		OnReqEslCreateMeet(json, strJson, iMsgType);
 		break;
+		
+	case SCH_MEETING_OVER_CMD:				//关闭会议
+		OnReqEslCloseMeet(json, strJson, iMsgType);
+		break;	
 		
 	case SCH_MEETING_MEMB_ADD_REQ:			//添加会议成员
 		OnReqEslAddMeetMemb(json, strJson, iMsgType);
@@ -39,10 +43,6 @@ void CEslMeetAdapter::eslBuildPkg(QJsonObject &json, std::string &strJson, int &
 		
 	case SCH_MEETING_VIDEO_SPEECH_SET_REQ:	//会议成员演讲
 		OnReqEslSpeechMeetMemb(json, strJson, iMsgType);
-		break;
-		
-	case SCH_MEETING_OVER_CMD:				//关闭会议
-		OnReqEslCloseMeet(json, strJson, iMsgType);
 		break;
 		
 	case SCH_P2P_CHANGE_TO_MEETING_REQ:		//通话转会议
@@ -74,6 +74,10 @@ bool CEslMeetAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &js
 	case ESL_MSG_CREATEMEET_RESP:
 		bRet = OnRespEslCreateMeet(json, jsonRet);
 		break;
+	
+	case ESL_MSG_CLOSEMEET_RESP:
+		bRet = OnRespEslCloseMeet(json, jsonRet);
+		break;
 		
 	case ESL_MSG_ADDMEETMEMB_RESP:
 		bRet = OnRespEslAddMeetMemb(json, jsonRet);
@@ -99,10 +103,6 @@ bool CEslMeetAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &js
 		bRet = OnRespEslSpeechMeetMemb(json, jsonRet);
 		break;
 		
-	case ESL_MSG_CLOSEMEET_RESP:
-		bRet = OnRespEslCloseMeet(json, jsonRet);
-		break;
-		
 	case ESL_MSG_CALLTOMEET_RESP:
 		bRet = OnRespEslCallToMeet(json, jsonRet);
 		break;
@@ -116,7 +116,7 @@ bool CEslMeetAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &js
 
 //////////////////////////////////////////////////////////////////////////
 //创建会议Req
-void CEslMeetAdapter::OnReqEslCreateMeet(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslMeetAdapter::OnReqEslCreateMeet(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -174,8 +174,8 @@ bool CEslMeetAdapter::OnRespEslCreateMeet(const QJsonObject &json, QJsonObject &
 	return true;
 }
 
-//增加会议成员Req
-void CEslMeetAdapter::OnReqEslAddMeetMemb(QJsonObject &json, std::string &strJson, int &iMsgType)
+//关闭会议Req
+void CEslMeetAdapter::OnReqEslCloseMeet(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -183,6 +183,61 @@ void CEslMeetAdapter::OnReqEslAddMeetMemb(QJsonObject &json, std::string &strJso
 		return;
 	}
 	
+	std::string strMeetId = std::to_string(jsonMsg["meetid"].toInt());
+	std::string strTernimalId = std::to_string(jsonMsg["ternimalId"].toInt());
+	if (strMeetId == "" || strTernimalId == "")
+	{
+		return;
+	}
+	
+	QJsonObject jsonRet;
+	jsonRet.insert("seq", json["requestId"].toInt());
+	jsonRet.insert("lgnum", json["connector"].toString());
+	jsonRet.insert("meetid", strMeetId.c_str());
+	jsonRet.insert("token", strTernimalId.c_str());
+	
+	iMsgType = ESL_MSG_CLOSEMEET_REQ;
+	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
+}
+
+//关闭会议Resp
+bool CEslMeetAdapter::OnRespEslCloseMeet(const QJsonObject &json, QJsonObject &jsonRet)
+{
+	if (json.isEmpty())
+	{
+		return false;
+	}
+	
+	if (json["result"].toInt() != 0 || json["token"].toString() == "")
+	{
+		return false;
+	}
+	
+	std::string strMeetId = json["meetid"].toString().toStdString();
+	if (strMeetId == "")
+	{
+		return false;
+	}
+	
+	QJsonObject jsonData;
+	jsonData.insert("requestId", json["seq"].toInt());
+	jsonData.insert("meetid", std::stoi(strMeetId));
+	
+	jsonRet.insert("feedback", jsonData);
+	jsonRet.insert("msgType", "");
+	jsonRet.insert("businessType", PKG_TYPE_SCHEDULE);
+	
+	return true;
+}
+
+//增加会议成员Req
+void CEslMeetAdapter::OnReqEslAddMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
+{
+	QJsonObject jsonMsg(json["msg"].toObject());
+	if (jsonMsg.isEmpty())
+	{
+		return;
+	}
 	
 	QJsonArray array = jsonMsg["members"].toArray();
 	if (array.isEmpty())
@@ -263,7 +318,7 @@ bool CEslMeetAdapter::OnRespEslAddMeetMemb(const QJsonObject &json, QJsonObject 
 }
 
 //删除会议成员Req
-void CEslMeetAdapter::OnReqEslDelMeetMemb(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslMeetAdapter::OnReqEslDelMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -341,7 +396,7 @@ bool CEslMeetAdapter::OnRespEslDelMeetMemb(const QJsonObject &json, QJsonObject 
 }
 
 //静音会议成员Req
-void CEslMeetAdapter::OnReqEslMuteMeetMemb(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslMeetAdapter::OnReqEslMuteMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -373,7 +428,7 @@ bool CEslMeetAdapter::OnRespEslMuteMeetMemb(const QJsonObject &json, QJsonObject
 }
 
 //禁言会议成员Req
-void CEslMeetAdapter::OnReqEslSilenceMeetMemb(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslMeetAdapter::OnReqEslSilenceMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -439,7 +494,7 @@ bool CEslMeetAdapter::OnRespEslSilenceMeetMemb(const QJsonObject &json, QJsonObj
 }
 
 //视频会议分屏Req
-void CEslMeetAdapter::OnReqEslSplitScrMeet(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslMeetAdapter::OnReqEslSplitScrMeet(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -489,7 +544,7 @@ bool CEslMeetAdapter::OnRespEslSplitScrMeet(const QJsonObject &json, QJsonObject
 	QJsonObject jsonData;
 	jsonData.insert("requestId", json["seq"].toInt());
 	jsonData.insert("meetid", std::stoi(strMeetId));
-	jsonData.insert("meetcode", strMeetId.c_str());
+	//jsonData.insert("meetcode", strMeetId.c_str());
 	jsonData.insert("splitnum", "");
 	
 	jsonRet.insert("feedback", jsonData);
@@ -500,7 +555,7 @@ bool CEslMeetAdapter::OnRespEslSplitScrMeet(const QJsonObject &json, QJsonObject
 }
 
 //演讲会议成员Req
-void CEslMeetAdapter::OnReqEslSpeechMeetMemb(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslMeetAdapter::OnReqEslSpeechMeetMemb(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -554,7 +609,7 @@ bool CEslMeetAdapter::OnRespEslSpeechMeetMemb(const QJsonObject &json, QJsonObje
 	QJsonObject jsonData;
 	jsonData.insert("requestId", json["seq"].toInt());
 	jsonData.insert("meetid", std::stoi(strMeetId));
-	jsonData.insert("meetcode", strMeetId.c_str());
+	//jsonData.insert("meetcode", strMeetId.c_str());
 	
 	jsonRet.insert("feedback", jsonData);
 	jsonRet.insert("msgType", SCH_MEETING_VIDEO_SPEECH_SET_RESP);
@@ -563,64 +618,8 @@ bool CEslMeetAdapter::OnRespEslSpeechMeetMemb(const QJsonObject &json, QJsonObje
 	return true;
 }
 
-//关闭会议Req
-void CEslMeetAdapter::OnReqEslCloseMeet(QJsonObject &json, std::string &strJson, int &iMsgType)
-{
-	QJsonObject jsonMsg(json["msg"].toObject());
-	if (jsonMsg.isEmpty())
-	{
-		return;
-	}
-	
-	std::string strMeetId = std::to_string(jsonMsg["meetid"].toInt());
-	std::string strTernimalId = std::to_string(jsonMsg["ternimalId"].toInt());
-	if (strMeetId == "" || strTernimalId == "")
-	{
-		return;
-	}
-	
-	QJsonObject jsonRet;
-	jsonRet.insert("seq", json["requestId"].toInt());
-	jsonRet.insert("lgnum", json["connector"].toString());
-	jsonRet.insert("meetid", strMeetId.c_str());
-	jsonRet.insert("token", strTernimalId.c_str());
-	
-	iMsgType = ESL_MSG_CLOSEMEET_REQ;
-	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
-}
-
-//关闭会议Resp
-bool CEslMeetAdapter::OnRespEslCloseMeet(const QJsonObject &json, QJsonObject &jsonRet)
-{
-	if (json.isEmpty())
-	{
-		return false;
-	}
-	
-	if (json["result"].toInt() != 0 || json["token"].toString() == "")
-	{
-		return false;
-	}
-	
-	std::string strMeetId = json["meetid"].toString().toStdString();
-	if (strMeetId == "")
-	{
-		return false;
-	}
-	
-	QJsonObject jsonData;
-	jsonData.insert("requestId", json["seq"].toInt());
-	jsonData.insert("meetid", std::stoi(strMeetId));
-	
-	jsonRet.insert("feedback", jsonData);
-	jsonRet.insert("msgType", "");
-	jsonRet.insert("businessType", PKG_TYPE_SCHEDULE);
-	
-	return true;
-}
-
 //通话转会议Req
-void CEslMeetAdapter::OnReqEslCallToMeet(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslMeetAdapter::OnReqEslCallToMeet(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -669,7 +668,7 @@ bool CEslMeetAdapter::OnRespEslCallToMeet(const QJsonObject &json, QJsonObject &
 	QJsonObject jsonData;
 	jsonData.insert("requestId", json["seq"].toInt());
 	jsonData.insert("meetid", std::stoi(strMeetId));
-	jsonData.insert("meetcode", strMeetId.c_str());
+	//jsonData.insert("meetcode", strMeetId.c_str());
 	
 	jsonRet.insert("feedback", jsonData);
 	jsonRet.insert("msgType", SCH_P2P_CHANGE_TO_MEETING_RESP);

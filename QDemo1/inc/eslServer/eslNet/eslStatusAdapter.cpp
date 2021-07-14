@@ -89,4 +89,20 @@ void CEslStatusAdapter::OnEslMeetStatus(const QJsonObject &json, QJsonObject &js
 //通播状态
 void CEslStatusAdapter::OnEslAnnounceStatus(const QJsonObject &json, QJsonObject &jsonRet)
 {
+	std::string strMeetId = json["othernum"].toString().toStdString();
+	if (strMeetId == "")
+	{
+		return;
+	}
+
+	int iStatus = json["status"].toInt();
+
+	QJsonObject jsonData;
+	jsonData.insert("meetid", std::stoi(strMeetId));
+	jsonData.insert("meetcode", strMeetId.c_str());
+	jsonData.insert("usernum", json["lgnum"].toString());
+	jsonData.insert("state", iStatus);
+	
+	jsonRet.insert("feedback", jsonData);
+	jsonRet.insert("msgType", EVENT_UPDATE_MEETING_MEMB_STATE);
 }

@@ -12,7 +12,7 @@ CEslDataAdapter::~CEslDataAdapter()
 
 //////////////////////////////////////////////////////////////////////////
 //Pkg组包请求
-void CEslDataAdapter::eslBuildPkg(QJsonObject &json, std::string &strJson, int &iPkgType, int &iMsgType)
+void CEslDataAdapter::eslBuildPkg(const QJsonObject &json, std::string &strJson, int &iPkgType, int &iMsgType)
 {
 	iPkgType = ESL_PKG_TYPE_DATA;
 	switch (static_cast<int>(json["msgType"].toInt()))
@@ -68,7 +68,7 @@ bool CEslDataAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &js
 
 //////////////////////////////////////////////////////////////////////////
 //登录Req
-void CEslDataAdapter::OnReqEslLogin(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslDataAdapter::OnReqEslLogin(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -113,7 +113,7 @@ bool CEslDataAdapter::OnRespEslLogin(const QJsonObject &json, QJsonObject &jsonR
 }
 
 //注销Req
-void CEslDataAdapter::OnReqEslLoginOut(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslDataAdapter::OnReqEslLoginOut(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())
@@ -137,7 +137,7 @@ void CEslDataAdapter::OnReqEslLoginOut(QJsonObject &json, std::string &strJson, 
 }
 
 //心跳Req
-void CEslDataAdapter::OnReqEslHeartBeat(QJsonObject &json, std::string &strJson, int &iMsgType)
+void CEslDataAdapter::OnReqEslHeartBeat(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
 	QJsonObject jsonMsg(json["msg"].toObject());
 	if (jsonMsg.isEmpty())

@@ -207,4 +207,15 @@ void CFuncTest::string_test()
         std::string s4 = stream.str();
         QString qs4 = s4.c_str();
     }
+
+    //4
+    {
+       QString s1 = "16104016001h";
+
+       QRegExp rx("(.*)[h|H]$");  //(.*?)[h|H]$ //^[A-Za-z]+$
+       int index = s1.indexOf(rx);
+       if (index == 0)
+       {
+       }
+    }
 }

@@ -23,16 +23,19 @@ public:
 	bool createMeeting(STMeetingDetailInfo &detailInfo, const QVector<QString> &vecMember);
 	
 	//关闭会议
-	void closeMeeting(int iMeetId);
+	void closeMeeting(int iType, int iMeetId);
 	
 	//获取会议信息
-	bool getMeetingInfo(int iMeetId, QJsonObject &jsonValue);
+	bool getMeetingInfo(int iType, int iMeetId, QJsonObject &jsonValue);
 	
 	//获取会议成员
-	bool getMeetingUserList(int iMeetId, QVector<STMeetingMemberVs> &vecMember);
+	bool getMeetingUserList(int iType, int iMeetId, QVector<STMeetingMemberVs> &vecMember);
 	
 	//获取会议状态
 	int getMeetStatusFromEsl(int iStatus);
+	
+	//获取通播状态
+	int getAnncStatusFromEsl(int iStatus);
 	
 protected:
 	//登录席位号码

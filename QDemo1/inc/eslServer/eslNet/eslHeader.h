@@ -26,7 +26,7 @@ enum ELS_PKG_TYPE
 	ESL_PKG_TYPE_STATUS,			//状态包类型
 	ESL_PKG_TYPE_NOTIFY,			//通知包类型
 	ESL_PKG_TYPE_MEET,				//会议包类型
-	ESL_PKG_TYPE_ANNOUNCE,			//通播包类型
+	ESL_PKG_TYPE_ANNC,				//通播包类型
 	ESL_PKG_TYPE_RADIO,				//电台包类型
 };
 
@@ -72,10 +72,31 @@ enum ESL_MEET_MSG_TYPE
 };
 
 //通播接口
-enum ESL_ANNOUNCE_MSG_TYPE
+enum ESL_ANNC_MSG_TYPE
 {
-	ESL_MSG_CREATEANNOUNCE_REQ = 0,	//创建通播请求
-	ESL_MSG_CREATEANNOUNCE_RESP,	//创建通播回复
+	ESL_MSG_CREATEANNC_REQ = 0,		//创建通播请求
+	ESL_MSG_CREATEANNC_RESP,		//创建通播回复
+	
+	ESL_MSG_ADDANNCMEMB_REQ,		//添加通播成员请求
+	ESL_MSG_ADDANNCMEMB_RESP,		//添加通播成员回复
+	
+	ESL_MSG_DELANNCMEMB_REQ,		//删除通播成员请求
+	ESL_MSG_DELANNCMEMB_RESP,		//删除通播成员回复
+	
+	ESL_MSG_CLOSEANNC_REQ,			//关闭通播请求
+	ESL_MSG_CLOSEANNC_RESP,			//关闭通播回复
+	
+	ESL_MSG_STARTSPEAK_REQ,			//开启通播对讲请求
+	ESL_MSG_STARTSPEAK_RESP,		//开启通播对讲回复
+	
+	ESL_MSG_STOPSPEAK_REQ,			//关闭通播对讲请求
+	ESL_MSG_STOPSPEAK_RESP,			//关闭通播对讲回复
+	
+	ESL_MSG_STARTVIDEO_REQ,			//开启通播视频请求
+	ESL_MSG_STARTVIDEO_RESP,		//开启通播视频回复
+	
+	ESL_MSG_STOPVIDEO_REQ,			//关闭通播视频请求
+	ESL_MSG_STOPVIDEO_RESP,			//关闭通播视频回复
 };
 
 //通知接口

@@ -61,6 +61,14 @@ bool CEslEventAdapter::eslGetSeatContactNotify(const QJsonObject &json, QJsonObj
 //更新快捷通讯录
 bool CEslEventAdapter::eslGetQuickContactNotify(const QJsonObject &json, QJsonObject &jsonRet)
 {
+	QJsonObject jsonData;
+	jsonData.insert("clienttype", 0);
+	jsonData.insert("cmdtype", 3);
+
+	jsonRet.insert("feedback", jsonData);
+	jsonRet.insert("msgType", EVENT_TERMINAL_INFO_UPDATE);
+	jsonRet.insert("businessType", PKG_TYPE_EVENT);
+
 	return true;
 }
 
@@ -87,7 +95,6 @@ bool CEslEventAdapter::eslGetCallToMeetNotify(const QJsonObject &json, QJsonObje
 	
 	QJsonObject jsonData;
 	jsonData.insert("meetid", std::stoi(strMeetId));
-	jsonData.insert("meetcode", strMeetId.c_str());
 	jsonData.insert("usernum", json["lgnum"].toString());
 	jsonData.insert("caller", json["caller"].toString());
 	jsonData.insert("callee", json["callee"].toString());

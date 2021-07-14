@@ -21,6 +21,9 @@ CEslHttpControl::CEslHttpControl()
 	
 	//meet对象指针
 	m_pEslHttpMeet = new CEslHttpMeet;
+	
+	//annc对象指针
+	m_pEslHttpAnnc = new CEslHttpAnnc;
 }
 
 CEslHttpControl::~CEslHttpControl()
@@ -42,10 +45,16 @@ CEslHttpControl::~CEslHttpControl()
 		delete m_pEslHttpMeet;
 		m_pEslHttpMeet = Q_NULLPTR;
 	}
+	
+	if (m_pEslHttpAnnc)
+	{
+		delete m_pEslHttpAnnc;
+		m_pEslHttpAnnc = Q_NULLPTR;
+	}
 }
 
 //esl获取数据
-bool CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
+bool CEslHttpControl::eslGetDataFromSrv(const QJsonObject &json)
 {
 	if (json.isEmpty())
 	{
@@ -64,14 +73,11 @@ bool CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
 		return false;
 	}
 	
+	//获取公共通讯录
+	//m_pEslHttpData->eslGetPublicContact(json);
+
 	//获取快捷通讯录
-	//m_pEslHttpData->eslSetPageData(FileHandle_Get, json);
-	
-	if (json.value("seat").toBool())
-	{
-		//获取公共通讯录
-		m_pEslHttpData->eslSetPublicContact(json);
-	}
+	m_pEslHttpData->eslSetPageData(FileHandle_Get, json);
 	
 	//获取席位通讯录
 	//m_pEslHttpData->eslSetSeatContact(0, json);
@@ -80,7 +86,7 @@ bool CEslHttpControl::eslGetDataFromSrv(QJsonObject &json)
 }
 
 //esl设置数据
-bool CEslHttpControl::eslSetSrvData(QJsonObject &json)
+bool CEslHttpControl::eslSetSrvData(const QJsonObject &json)
 {
 	if (json.isEmpty())
 	{
@@ -103,7 +109,7 @@ bool CEslHttpControl::eslSetSrvData(QJsonObject &json)
 }
 
 //esl设置事件
-void CEslHttpControl::eslSetUserEvent(QJsonObject &json)
+void CEslHttpControl::eslSetUserEvent(const QJsonObject &json)
 {
 	bool bIsSeat = false;
 	if (json.contains("seat"))
@@ -179,4 +185,10 @@ CEslHttpCall* CEslHttpControl::eslGetCallPtr() const
 CEslHttpMeet* CEslHttpControl::eslGetMeetPtr() const
 {
 	return m_pEslHttpMeet;
+}
+
+//获取annc对象指针
+CEslHttpAnnc* CEslHttpControl::eslGetAnncPtr() const
+{
+	return m_pEslHttpAnnc;
 }

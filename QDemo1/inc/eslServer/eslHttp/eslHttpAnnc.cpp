@@ -1,18 +1,19 @@
-#include "eslHttpMeet.h"
+#include "eslHttpAnnc.h"
 
 #include "IRztCallNumberMgr.h"
 
-CEslHttpMeet::CEslHttpMeet()
+CEslHttpAnnc::CEslHttpAnnc()
 {
 }
 
-CEslHttpMeet::~CEslHttpMeet()
+CEslHttpAnnc::~CEslHttpAnnc()
 {
+
 }
 
 //////////////////////////////////////////////////////////////////////////
 //获取成员列表
-bool CEslHttpMeet::eslGetMeetUserList(const QJsonObject &json, QJsonObject &jsonValue)
+bool CEslHttpAnnc::eslGetAnncUserList(const QJsonObject &json, QJsonObject &jsonValue)
 {
 	if (json.isEmpty())
 	{
@@ -25,46 +26,46 @@ bool CEslHttpMeet::eslGetMeetUserList(const QJsonObject &json, QJsonObject &json
 	{
 		return false;
 	}
-	
+
 	int iTerminalId = callNumberMgr->getTerminalId(strUserNum.c_str());
-	std::string strUrl = "/api/v1/meeting/getMeetMembers";
-	
+	std::string strUrl = "/api/v1/satis/getSatisMembers";
+
 	std::string strMeetId;
 	if (json.contains("meetid"))
 	{
 		strMeetId = json["meetid"].toString().toStdString();	
 	}
-	
-	QJsonObject jsonMeet;
-	jsonMeet.insert("user", strUserNum.c_str());
-	jsonMeet.insert("token", iTerminalId);
-	jsonMeet.insert("meetingid", strMeetId.c_str());
-	
+
+	QJsonObject jsonAnnc;
+	jsonAnnc.insert("user", strUserNum.c_str());
+	jsonAnnc.insert("token", iTerminalId);
+	jsonAnnc.insert("atisid", strMeetId.c_str());
+
 	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, "", jsonMeet, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonAnnc, jsonRet))
 	{
 		return false;
 	}
-	
+
 	if (!jsonRet["data"].isArray())
 	{
 		return false;
 	}
-	
+
 	QJsonArray jsonArray(jsonRet["data"].toArray());
 	if (jsonArray.isEmpty())
 	{
 		return false;
 	}
-	
+
 	jsonValue.insert("count", jsonArray.size());
 	jsonValue.insert("data", jsonArray);
-	
+
 	return true;
 }
 
-//获取会议模板
-bool CEslHttpMeet::eslGetMeetTemplate(const QJsonObject &json, QJsonObject &jsonValue)
+//获取通播模板
+bool CEslHttpAnnc::eslGetAnncTemplate(const QJsonObject &json, QJsonObject &jsonValue)
 {
 	if (json.isEmpty())
 	{
@@ -79,8 +80,8 @@ bool CEslHttpMeet::eslGetMeetTemplate(const QJsonObject &json, QJsonObject &json
 	}
 	
 	int iTerminalId = callNumberMgr->getTerminalId(strUserNum.c_str());
-	std::string strUrl = "/api/v1/meeting/getMeetTemplate";
-	
+	std::string strUrl = "/api/v1/satis/getSatisTemplateList";
+
 	std::string strMeetId;
 	if (json.contains("meetid"))
 	{
@@ -92,15 +93,15 @@ bool CEslHttpMeet::eslGetMeetTemplate(const QJsonObject &json, QJsonObject &json
 	{
 		strMeetCreater = json["creator"].toString().toStdString();
 	}
-	
-	QJsonObject jsonMeet;
-	jsonMeet.insert("user", strUserNum.c_str());
-	jsonMeet.insert("token", iTerminalId);
-	jsonMeet.insert("meetingid", strMeetId.c_str());
-	jsonMeet.insert("creator", strMeetCreater.c_str());
+
+	QJsonObject jsonAnnc;
+	jsonAnnc.insert("user", strUserNum.c_str());
+	jsonAnnc.insert("token", iTerminalId);
+	jsonAnnc.insert("atisid", strMeetId.c_str());
+	jsonAnnc.insert("creator", strMeetCreater.c_str());
 	
 	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, "", jsonMeet, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonAnnc, jsonRet))
 	{
 		return false;
 	}
@@ -118,12 +119,12 @@ bool CEslHttpMeet::eslGetMeetTemplate(const QJsonObject &json, QJsonObject &json
 	
 	jsonValue.insert("count", jsonArray.size());
 	jsonValue.insert("data", jsonArray);
-	
+
 	return true;
 }
 
-//创建会议模板
-bool CEslHttpMeet::eslAddMeetTemplate(const QJsonObject &json, const QVector<QString> &vecMember, QJsonObject &jsonValue)
+//创建通播模板
+bool CEslHttpAnnc::eslAddAnncTemplate(const QJsonObject &json, const QVector<QString> &vecMember, QJsonObject &jsonValue)
 {
 	if (json.isEmpty())
 	{
@@ -136,16 +137,16 @@ bool CEslHttpMeet::eslAddMeetTemplate(const QJsonObject &json, const QVector<QSt
 	{
 		return false;
 	}
-	
+
 	QJsonArray jsonArray;
 	for (auto vec:vecMember)
 	{
 		jsonArray.append(vec);
 	}
-	
+
 	int iTerminalId = callNumberMgr->getTerminalId(strUserNum.c_str());
-	std::string strUrl = "/api/v1/meeting/addMeetTemplate";
-	
+	std::string strUrl = "/api/v1/satis/addSatisTemplate";
+
 	std::string strTitle;
 	if (json.contains("theme"))
 	{
@@ -159,20 +160,17 @@ bool CEslHttpMeet::eslAddMeetTemplate(const QJsonObject &json, const QVector<QSt
 	{
 		strTitle = strUserNum;
 	}
-	
-	QJsonObject jsonMeet;
-	jsonMeet.insert("user", strUserNum.c_str());
-	jsonMeet.insert("token", iTerminalId);
-	jsonMeet.insert("split", 0);
-	jsonMeet.insert("imagesize", 0);
-	jsonMeet.insert("meetmode", json["mode"].toInt());
-	jsonMeet.insert("title", strTitle.c_str());
-	jsonMeet.insert("needrecord", 1);
-	jsonMeet.insert("members", jsonArray);
-	jsonMeet.insert("administrator", strUserNum.c_str());
-	
+
+	QJsonObject jsonAnnc;
+	jsonAnnc.insert("user", strUserNum.c_str());
+	jsonAnnc.insert("token", iTerminalId);
+	jsonAnnc.insert("title", strTitle.c_str());
+	jsonAnnc.insert("needrecord", 1);
+	jsonAnnc.insert("members", jsonArray);
+	jsonAnnc.insert("administrator", strUserNum.c_str());
+
 	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, "", jsonMeet, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonAnnc, jsonRet))
 	{
 		return false;
 	}
@@ -182,15 +180,15 @@ bool CEslHttpMeet::eslAddMeetTemplate(const QJsonObject &json, const QVector<QSt
 	{
 		return false;
 	}
-	
+
 	jsonValue.insert("title", jsonMsg["title"].toString());
-	jsonValue.insert("meetid", jsonMsg["meetingid"].toInt());
-	
+	jsonValue.insert("meetid", jsonMsg["atisid"].toInt());
+
 	return true;
 }
 
-//删除会议模板
-bool CEslHttpMeet::eslDelMeetTemplate(const QJsonObject &json)
+//删除通播模板	
+bool CEslHttpAnnc::eslDelAnncTemplate(const QJsonObject &json)
 {
 	if (json.isEmpty())
 	{
@@ -206,18 +204,18 @@ bool CEslHttpMeet::eslDelMeetTemplate(const QJsonObject &json)
 	
 	int iTerminalId = callNumberMgr->getTerminalId(strUserNum.c_str());
 	std::string strMeetId = json["meetid"].toString().toStdString();
-	std::string strUrl = "/api/v1/meeting/delMeetTemplate";
-	
-	QJsonObject jsonMeet;
-	jsonMeet.insert("user", strUserNum.c_str());
-	jsonMeet.insert("token", iTerminalId);
-	jsonMeet.insert("meetingid", strMeetId.c_str());
+	std::string strUrl = "/api/v1/satis/delSatisTemplate";
+
+	QJsonObject jsonAnnc;
+	jsonAnnc.insert("user", strUserNum.c_str());
+	jsonAnnc.insert("token", iTerminalId);
+	jsonAnnc.insert("atisid", strMeetId.c_str());
 
 	QJsonObject jsonRet;
-	if (!postHttpRequest(strUrl, "", jsonMeet, jsonRet))
+	if (!postHttpRequest(strUrl, "", jsonAnnc, jsonRet))
 	{
 		return false;
 	}
-	
+
 	return true;
 }

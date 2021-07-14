@@ -36,14 +36,7 @@ CEslServer& CEslServer::Instance()
 bool CEslServer::isEslServer()
 {
 	ObjectPtr<IRztSettingMgr> settingMgr;
-	
-	bool bFlag = settingMgr->toBool(RztSettingKey::SKey_EslOpen);
-	if (!bFlag)
-	{
-		return false;
-	}
-	
-	return true;
+	return settingMgr->toBool(RztSettingKey::SKey_EslOpen);
 }
 
 //登录用户
@@ -78,127 +71,173 @@ bool CEslServer::loginUser(const QJsonObject &json)
 bool CEslServer::createMeeting(STMeetingDetailInfo &detailInfo, const QVector<QString> &vecMember)
 {
 	CEslHttpMeet *pEslHttpMeet = m_pHttpCtrl->eslGetMeetPtr();
-	if (pEslHttpMeet == Q_NULLPTR)
+	CEslHttpAnnc *pEslHttpAnnc = m_pHttpCtrl->eslGetAnncPtr();
+
+	if (pEslHttpMeet == Q_NULLPTR || pEslHttpAnnc == Q_NULLPTR)
 	{
 		return false;
 	}
-	
-	ObjectPtr<IRztCreateMeetingCondition> meetingCreate;
-	if (!meetingCreate->canCreate())
-    {
-        addLastErr("会议操作太频繁，请稍侯!");
-        return false;
-    }
-	
-	QJsonObject jsonInfo;
-	jsonInfo.insert("mode", detailInfo.nMode);
-	jsonInfo.insert("type", detailInfo.nType);
-	jsonInfo.insert("theme", detailInfo.strTheme);
-	jsonInfo.insert("voice", detailInfo.strVoice);
-	jsonInfo.insert("endmode", detailInfo.nEndMode);
+
+	QJsonObject jsonMeet;
+	jsonMeet.insert("mode", detailInfo.nMode);
+	jsonMeet.insert("type", detailInfo.nType);
+	jsonMeet.insert("theme", detailInfo.strTheme);
+	jsonMeet.insert("voice", detailInfo.strVoice);
+	jsonMeet.insert("endmode", detailInfo.nEndMode);
 	
 	QJsonObject jsonRet;
-	if (!pEslHttpMeet->eslAddMeetTemplate(jsonInfo, vecMember, jsonRet))
-	{
-		addLastErr("会议模板创建失败，请检查!");
-		return false;
+	int iType = detailInfo.nType;
+	
+	if (iType == 2)
+	{//通播
+		if (!pEslHttpAnnc->eslAddAnncTemplate(jsonMeet, vecMember, jsonRet))
+		{
+			addLastErr("通播模板创建失败,请检查!");
+			return false;
+		}
+	}
+	else
+	{//会议
+		if (!pEslHttpMeet->eslAddMeetTemplate(jsonMeet, vecMember, jsonRet))
+		{
+			addLastErr("会议模板创建失败,请检查!");
+			return false;
+		}
 	}
 	
-	detailInfo.nMeetingId = jsonRet["meetingid"].toInt();
-	if (detailInfo.nMeetingId <= 0)
-	{
-		addLastErr("会议号发生错误, 请检查!");
-		return false;
-	}
-	
+	detailInfo.nMeetingId = jsonRet["meetid"].toInt();
+
 	ObjectPtr<ISDKMeeting> sdkMeeting;
-	if (sdkMeeting->createMeeting(detailInfo, vecMember) == INVALID_ID)
+	int iRet = sdkMeeting->createMeeting(detailInfo, vecMember);
+	if (iRet <= 0 || iRet == INVALID_ID)
 	{
-		QJsonObject json;
-		json.insert("meetId", std::to_string(detailInfo.nMeetingId).c_str());
-		
-		pEslHttpMeet->eslDelMeetTemplate(json);
 		addLastErr("会议创建失败!");
+		closeMeeting(iType, detailInfo.nMeetingId);
 		return false;
 	}
-	
-	meetingCreate->setMeetingDetailInfo(detailInfo);
-	meetingCreate->setMeetingId(jsonRet["meetingid"].toInt());
-	
+
+	if (iType == 2)
+	{
+		ObjectPtr<IRztCreateMeetingCondition> AnnounceCreate;
+
+		AnnounceCreate->setMeetingDetailInfo(detailInfo);
+		AnnounceCreate->setMeetingId(jsonRet["meetid"].toInt());
+	}
+	else
+	{
+		ObjectPtr<IRztCreateMeetingCondition> meetingCreate;
+
+		meetingCreate->setMeetingDetailInfo(detailInfo);
+		meetingCreate->setMeetingId(jsonRet["meetid"].toInt());
+	}
+
 	return true;
 }
 
 //关闭会议
-void CEslServer::closeMeeting(int iMeetId)
+void CEslServer::closeMeeting(int iType, int iMeetId)
 {
 	CEslHttpMeet *pEslHttpMeet = m_pHttpCtrl->eslGetMeetPtr();
-	if (pEslHttpMeet == Q_NULLPTR || iMeetId <= 0)
+	CEslHttpAnnc *pEslHttpAnnc = m_pHttpCtrl->eslGetAnncPtr();
+
+	if (iMeetId <= 0 || pEslHttpMeet == Q_NULLPTR || pEslHttpAnnc == Q_NULLPTR)
 	{
 		return;
 	}
 	
-	QJsonObject jsonInfo;
-	jsonInfo.insert("meetId", std::to_string(iMeetId).c_str());
+	QJsonObject jsonMeet;
+	jsonMeet.insert("meetid", std::to_string(iMeetId).c_str());
 	
-	if (!pEslHttpMeet->eslDelMeetTemplate(jsonInfo))
-	{
-		addLastErr("会议模板删除失败!");
-		return;
+	if (iType == 2)
+	{//通播
+		if (!pEslHttpAnnc->eslDelAnncTemplate(jsonMeet))
+		{
+			addLastErr("会议模板删除失败!");
+		}
 	}
-	
-	ObjectPtr<ISDKMeeting> sdkMeeting;
-	sdkMeeting->vsDeleteMeeting(iMeetId, "");
+	else
+	{//会议
+		if (!pEslHttpMeet->eslDelMeetTemplate(jsonMeet))
+		{
+			addLastErr("会议模板删除失败!");
+		}
+	}
 }
 
 //获取会议信息
-bool CEslServer::getMeetingInfo(int iMeetId, QJsonObject &jsonValue)
+bool CEslServer::getMeetingInfo(int iType, int iMeetId, QJsonObject &jsonValue)
 {
 	CEslHttpMeet *pEslHttpMeet = m_pHttpCtrl->eslGetMeetPtr();
-	if (pEslHttpMeet == Q_NULLPTR || iMeetId <= 0)
+	CEslHttpAnnc *pEslHttpAnnc = m_pHttpCtrl->eslGetAnncPtr();
+
+	if (iMeetId <= 0 || pEslHttpMeet == Q_NULLPTR || pEslHttpAnnc == Q_NULLPTR)
 	{
 		return false;
 	}
 	
-	QJsonObject jsonInfo;
-	jsonInfo.insert("meetId", std::to_string(iMeetId).c_str());
+	QJsonObject jsonMeet;
+	jsonMeet.insert("meetid", std::to_string(iMeetId).c_str());
 	
 	QJsonObject jsonRet;
-	if (!pEslHttpMeet->eslGetMeetTemplate(jsonInfo, jsonRet))
+	if (iType == 2)
 	{
-		addLastErr("获取会议模板失败!");
-		return false;
+		if (!pEslHttpAnnc->eslGetAnncTemplate(jsonMeet, jsonRet))
+		{
+			addLastErr("获取通播模板失败!");
+			return false;
+		}
+	}
+	else
+	{
+		if (!pEslHttpMeet->eslGetMeetTemplate(jsonMeet, jsonRet))
+		{
+			addLastErr("获取会议模板失败!");
+			return false;
+		}
 	}
 	
 	int iCount = jsonRet["count"].toInt();
 	QJsonArray array = jsonRet["data"].toArray();
 	if (iCount <= 0 || array.isEmpty())
 	{
-		addLastErr("会议模板数据发生错误!");
+		addLastErr("模板数据发生错误!");
 		return false;
 	}
 	
 	jsonValue = array.at(0).toObject();
-	
 	return true;
 }
 
 //获取会议成员
-bool CEslServer::getMeetingUserList(int iMeetId, QVector<STMeetingMemberVs> &vecMember)
+bool CEslServer::getMeetingUserList(int iType, int iMeetId, QVector<STMeetingMemberVs> &vecMember)
 {
 	CEslHttpMeet *pEslHttpMeet = m_pHttpCtrl->eslGetMeetPtr();
-	if (pEslHttpMeet == Q_NULLPTR || iMeetId <= 0)
+	CEslHttpAnnc *pEslHttpAnnc = m_pHttpCtrl->eslGetAnncPtr();
+
+	if (iMeetId <= 0 || pEslHttpMeet == Q_NULLPTR || pEslHttpAnnc == Q_NULLPTR)
 	{
 		return false;
 	}
 	
-	QJsonObject jsonInfo;
-	jsonInfo.insert("meetId", std::to_string(iMeetId).c_str());
+	QJsonObject jsonMeet;
+	jsonMeet.insert("meetid", std::to_string(iMeetId).c_str());
 	
 	QJsonObject jsonRet;
-	if (!pEslHttpMeet->eslGetMeetUserList(jsonInfo, jsonRet))
+	if (iType == 2)
 	{
-		addLastErr("获取会议成员失败!");
-		return false;
+		if (!pEslHttpAnnc->eslGetAnncUserList(jsonMeet, jsonRet))
+		{
+			addLastErr("获取会议成员失败!");
+			return false;
+		}
+	}
+	else
+	{
+		if (!pEslHttpMeet->eslGetMeetUserList(jsonMeet, jsonRet))
+		{
+			addLastErr("获取会议成员失败!");
+			return false;
+		}
 	}
 	
 	int iCount = jsonRet["count"].toInt();
@@ -237,46 +276,99 @@ int CEslServer::getMeetStatusFromEsl(int iStatus)
 	int iMmsState = MMS_OFFLINE;
 	switch (iStatus)
 	{
-	case ESL_MEMB_STATE_INIT:
+	case MEET_MEMB_STATE_INIT:
 		iMmsState = static_cast<int>(MMS_INIT);
 		break;
 		
-	case ESL_MEMB_STATE_OFFLINE:
+	case MEET_MEMB_STATE_OFFLINE:
 		iMmsState = static_cast<int>(MMS_OFFLINE);
 		break;
 		
-	case ESL_MEMB_STATE_INVITING:
+	case MEET_MEMB_STATE_INVITING:
 		iMmsState = static_cast<int>(MMS_INVITING);
 		break;
 		
-	case ESL_MEMB_STATE_ANSWER:
+	case MEET_MEMB_STATE_ANSWER:
 		iMmsState = static_cast<int>(MMS_JOINED);
 		break;
 		
-	case ESL_MEMB_STATE_NOANSWER:
+	case MEET_MEMB_STATE_NOANSWER:
 		iMmsState = static_cast<int>(MMS_NO_ANSWER);
 		break;
 		
-	case ESL_MEMB_STATE_REJECT:
+	case MEET_MEMB_STATE_REJECT:
 		iMmsState = static_cast<int>(MMS_REJECT);
 		break;
 		
-	case ESL_MEMB_STATE_EXIT:
+	case MEET_MEMB_STATE_EXIT:
 		iMmsState = static_cast<int>(MMS_EXIT);
 		break;
 		
-	case ESL_MEMB_STATE_SILENCE:
+	case MEET_MEMB_STATE_KICKOUT:
+		iMmsState = static_cast<int>(MMS_KICKOUTED);
+		break;
+		
+	case MEET_MEMB_STATE_SILENCE:
 		iMmsState = static_cast<int>(MMS_MUTED);
 		break;
 		
-	case ESL_MEMB_STATE_HOLDING:
+	case MEET_MEMB_STATE_HOLDING:
 		iMmsState = static_cast<int>(MMS_NON_TALK);
 		break;
 		
-	case ESL_MEMB_STATE_SPEECHING:
+	case MEET_MEMB_STATE_SPEECHING:
 		iMmsState = static_cast<int>(MMS_TALK);
 		break;
 		
+	default:
+		break;
+	}
+	
+	return iMmsState;
+}
+
+//获取通播状态
+int CEslServer::getAnncStatusFromEsl(int iStatus)
+{
+	int iMmsState = MMS_OFFLINE;
+	switch (iStatus)
+	{
+	case ANNC_MEMB_STATE_INIT:
+		iMmsState = static_cast<int>(MMS_INIT);
+		break;
+
+	case ANNC_MEMB_STATE_OFFLINE:
+		iMmsState = static_cast<int>(MMS_OFFLINE);
+		break;
+
+	case ANNC_MEMB_STATE_CALLING:
+		iMmsState = static_cast<int>(MMS_INVITING);
+		break;
+
+	case ANNC_MEMB_STATE_CONNECT:
+		iMmsState = static_cast<int>(MMS_JOINED);
+		break;
+
+	case ANNC_MEMB_STATE_SPEAKING:
+		iMmsState = static_cast<int>(MMS_TALK);
+		break;
+
+	case ANNC_MEMB_STATE_NOANSWER:
+		iMmsState = static_cast<int>(MMS_NO_ANSWER);
+		break;
+
+	case ANNC_MEMB_STATE_HUNGUP:
+		iMmsState = static_cast<int>(MMS_EXIT);
+		break;
+
+	case ANNC_MEMB_STATE_KICKOUT:
+		iMmsState = static_cast<int>(MMS_KICKOUTED);
+		break;
+
+	case ANNC_MEMB_STATE_REJECT:
+		iMmsState = static_cast<int>(MMS_REJECT);
+		break;
+
 	default:
 		break;
 	}
