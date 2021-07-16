@@ -32,7 +32,15 @@ void CEslAnncAdapter::eslBuildPkg(const QJsonObject &json, std::string &strJson,
 	case SCH_MEETING_MEMB_KICKOUT_REQ:
 		OnReqEslDelAnncMemb(json, strJson, iMsgType);
 		break;
-		
+
+	case SCH_PHONE_HANDLE_UPDATE_STATE_CMD:
+		OnReqEslSpeakDetect(json, strJson, iMsgType);
+		break;	
+
+	case SCH_MEETING_GET_SPEC_PICTURE_REQ:
+		OnReqEslRequestVideo(json, strJson, iMsgType);
+		break;
+	
 	default:
 		break;	
 	}
@@ -69,6 +77,21 @@ bool CEslAnncAdapter::eslBuildJson(int iMsgType, char *pPayload, QJsonObject &js
 		
 	case ESL_MSG_DELANNCMEMB_RESP:
 		bRet = OnRespEslDelAnncMemb(json, jsonRet);
+		break;
+
+	case ESL_MSG_STARTSPEAK_RESP:
+	case ESL_MSG_STOPSPEAK_RESP:
+		bRet = OnRespEslSpeakDetect(iMsgType, json, jsonRet);
+		break;	
+
+	case ESL_MSG_STARTVIDEO_REQ:	//视频查看对方处理消息
+	case ESL_MSG_STOPVIDEO_REQ:
+		bRet = OnNotifyRequestVideo(iMsgType, json, jsonRet);
+		break;
+
+	case ESL_MSG_STARTVIDEO_RESP:	//视频查看申请方处理消息
+	case ESL_MSG_STOPVIDEO_RESP:
+		bRet = OnRespEslRequestVideo(iMsgType, json, jsonRet);
 		break;
 		
 	default:
@@ -359,47 +382,246 @@ bool CEslAnncAdapter::OnRespEslDelAnncMemb(const QJsonObject &json, QJsonObject 
 	return true;
 }
 
-//开启手咪对讲Req
-void CEslAnncAdapter::OnReqEslStartSpeak(const QJsonObject &json, std::string &strJson, int &iMsgType)
+//手咪对讲Req
+void CEslAnncAdapter::OnReqEslSpeakDetect(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
+	QJsonObject jsonMsg = json.value("msg").toObject();
+	if (jsonMsg.isEmpty())
+	{
+		return;
+	}
 	
+	std::string strMeetId = std::to_string(jsonMsg["meetid"].toInt());
+	std::string strTernimalId = std::to_string(jsonMsg["ternimalId"].toInt());
+	if (strMeetId == "" || strTernimalId == "")
+	{
+		return;
+	}
+
+	QJsonObject jsonRet;
+	jsonRet.insert("seq", json["requestId"].toInt());
+	jsonRet.insert("lgnum", json["connector"].toString());
+	jsonRet.insert("atisid", strMeetId.c_str());
+	jsonRet.insert("token", strTernimalId.c_str());
+
+	int iState = jsonMsg["state"].toInt();
+	if (iState == MMS_TALK)
+	{
+		iMsgType = ESL_MSG_STARTSPEAK_REQ;
+		strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
+	}
+	else if (iState == MMS_NON_TALK)
+	{
+		iMsgType = ESL_MSG_STOPSPEAK_REQ;
+		strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
+	}
 }
 
 //开启手咪对讲Resp
-bool CEslAnncAdapter::OnRespEslStartSpeak(const QJsonObject &json, QJsonObject &jsonRet)
+bool CEslAnncAdapter::OnRespEslSpeakDetect(int iMsgType, const QJsonObject &json, QJsonObject &jsonRet)
 {
+	if (json.isEmpty())
+	{
+		return false;
+	}
+	
+	if (json["result"].toInt() != 0 || json["token"].toString() == "")
+	{
+		return false;
+	}
+	
+	std::string strMeetId = json["atisid"].toString().toStdString();
+	if (strMeetId == "")
+	{
+		return false;
+	}
+
+	QJsonObject jsonData;
+	jsonData.insert("requestId", json["seq"].toInt());
+	jsonData.insert("meetid", std::stoi(strMeetId));
+
+	jsonRet.insert("feedback", jsonData);
+	jsonRet.insert("businessType", PKG_TYPE_SCHEDULE);
+	
 	return true;
 }
 
-//关闭手咪对讲Req
-void CEslAnncAdapter::OnReqEslStopSpeak(const QJsonObject &json, std::string &strJson, int &iMsgType)
+//请求视频查看Req
+void CEslAnncAdapter::OnReqEslRequestVideo(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
+	QJsonObject jsonMsg = json.value("msg").toObject();
+	if (jsonMsg.isEmpty())
+	{
+		return;
+	}
+	
+	std::string strMeetId = std::to_string(jsonMsg["meetid"].toInt());
+	std::string strTernimalId = std::to_string(jsonMsg["ternimalId"].toInt());
+	if (strMeetId == "" || strTernimalId == "")
+	{
+		return;
+	}
+
+	std::string strUserNum = jsonMsg["targetnum"].toString().toStdString();
+	if (strUserNum == "")
+	{
+		return;
+	}
+
+	QJsonObject jsonRet;
+	jsonRet.insert("seq", json["requestId"].toInt());
+	jsonRet.insert("lgnum", json["connector"].toString());
+	jsonRet.insert("atisid", strMeetId.c_str());
+	jsonRet.insert("mem", strUserNum.c_str());
+	jsonRet.insert("token", strTernimalId.c_str());
+
+	int iViewState = jsonMsg["viewstate"].toInt();
+	if (iViewState == ARVC_RequesterOpen)
+	{
+		iMsgType = ESL_MSG_STARTVIDEO_REQ;
+		strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
+	}
+	else
+	{
+		if (iViewState == ARVC_RequesterCancel)
+		{
+			iMsgType = ESL_MSG_STOPVIDEO_REQ;
+			strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
+		}
+	}
 }
 
-//关闭手咪对讲Resp
-bool CEslAnncAdapter::OnRespEslStopSpeak(const QJsonObject &json, QJsonObject &jsonRet)
+//请求视频查看Resp
+bool CEslAnncAdapter::OnRespEslRequestVideo(int iMsgType, const QJsonObject &json, QJsonObject &jsonRet)
 {
+	if (json.isEmpty())
+	{
+		return false;
+	}
+
+	if (json["result"].toInt() != 0 || json["token"].toString() == "")
+	{
+		return false;
+	}
+
+	std::string strMeetId = json["atisid"].toString().toStdString();
+	if (strMeetId == "")
+	{
+		return false;
+	}
+
+	QJsonObject jsonData;
+	jsonData.insert("requestId", json["seq"].toInt());
+	jsonData.insert("meetid", std::stoi(strMeetId));
+
+	jsonRet.insert("feedback", jsonData);
+	jsonRet.insert("businessType", PKG_TYPE_SCHEDULE);
+	
 	return true;
 }
 
-//开启视频查看Req
-void CEslAnncAdapter::OnReqEslStartVideo(const QJsonObject &json, std::string &strJson, int &iMsgType)
+//请求视频通知
+bool CEslAnncAdapter::OnNotifyRequestVideo(int iMsgType, const QJsonObject &json, QJsonObject &jsonRet)
 {
-}
+	if (json.isEmpty())
+	{
+		return false;
+	}
 
-//开启视频查看Resp
-bool CEslAnncAdapter::OnRespEslStartVideo(const QJsonObject &json, QJsonObject &jsonRet)
-{
+	std::string strMeetId = json["atisid"].toString().toStdString();
+	std::string strTernimalId = json["token"].toString().toStdString();
+	if (strMeetId == "" || strTernimalId == "")
+	{
+		return false;
+	}
+
+	std::string strReqNum = json["lgnum"].toString().toStdString();
+	std::string strRecvNum = json["mem"].toString().toStdString();
+	if (strReqNum == "" || strRecvNum == "")
+	{
+		return false;
+	}
+
+	int iViewState = ARVC_RequesterCancel;
+	if (iMsgType == ESL_MSG_STARTVIDEO_REQ)
+	{
+		iViewState = ARVC_RequesterOpen;
+	}
+	else 
+	{
+		if (iMsgType == ESL_MSG_STOPVIDEO_REQ)
+		{
+			iViewState = ARVC_RequesterCancel;
+		}
+	}
+
+	QJsonObject jsonData;
+	jsonData.insert("preresult", AVE_SUCCESS);
+	jsonData.insert("prereqid", json["seq"].toInt());
+	jsonData.insert("preternimalid", std::stoi(strTernimalId));
+	jsonData.insert("pretransactionid", std::stoi(strMeetId));
+
+	jsonData.insert("uicfg", iViewState);	//请求查看视频
+	jsonData.insert("videosender", json["lgnum"].toString());
+	jsonData.insert("videoreceiver", json["mem"].toString());
+
+	jsonRet.insert("feedback", jsonData);
+	jsonRet.insert("msgType", SCH_MEETING_GET_SPEC_PICTURE_RESP);
+	jsonRet.insert("businessType", PKG_TYPE_SCHEDULE);
+
 	return true;
 }
 
-//关闭视频查看Req
-void CEslAnncAdapter::OnReqEslStopVideo(const QJsonObject &json, std::string &strJson, int &iMsgType)
+//回复视频确认消息
+void CEslAnncAdapter::OnReqEslConfirmVideo(const QJsonObject &json, std::string &strJson, int &iMsgType)
 {
-}
+	QJsonObject jsonMsg = json.value("msg").toObject();
+	if (jsonMsg.isEmpty())
+	{
+		return;
+	}
 
-//关闭视频查看Resp
-bool CEslAnncAdapter::OnRespEslStopVideo(const QJsonObject &json, QJsonObject &jsonRet)
-{
-	return true;
+	std::string strMeetId = std::to_string(jsonMsg["pretransactionid"].toInt());
+	std::string strTernimalId = std::to_string(jsonMsg["preternimalid"].toInt());
+	if (strMeetId == "" || strTernimalId == "")
+	{
+		return;
+	}
+
+	int iResult = -1;
+	std::string strReqNum;
+	std::string strRecvNum;
+
+	int iViewState = jsonMsg["viewstate"].toInt();
+	if (iViewState == ARVC_AnswerAgreen)
+	{
+		iResult = 0;
+		strReqNum = jsonMsg["selfnum"].toString().toStdString();
+		strRecvNum = jsonMsg["targetnum"].toString().toStdString();
+	}
+	else 
+	{
+		if (iViewState == ARVC_AnswerReject)
+		{
+			iResult = -1;
+			strReqNum = jsonMsg["targetnum"].toString().toStdString();
+			strRecvNum = jsonMsg["selfnum"].toString().toStdString();
+		}
+		else
+		{
+			return;
+		}
+	}
+
+	QJsonObject jsonRet;
+	jsonRet.insert("seq", jsonMsg["prereqid"].toInt());
+	jsonRet.insert("result", iResult);
+	jsonRet.insert("atisid", strMeetId.c_str());
+	jsonRet.insert("token", strTernimalId.c_str());
+
+	jsonRet.insert("lgnum", strReqNum.c_str());
+	jsonRet.insert("mem", strRecvNum.c_str());
+
+	iMsgType = ESL_MSG_STARTVIDEO_RESP;
+	strJson = std::string(QJsonDocument(jsonRet).toJson(QJsonDocument::Compact));
 }

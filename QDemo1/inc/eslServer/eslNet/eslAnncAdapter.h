@@ -41,29 +41,23 @@ protected:
 	//删除通播成员Resp
 	bool OnRespEslDelAnncMemb(const QJsonObject &json, QJsonObject &jsonRet);
 	
-	//开启手咪对讲Req
-	void OnReqEslStartSpeak(const QJsonObject &json, std::string &strJson, int &iMsgType);
+	//手咪对讲Req
+	void OnReqEslSpeakDetect(const QJsonObject &json, std::string &strJson, int &iMsgType);
 	
-	//开启手咪对讲Resp
-	bool OnRespEslStartSpeak(const QJsonObject &json, QJsonObject &jsonRet);
+	//手咪对讲Resp
+	bool OnRespEslSpeakDetect(int iMsgType, const QJsonObject &json, QJsonObject &jsonRet);
 	
-	//关闭手咪对讲Req
-	void OnReqEslStopSpeak(const QJsonObject &json, std::string &strJson, int &iMsgType);
+	//请求视频查看Req
+	void OnReqEslRequestVideo(const QJsonObject &json, std::string &strJson, int &iMsgType);
 	
-	//关闭手咪对讲Resp
-	bool OnRespEslStopSpeak(const QJsonObject &json, QJsonObject &jsonRet);
-	
-	//开启视频查看Req
-	void OnReqEslStartVideo(const QJsonObject &json, std::string &strJson, int &iMsgType);
-	
-	//开启视频查看Resp
-	bool OnRespEslStartVideo(const QJsonObject &json, QJsonObject &jsonRet);
-	
-	//关闭视频查看Req
-	void OnReqEslStopVideo(const QJsonObject &json, std::string &strJson, int &iMsgType);
-	
-	//关闭视频查看Resp
-	bool OnRespEslStopVideo(const QJsonObject &json, QJsonObject &jsonRet);
+	//请求视频查看Resp
+	bool OnRespEslRequestVideo(int iMsgType, const QJsonObject &json, QJsonObject &jsonRet);
+
+	//请求视频通知
+	bool OnNotifyRequestVideo(int iMsgType, const QJsonObject &json, QJsonObject &jsonRet);
+
+	//回复视频确认消息
+	void OnReqEslConfirmVideo(const QJsonObject &json, std::string &strJson, int &iMsgType);
 };
 
 #endif

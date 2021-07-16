@@ -17,6 +17,7 @@
 #include "STHeader.h"
 #include "mcBaseDef.h"
 #include <DCProtocol.h>
+#include <IRztAnnounceRequestVideoMgr.h>
 #define ESL_PROTOCOL_ID		0x1234abcd
 
 //pkg包类型

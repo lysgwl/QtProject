@@ -353,6 +353,10 @@ int CEslServer::getAnncStatusFromEsl(int iStatus)
 		iMmsState = static_cast<int>(MMS_TALK);
 		break;
 
+	case ANNC_MEMB_STATE_NOSPEAKING:
+		iMmsState = static_cast<int>(MMS_NON_TALK);
+		break;	
+
 	case ANNC_MEMB_STATE_NOANSWER:
 		iMmsState = static_cast<int>(MMS_NO_ANSWER);
 		break;
