@@ -1,14 +1,11 @@
-#ifndef INTERNAL_H
-#define INTERNAL_H
+#ifndef __INTERNAL_H__
+#define __INTERNAL_H__
 
-#include "stHeader.h"
+#include "stheader.h"
+#include "objects.h"
+#include "macros.h"
 
-#include "GenUtils.h"
-#include "ObjectMgr.h"
-#include "FrameWork.h"
-#include "StyleSheet.h"
-
-#include "./test/FuncTest.h"
-#include "./test/ThreadTest.h"
+//#include "../framework/GenUtils.h"
+//#include "../framework/FrameWork.h"
 
 #endif

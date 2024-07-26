@@ -7,8 +7,8 @@ int main(int argc, char *argv[])
 
     QApplication::setQuitOnLastWindowClosed(false);
     
-	app.initModule();
-    app.runModule();
+	app.init_module();
+    app.run_module();
 	
     return app.exec();
 }

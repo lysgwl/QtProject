@@ -4,6 +4,10 @@ CGenUtils::CGenUtils()
 {
 }
 
+CGenUtils::~CGenUtils()
+{
+}
+
 void CGenUtils::mkdir(const QString &strDir)
 {
 	QDir dir(strDir);

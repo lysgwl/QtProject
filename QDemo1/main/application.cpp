@@ -1,30 +1,29 @@
 #include "application.h"
 
-#include <internal.h>
-#include "../control/ControlerMain.h"
+#include "../framework/FrameWork.h"
 
 CApplication::CApplication(int &argc, char **argv):
     QApplication(argc, argv)
 {
 }
 
-void CApplication::initModule()
+void CApplication::init_module()
 {
-    setAppEnv();
-    setAppModule();
+    set_app_env();
+    set_app_module();
 }
 
-void CApplication::runModule()
+void CApplication::run_module()
 {
-    ControlerMain::showControlMain();
+    //ControlerMain::showControlMain();
 }
 
-void CApplication::setAppEnv()
+void CApplication::set_app_env()
 {
-    CFrameWork::getFrameWork().initGlobalEnv();
+    CFrameWork::get_frame_work().init_global_env();
 }
 
-void CApplication::setAppModule()
+void CApplication::set_app_module()
 {
-    ControlerMain::registerObj();
+    //ControlerMain::registerObj();
 }

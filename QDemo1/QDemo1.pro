@@ -59,45 +59,20 @@ INCLUDEPATH += \
 	./inc
 
 HEADERS += \
-	main/application.h \
-	inc/internal.h \
-	inc/stHeader.h \
-	inc/GenUtils.h \
-	inc/FrameWork.h \
-	inc/ObjectMgr.h \
-	inc/StyleSheet.h \
-	control/ControlerMain.h \
-	control/HomePageControl.h \
-	control/MainFrameControl.h \
-	control/WorkMainControl.h \
-	control/ToolStatusControl.h \
-	widget/HomePageView.h \
-	widget/MainFrameView.h \
-	widget/WorkMainView.h \
-	widget/ToolStatusView.h \ 
-	widget/BottomMenuView.h \
-	inc/test/FuncTest.h \
-	inc/test/ThreadTest.h \
+		inc/internal.h \
+		inc/stheader.h \
+		inc/macros.h   \
+		inc/objects.h  \
+		main/application.h \
+		interface/IMgrObject.h \
+        framework/GenUtils.h \
+        framework/FrameWork.h \
 
 SOURCES += \
-	main/main.cpp \
-	main/application.cpp \
-	inc/GenUtils.cpp \
-	inc/FrameWork.cpp \
-	inc/ObjectMgr.cpp \
-	inc/StyleSheet.cpp \
-	control/ControlerMain.cpp \
-	control/HomePageControl.cpp \
-	control/MainFrameControl.cpp \
-	control/WorkMainControl.cpp \
-	control/ToolStatusControl.cpp \
-	widget/HomePageView.cpp \
-	widget/MainFrameView.cpp \
-	widget/WorkMainView.cpp \
-	widget/ToolStatusView.cpp \
-	widget/BottomMenuView.cpp \
-	inc/test/FuncTest.cpp \
-	inc/test/ThreadTest.cpp \
+		main/main.cpp \
+		main/application.cpp \
+        framework/GenUtils.cpp \
+        framework/FrameWork.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc
