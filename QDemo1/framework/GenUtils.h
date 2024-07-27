@@ -14,6 +14,9 @@ private:
 	CGenUtils& operator=(const CGenUtils&) = delete;
 	
 public:
+	static CGenUtils &GetInstance();	
+	
+public:
 	// 创建目录
 	void mkdir(const QString &strDir);
 

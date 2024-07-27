@@ -63,16 +63,20 @@ HEADERS += \
 		inc/stheader.h \
 		inc/macros.h   \
 		inc/objects.h  \
-		main/application.h \
 		interface/IMgrObject.h \
+		interface/IMgrService.h \
         framework/GenUtils.h \
         framework/FrameWork.h \
+		framework/ObjectMgr.h \
+		framework/ObjectServiceLocator.h \
+		main/application.h \
 
 SOURCES += \
 		main/main.cpp \
 		main/application.cpp \
         framework/GenUtils.cpp \
         framework/FrameWork.cpp \
+		framework/ObjectMgr.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc

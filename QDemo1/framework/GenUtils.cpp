@@ -8,6 +8,12 @@ CGenUtils::~CGenUtils()
 {
 }
 
+CGenUtils& CGenUtils::GetInstance()
+{
+    static CGenUtils instance;
+    return instance;
+}
+
 void CGenUtils::mkdir(const QString &strDir)
 {
 	QDir dir(strDir);

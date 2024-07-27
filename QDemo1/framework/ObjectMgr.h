@@ -1,26 +1,34 @@
 #ifndef __OBJECT_MGR_H__
 #define __OBJECT_MGR_H__
 
+#include <IMgrObject.h>
+#include <IMgrService.h>
+
 class CObjectMgr ：public IMgrObject, public IMgrService
 {
 private:
-	std::map<ObjectKey, CObject*> m_mapData;
+	QMap<QString, CObject*> m_mapData;
 	
 public:
-	CObjectMgr();
-	~CObjectMgr();
+	CObjectMgr()
+	~CObjectMgr()
 	
 public:
-	void init();
+	// 初始化服务
+	void init()
 
-	void exec();
+	// 执行服务
+	void exec()
 
 public:
-	QString  getObjectName(CObject* obj) override;
-	void 	 addObject(const ObjectKey& key, CObject* obj) override;
+	// 获取对象
+	CObject* getObject(const QString& strName) override;
 	
-	CObject* getObject(const QString& strName, const int& index=-1) override;
-	CObject* getObject(const ObjectKey& key) override;
+	// 注册对象
+	void addObject(const QString& strName, CObject* obj) override;
+	
+	// 清空对象
+	void cleanObject();
 };
 
 #endif

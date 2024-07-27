@@ -1,39 +1,47 @@
 #include "ObjectMgr.h"
 
-
 CObjectMgr::CObjectMgr()
-{
-}
+{}
 
 CObjectMgr::~CObjectMgr()
 {
+	cleanObject();
 }
 
+// 初始化服务
 void CObjectMgr::init()
 {
 }
 
+// 执行服务
 void CObjectMgr::exec()
 {
 }
 
-QString CObjectMgr::getObjectName(CObject* obj)
+// 获取对象
+CObject* CObjectMgr::getObject(const QString& strName)
 {
-	ObjectKey key = m_mapData.key(obj);
-	return std::get<0>(key)
-}
-
-void CObjectMgr::addObject(const ObjectKey& key, CObject* obj)
-{
+	if (!m_mapData.contains(strName))
+	{
+		return nullptr;
+	}
 	
+	return m_mapData[strName].data();
 }
 
-CObject* CObjectMgr::getObject(const QString& strName, const int& index)
+// 注册对象
+void CObjectMgr::addObject(const QString& strName, CObject* obj)
 {
-	return getObject(ObjectKey(strName, index))
+	if (!obj)
+	{
+		return;
+	}
+	
+	m_mapData.insert(strName, QSharedPointer<T>(obj));
 }
 
-CObject* CObjectMgr::getObject(const ObjectKey& key)
+// 清空对象
+void CObjectMgr::cleanObject()
 {
-	return m_mapData.value(key);
+	m_mapData.clear();
 }
