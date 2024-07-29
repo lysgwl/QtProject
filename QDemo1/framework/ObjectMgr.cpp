@@ -26,7 +26,7 @@ CObject* CObjectMgr::getObject(const QString& strName)
 		return nullptr;
 	}
 	
-	return m_mapData[strName].data();
+    return m_mapData[strName];
 }
 
 // 注册对象
@@ -37,7 +37,7 @@ void CObjectMgr::addObject(const QString& strName, CObject* obj)
 		return;
 	}
 	
-	m_mapData.insert(strName, QSharedPointer<T>(obj));
+    m_mapData.insert(strName, obj);
 }
 
 // 清空对象

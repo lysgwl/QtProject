@@ -8,9 +8,9 @@ template <typename T>
 class CObjectServiceLocator : public IMgrServiceLocator
 {
 private:
-	QMap<QString, QSharedPointer<IService>><T> m_mapService;
+    QMap<QString, QSharedPointer<T>> m_mapService;
 	 
-public
+public:
 	CObjectServiceLocator() {}
 	~CObjectServiceLocator() 
 	{
@@ -20,33 +20,33 @@ public
 protected:
 	void cleanService()
 	{
-		m_mapService.clear();
+        m_mapService.clear();
 	}
 	
 public:
-	T* getService(const std::string& strServiceName)
+    T* getService(const QString& strServiceName)
 	{
-		if (!m_mapService.contains(strServiceName))
+        if (!m_mapService.contains(strServiceName))
 		{
 			return nullptr;
 		}
 		
-		return m_mapService.value(strServiceName).data();
+        return m_mapService.value(strServiceName).data();
 	}
 	
-	void addService(const std::string& strServiceName, T* service)
+    void addService(const QString& strServiceName, IMgrService* service)
 	{
 		if (!service)
 		{
 			return;
 		}
 		
-		 m_mapService.insert(strServiceName, QSharedPointer<T>(service));
+        m_mapService.insert(strServiceName, QSharedPointer<T>(service));
 	}
 	
-	void removeService(const std::string& strServiceName)
+    void removeService(const QString& strServiceName)
 	{
-		m_mapService.remove(strServiceName);
+        m_mapService.remove(strServiceName);
 	}
 };
 

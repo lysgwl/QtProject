@@ -20,7 +20,7 @@ void CApplication::run_module()
 
 void CApplication::set_app_env()
 {
-    CFrameWork::get_frame_work().init_global_env();
+    CFrameWork::GetInstance().init();
 }
 
 void CApplication::set_app_module()

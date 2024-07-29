@@ -4,21 +4,21 @@
 #include <IMgrObject.h>
 #include <IMgrService.h>
 
-class CObjectMgr ：public IMgrObject, public IMgrService
+class CObjectMgr : public IMgrObject, public IMgrService
 {
 private:
 	QMap<QString, CObject*> m_mapData;
 	
 public:
-	CObjectMgr()
-	~CObjectMgr()
+    CObjectMgr();
+    ~CObjectMgr();
 	
 public:
 	// 初始化服务
-	void init()
+    void init() override;
 
 	// 执行服务
-	void exec()
+    void exec() override;
 
 public:
 	// 获取对象

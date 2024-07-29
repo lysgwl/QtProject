@@ -6,7 +6,6 @@
 class CFrameWork
 {
 private:
-	stGlobalVariant m_stGlobalVariant;
 	CObjectServiceLocator<IMgrService> m_serviceLocator;
 	
 private:
@@ -21,18 +20,12 @@ public:
     static CFrameWork &GetInstance();
 	
 protected:
-	// 初始化全局环境
-	void init_global_env();	
-	
 	// 初始化服务
 	void init_service();
 	
 public:
 	// 初始化
 	void init();
-	
-	// 获取全局变量
-    stGlobalVariant* get_global_variant();
 };
 
 #endif

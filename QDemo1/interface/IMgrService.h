@@ -1,13 +1,13 @@
 #ifndef __I_MGR_SERVICE_H__
 #define __I_MGR_SERVICE_H__
 
-#include <internal.h>
+#include <stheader.h>
 
 // 服务接口声明
 class IMgrService
 {
 public:
-	virtual ~IService() = default; 
+    virtual ~IMgrService() = default;
 	
 	// 初始化服务
 	virtual void init() = 0;

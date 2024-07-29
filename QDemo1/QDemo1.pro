@@ -56,27 +56,28 @@ unix:!macx:{
 DESTDIR = $$PWD/./bin/$$PlatformFolder
 
 INCLUDEPATH += \
-	./inc
+        ./inc \
+        ./interface
 
 HEADERS += \
-		inc/internal.h \
-		inc/stheader.h \
-		inc/macros.h   \
-		inc/objects.h  \
-		interface/IMgrObject.h \
-		interface/IMgrService.h \
+        inc/internal.h \
+        inc/stheader.h \
+        interface/IMgrObject.h \
+        interface/IMgrService.h \
+        framework/ObjectMgr.h \
         framework/GenUtils.h \
+        framework/AppConfig.h \
         framework/FrameWork.h \
-		framework/ObjectMgr.h \
-		framework/ObjectServiceLocator.h \
-		main/application.h \
+        framework/ObjectServiceLocator.h \
+        main/application.h \
 
 SOURCES += \
-		main/main.cpp \
-		main/application.cpp \
+        main/main.cpp \
+        main/application.cpp \
+        framework/ObjectMgr.cpp \
         framework/GenUtils.cpp \
+        framework/AppConfig.cpp \
         framework/FrameWork.cpp \
-		framework/ObjectMgr.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc
