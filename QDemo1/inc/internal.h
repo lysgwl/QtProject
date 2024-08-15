@@ -4,6 +4,7 @@
 #include "stheader.h"
 #include <IMgrObject.h>
 #include <IMgrService.h>
+#include <IMgrController.h>
 #include "../framework/ObjectMgr.h"
 #include "../framework/AppConfig.h"
 #include "../framework/ObjectServiceLocator.h"

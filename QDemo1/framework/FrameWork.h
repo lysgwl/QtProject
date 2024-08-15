@@ -23,6 +23,9 @@ protected:
 	// 初始化服务
 	void init_service();
 	
+	// 初始化对象
+	void init_object();
+	
 public:
 	// 初始化
 	void init();

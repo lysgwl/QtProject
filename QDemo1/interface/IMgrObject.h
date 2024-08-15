@@ -7,6 +7,8 @@
 class IMgrObject : public CObject
 {
 public:
+    virtual ~IMgrObject() = default;
+	
     // 获取对象
     virtual CObject* getObject(const QString& strName) = 0;
 	
