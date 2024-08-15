@@ -1,7 +1,7 @@
 #ifndef __I_MGR_OBJECT_H__
 #define __I_MGR_OBJECT_H__
 
-#include <stheader.h>
+#include <objects.h>
 
 // 对象管理抽象接口
 class IMgrObject : public CObject

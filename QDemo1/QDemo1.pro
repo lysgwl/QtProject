@@ -60,16 +60,19 @@ INCLUDEPATH += \
         ./interface
 
 HEADERS += \
+        main/application.h \
         inc/internal.h \
         inc/stheader.h \
+        inc/objects.h \
         interface/IMgrObject.h \
         interface/IMgrService.h \
+        interface/IMgrController.h \
+        framework/ObjectServiceLocator.h \
         framework/ObjectMgr.h \
         framework/GenUtils.h \
         framework/AppConfig.h \
         framework/FrameWork.h \
-        framework/ObjectServiceLocator.h \
-        main/application.h \
+        controller/TopMainFrameController.h \
 
 SOURCES += \
         main/main.cpp \
@@ -78,6 +81,7 @@ SOURCES += \
         framework/GenUtils.cpp \
         framework/AppConfig.cpp \
         framework/FrameWork.cpp \
+        controller/TopMainFrameController.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc

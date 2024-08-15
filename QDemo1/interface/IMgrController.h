@@ -1,7 +1,7 @@
 #ifndef __I_MGR_CONTROLLER_H__
 #define __I_MGR_CONTROLLER_H__
 
-#include <stheader.h>
+#include <objects.h>
 
 class IMgrController : public CObject
 {
@@ -16,7 +16,7 @@ public:
 	virtual void init() = 0;
 	
 	// 执行
-	virtual void exec() = 0
+    virtual void exec() = 0;
 };
 
 #endif

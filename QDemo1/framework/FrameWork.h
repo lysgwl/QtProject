@@ -29,6 +29,9 @@ protected:
 public:
 	// 初始化
 	void init();
+
+    // 根据名称获取服务
+    IMgrService* get_object_service(const QString& strServiceName);
 };
 
 #endif

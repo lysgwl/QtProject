@@ -1,7 +1,7 @@
 #ifndef __TOP_MAINFRAME_CONTROLLER_H__
 #define __TOP_MAINFRAME_CONTROLLER_H__
 
-#include <internal.h>
+#include <IMgrController.h>
 
 class CTopMainFrameController : public IMgrController
 {
@@ -24,4 +24,5 @@ public:
 	void exec();
 };
 
+DECLARE_OBJ(CTopMainFrameController, "org.CTopMainFrameController.service")
 #endif

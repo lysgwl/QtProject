@@ -1,7 +1,7 @@
 #ifndef __I_MGR_SERVICE_H__
 #define __I_MGR_SERVICE_H__
 
-#include <stheader.h>
+#include <objects.h>
 
 // 服务接口声明
 class IMgrService

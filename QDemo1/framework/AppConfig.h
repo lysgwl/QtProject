@@ -17,4 +17,6 @@ public:
     void exec() override;
 };
 
+DECLARE_OBJ(CAppConfig, "org.CAppConfig.service")
+
 #endif

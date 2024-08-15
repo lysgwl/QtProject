@@ -60,16 +60,4 @@ typedef struct tagGlobalVariant {
     QVector<stUISolution> vecUISolutions;
 }stGlobalVariant;
 
-class CObject : public QObject
-{
-public:
-    CObject() {};
-    virtual ~CObject() {};
-};
-
-template <class T> inline const char * get_obj_iid() { return nullptr; }
-#define GET_DECLARE_OBJ(IFace, IID) template <> inline const char * get_obj_iid<IFace*>() { return IID; }
-#define GET_IID(IFace) (get_obj_iid<IFace*>())
-
-
 #endif

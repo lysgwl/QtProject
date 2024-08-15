@@ -31,4 +31,6 @@ public:
 	void cleanObject();
 };
 
+DECLARE_OBJ(CObjectMgr, "org.CObjectMgr.service")
+
 #endif

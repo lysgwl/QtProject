@@ -1,5 +1,8 @@
 #include "FrameWork.h"
 
+#include <objects.h>
+#include "./controller/TopMainFrameController.h"
+
 CFrameWork::CFrameWork()
 {
 }
@@ -17,16 +20,22 @@ CFrameWork& CFrameWork::GetInstance()
 // 初始化服务
 void CFrameWork::init_service()
 {
-    m_serviceLocator.addService("objectMgr", new CObjectMgr);
-    m_serviceLocator.addService("globalvar", new CAppConfig);
+    m_serviceLocator.addService(GET_IID(CObjectMgr), new CObjectMgr);
+    m_serviceLocator.addService(GET_IID(CAppConfig), new CAppConfig);
 
-    m_serviceLocator.getService("globalvar")->init();
+    m_serviceLocator.getService(GET_IID(CAppConfig))->init();
 }
 
 // 初始化对象
 void CFrameWork::init_object()
 {
-	m_serviceLocator.getService("objectMgr")->addObject("topMainController", new CTopMainFrameController);
+    REGISTER_OBJECT(CTopMainFrameController, new CTopMainFrameController);
+
+    CTopMainFrameController* pController = GET_OBJECT_PTR(CTopMainFrameController);
+    if (pController != nullptr)
+    {
+        pController->registerobj();
+    }
 }
 
 // 初始化
@@ -39,3 +48,8 @@ void CFrameWork::init()
 	init_object();
 }
 
+// 根据名称获取服务
+IMgrService* CFrameWork::get_object_service(const QString& strServiceName)
+{
+	return m_serviceLocator.getService(strServiceName);
+}

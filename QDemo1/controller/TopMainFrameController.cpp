@@ -8,7 +8,7 @@ CTopMainFrameController::~CTopMainFrameController()
 {
 }
 
-void CTopMainFrameController::registerObj()
+void CTopMainFrameController::registerobj()
 {
 }
 
