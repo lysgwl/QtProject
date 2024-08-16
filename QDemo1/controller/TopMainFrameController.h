@@ -8,6 +8,7 @@ class CTopMainFrameController : public IMgrController
 private:
 	QStackedWidget* m_stkWdg = Q_NULLPTR;
 	QWidget* m_topFrameMain = Q_NULLPTR;
+    QWidget* m_pMainWindow = Q_NULLPTR;
 	
 public:
     explicit CTopMainFrameController();
@@ -20,8 +21,14 @@ public:
 	// 初始化
 	void init();
 	
-	//
+	// 执行
 	void exec();
+
+    //
+    CObject* getobject();
+
+    //
+    QWidget* getview();
 };
 
 DECLARE_OBJ(CTopMainFrameController, "org.CTopMainFrameController.service")

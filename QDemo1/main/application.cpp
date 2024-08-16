@@ -1,6 +1,6 @@
 #include "application.h"
 
-#include "../framework/FrameWork.h"
+#include <platform.h>
 
 CApplication::CApplication(int &argc, char **argv):
     QApplication(argc, argv)
@@ -15,7 +15,11 @@ void CApplication::init_module()
 
 void CApplication::run_module()
 {
-    //ControlerMain::showControlMain();
+    CTopMainFrameController* pController = GET_OBJECT_PTR(CTopMainFrameController);
+    if (pController != nullptr)
+    {
+        pController->init();
+    }
 }
 
 void CApplication::set_app_env()

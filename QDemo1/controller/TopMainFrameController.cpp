@@ -1,5 +1,7 @@
 #include "TopMainFrameController.h"
 
+#include <platform.h>
+
 CTopMainFrameController::CTopMainFrameController()
 {
 }
@@ -10,6 +12,7 @@ CTopMainFrameController::~CTopMainFrameController()
 
 void CTopMainFrameController::registerobj()
 {
+	REGISTER_OBJECT(CMainWindowController, new CMainWindowController);
 }
 
 void CTopMainFrameController::init()
@@ -26,9 +29,30 @@ void CTopMainFrameController::init()
 		m_topFrameMain->setLayout(layoutMain);
 		m_topFrameMain->setWindowFlags(Qt::FramelessWindowHint/* | Qt::WindowStaysOnTopHint*/);
 		m_topFrameMain->setFixedSize(800,600);
+
+        CMainWindowController* pMainWindow = GET_OBJECT_PTR(CMainWindowController);
+        if (pMainWindow != nullptr)
+        {
+            pMainWindow->init();
+            m_pMainWindow = pMainWindow->getview();
+        }
+
+        m_stkWdg->addWidget(new QPushButton("test1"));
+        m_stkWdg->addWidget(m_pMainWindow);
 	}
 }
 
 void CTopMainFrameController::exec()
 {
+
+}
+
+CObject* CTopMainFrameController::getobject()
+{
+    return this;
+}
+
+QWidget* CTopMainFrameController::getview()
+{
+    return m_topFrameMain;
 }

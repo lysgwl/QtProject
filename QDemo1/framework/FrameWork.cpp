@@ -1,7 +1,6 @@
 #include "FrameWork.h"
 
-#include <objects.h>
-#include "./controller/TopMainFrameController.h"
+#include <platform.h>
 
 CFrameWork::CFrameWork()
 {

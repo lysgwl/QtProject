@@ -3,6 +3,7 @@
 
 #include <objects.h>
 
+// 控制器模型
 class IMgrController : public CObject
 {
 public:
@@ -17,6 +18,12 @@ public:
 	
 	// 执行
     virtual void exec() = 0;
+
+    //
+    virtual CObject* getobject() =0;
+
+    //
+    virtual QWidget* getview() = 0;
 };
 
 #endif
