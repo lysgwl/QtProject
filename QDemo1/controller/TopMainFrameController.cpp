@@ -54,28 +54,36 @@ void CTopMainFrameController::init()
 
 void CTopMainFrameController::exec()
 {
-    if (m_topFrameMain != Q_NULLPTR)
+    if (m_topFrameMain == Q_NULLPTR)
     {
-        // 获取所有屏幕
-        QList<QScreen *> screens = QGuiApplication::screens();
-        if (!screens.isEmpty())
-        {
-            // 获取主屏幕
-            QScreen *screen = screens.first();
-
-            // 获取屏幕的几何信息
-            QRect screenGeometry = screen->geometry();
-
-            // 计算居中位置
-            int x = (screenGeometry.width() - m_topFrameMain->width()) / 2;
-            int y = (screenGeometry.height() - m_topFrameMain->height()) / 2;
-
-            // 设置窗口的位置和显示
-            m_topFrameMain->move(x, y);
-        }
-
-        m_topFrameMain->showFullScreen();
+        return;
     }
+
+    CMainWindowController* pMainWindow = GET_OBJECT_PTR(CMainWindowController);
+    if (pMainWindow != nullptr)
+    {
+        pMainWindow->exec();
+    }
+
+    // 获取所有屏幕
+    QList<QScreen *> screens = QGuiApplication::screens();
+    if (!screens.isEmpty())
+    {
+        // 获取主屏幕
+        QScreen *screen = screens.first();
+
+        // 获取屏幕的几何信息
+        QRect screenGeometry = screen->geometry();
+
+        // 计算居中位置
+        int x = (screenGeometry.width() - m_topFrameMain->width()) / 2;
+        int y = (screenGeometry.height() - m_topFrameMain->height()) / 2;
+
+        // 设置窗口的位置和显示
+        m_topFrameMain->move(x, y);
+    }
+
+    m_topFrameMain->showFullScreen();
 }
 
 CObject* CTopMainFrameController::getobject()

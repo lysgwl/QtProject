@@ -38,6 +38,16 @@ void CMainWindowController::init()
 
 void CMainWindowController::exec()
 {
+    if (m_pMainWindowView == Q_NULLPTR)
+    {
+        return;
+    }
+
+    CTaskStatusBarController* pStatusBar = GET_OBJECT_PTR(CTaskStatusBarController);
+    if (pStatusBar != nullptr)
+    {
+        pStatusBar->exec();
+    }
 }
 
 CObject* CMainWindowController::getobject()
