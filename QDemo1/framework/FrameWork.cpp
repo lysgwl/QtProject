@@ -30,10 +30,10 @@ void CFrameWork::init_object()
 {
     REGISTER_OBJECT(CTopMainFrameController, new CTopMainFrameController);
 
-    CTopMainFrameController* pController = GET_OBJECT_PTR(CTopMainFrameController);
-    if (pController != nullptr)
+    CTopMainFrameController* pTopMainFrame = GET_OBJECT_PTR(CTopMainFrameController);
+    if (pTopMainFrame != nullptr)
     {
-        pController->registerobj();
+        pTopMainFrame->registerobj();
     }
 }
 

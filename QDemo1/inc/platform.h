@@ -6,5 +6,6 @@
 #include "../framework/FrameWork.h"
 #include "../controller/TopMainFrameController.h"
 #include "../controller/MainWindowController.h"
+#include "../controller/TaskStatusBarController.h"
 
 #endif

@@ -4,7 +4,10 @@ CMainWindowView::CMainWindowView(QWidget *parent)
 	: QWidget(parent)
 {
     setWindowFlags(Qt::FramelessWindowHint);  //Qt::WindowStaysOnTopHint
-    setFixedSize(640, 480); //resize
+    setFixedSize(800, 600); //resize
+
+    setAttribute(Qt::WA_StyledBackground, true);
+    setStyleSheet("background-color:rgb(150,130,80)");
 }
 
 CMainWindowView::~CMainWindowView()

@@ -1,5 +1,7 @@
 #include "MainWindowController.h"
 
+#include <platform.h>
+
 CMainWindowController::CMainWindowController() 
 {
 }
@@ -10,6 +12,13 @@ CMainWindowController::~CMainWindowController()
 
 void CMainWindowController::registerobj()
 {
+   REGISTER_OBJECT(CTaskStatusBarController, new CTaskStatusBarController);
+
+   CTaskStatusBarController* pStatusBar = GET_OBJECT_PTR(CTaskStatusBarController);
+   if (pStatusBar != nullptr)
+   {
+       pStatusBar->registerobj();
+   }
 }
 
 void CMainWindowController::init()
@@ -18,6 +27,12 @@ void CMainWindowController::init()
 	{
         m_pMainWindowView = new CMainWindowView();
         m_pMainWindowView->init();
+
+        CTaskStatusBarController* pStatusBar = GET_OBJECT_PTR(CTaskStatusBarController);
+        if (pStatusBar != nullptr)
+        {
+            pStatusBar->init();
+        }
     }
 }
 

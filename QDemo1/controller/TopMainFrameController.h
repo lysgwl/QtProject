@@ -24,11 +24,14 @@ public:
 	// 执行
 	void exec();
 
-    //
+    // 获取对象
     CObject* getobject();
 
-    //
+    // 获取视图
     QWidget* getview();
+
+    //
+    void setcurrentview(QWidget* pWidget);
 };
 
 DECLARE_OBJ(CTopMainFrameController, "org.CTopMainFrameController.service")

@@ -26,9 +26,11 @@
 #include <QTimer>
 #include <QLabel>
 #include <QLayout>
+#include <QScreen>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QStackedWidget>
 #include <QMouseEvent>
 

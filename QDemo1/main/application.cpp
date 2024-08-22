@@ -15,10 +15,12 @@ void CApplication::init_module()
 
 void CApplication::run_module()
 {
-    CTopMainFrameController* pController = GET_OBJECT_PTR(CTopMainFrameController);
-    if (pController != nullptr)
+    CTopMainFrameController* pTopMainFrame = GET_OBJECT_PTR(CTopMainFrameController);
+    CMainWindowController* pMainWindow = GET_OBJECT_PTR(CMainWindowController);
+    if (pTopMainFrame != nullptr && pMainWindow != nullptr)
     {
-        pController->init();
+        pTopMainFrame->setcurrentview(pMainWindow->getview());
+        pTopMainFrame->exec();
     }
 }
 
@@ -29,5 +31,9 @@ void CApplication::set_app_env()
 
 void CApplication::set_app_module()
 {
-    //ControlerMain::registerObj();
+    CTopMainFrameController* pTopMainFrame = GET_OBJECT_PTR(CTopMainFrameController);
+    if (pTopMainFrame != nullptr)
+    {
+        pTopMainFrame->init();
+    }
 }

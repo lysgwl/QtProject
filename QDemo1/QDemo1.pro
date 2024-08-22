@@ -76,7 +76,9 @@ HEADERS += \
         framework/FrameWork.h \
         controller/TopMainFrameController.h \
         controller/MainWindowController.h \
+        controller/TaskStatusBarController.h \
         widget/MainWindowView.h \
+        widget/TaskStatusBarView.h \
 
 SOURCES += \
         main/main.cpp \
@@ -87,7 +89,9 @@ SOURCES += \
         framework/FrameWork.cpp \
         controller/TopMainFrameController.cpp \
         controller/MainWindowController.cpp \
+        controller/TaskStatusBarController.cpp \
         widget/MainWindowView.cpp \
+        widget/TaskStatusBarView.cpp \
 
 #RESOURCES += \
 #	res/QDemo1.qrc
